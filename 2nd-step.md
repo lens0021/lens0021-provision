@@ -137,13 +137,11 @@ compress to `~/Wallpapers`
 # Downloads secrets from keybase
 
 ```sh
-curl https://gitlab.com/lens0021/provision/-/blob/main/secrets/ssh/id_ed25519.pgp | keybase pgp decrypt -o "$HOME/.ssh/id_ed25519"
-curl https://gitlab.com/lens0021/provision/-/blob/main/secrets/ssh/id_rsa.pgp | keybase pgp decrypt -o "$HOME/.ssh/id_rsa"
+curl https://gitlab.com/lens0021/provision/-/raw/main/secrets/ssh/id_ed25519_2019.pgp | keybase pgp decrypt -o "$HOME/.ssh/id_ed25519_2019"
 sudo chmod 600 "$HOME/.ssh/id_ed25519"
-sudo chmod 600 "$HOME/.ssh/id_rsa"
 mkdir -p ~/secrets
-curl https://gitlab.com/lens0021/provision/-/blob/main/secrets/tokens/github/lens0021/gist.pgp | keybase pgp decrypt -o ~/secrets/github-gist-token.txt
-curl https://gitlab.com/lens0021/provision/-/blob/main/secrets/gpg/gpg.pgp | keybase pgp decrypt -o ~/secrets/gpg
+curl https://gitlab.com/lens0021/provision/-/raw/main/secrets/tokens/github/lens0021/gist.pgp | keybase pgp decrypt -o ~/secrets/github-gist-token.txt
+curl https://gitlab.com/lens0021/provision/-/raw/main/secrets/gpg/gpg.pgp | keybase pgp decrypt -o ~/secrets/gpg
 ```
 
 # GSConnect
