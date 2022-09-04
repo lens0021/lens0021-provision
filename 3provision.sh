@@ -41,10 +41,10 @@ sudo ln -s "$HOME/Android/Sdk/platform-tools/adb" /usr/bin/adb
 sudo chown -R $USER:$USER android-studio/
 
 # ssh
-curl -L https://pastebin.com/raw/P1f0BJ4h -o "$HOME/.ssh/id_rsa.pub"
+curl -L https://gitlab.com/lens0021/provision/-/blob/main/public_keys/id_rsa.pub -o "$HOME/.ssh/id_rsa.pub"
 
 # GPG
-curl -L https://pastebin.com/raw/AYSUgm4N -o ~/Downloads/gpg.pub
+curl -L https://gitlab.com/lens0021/provision/-/blob/main/public_keys/gpg.pub -o ~/Downloads/gpg.pub
 gpg --import ~/Downloads/gpg.pub
 gpg --allow-secret-key-import --import ~/secrets/gpg
 rm ~/Downloads/gpg.pub ~/secrets/gpg
