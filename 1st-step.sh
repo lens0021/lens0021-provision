@@ -30,7 +30,7 @@ case $LINUX_ID in
       fzf \
       xclip \
       htop \
-      
+
       ;;
   "Debian"|"Ubuntu")
     sudo apt install -y \
@@ -58,7 +58,7 @@ case $LINUX_ID in
       gnome-tweaks \
       gnome-colors \
       sqlite3
-      
+
     # Ubuntu
     #  "$(check-language-support)" \
     #  "$(check-language-support -l ja)" \
@@ -78,7 +78,7 @@ case $LINUX_ID in
       ibus-hangul \
       fonts-unfonts-core
     ;;
-case
+esac
 
 #
 # Python
@@ -237,10 +237,13 @@ case $LINUX_ID in
   "Ubuntu")
     CODE_NAME=$(cat /etc/os-release | grep UBUNTU_CODENAME | cut -d= -f2)
     sudo add-apt-repository "deb https://dl.winehq.org/wine-builds/ubuntu/ ${CODE_NAME} main"
+    ;;
   "Debian")
     sudo wget -nc -O /usr/share/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
     CODE_NAME=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d= -f2)
     sudo wget -nc -P /etc/apt/sources.list.d/ "https://dl.winehq.org/wine-builds/debian/dists/${CODE_NAME}/winehq-${CODE_NAME}.sources"
+    ;;
+esac
 
 sudo apt update
 
