@@ -114,9 +114,28 @@ gsettings set org.gnome.desktop.interface gtk-enable-primary-paste false
 # gsettings set org.gnome.shell.extensions.desktop-icons show-home false
 
 #
+# BITWARDEN
+#
+BITWARDEN_VERSION=$(curl -s https://api.github.com/repos/bitwarden/clients/releases/latest | json tag_name | cut -dv -f2)
+sudo curl -L https://github.com/bitwarden/clients/releases/download/desktop-v${BITWARDEN_VERSION}/Bitwarden-${BITWARDEN_VERSION}-x86_64.AppImage \
+  -o ~/.local/bin/Bitwarden.AppImage
+sudo chmod +x ~/.local/bin/Bitwarden.AppImage
+
+curl -L https://github.com/bitwarden/brand/raw/master/icons/512x512.png -o ~/.icons/bitwarden.png
+touch ~/.local/share/applications/Bitwarden.desktop
+desktop-file-edit \
+  --set-name=Bitwarden \
+  --set-key=Type --set-value=Application \
+  --set-key=Terminal --set-value=false \
+  --set-key=Exec --set-value=$HOME/.local/bin/Bitwarden.AppImage \
+  --set-key=Icon --set-value=bitwarden \
+  ~/.local/share/applications/Bitwarden.desktop
+
+desktop-file-install ~/.local/share/applications/Bitwarden.desktop
+
+#
 # Python
 #
-
 case $LINUX_ID in
   "Fedora")
     dnf install -y \
@@ -420,6 +439,28 @@ mssh "\$INSTANCE_ID"
 EOF
 chmod +x aws-connect
 sudo mv ~/aws-connect /usr/local/bin/
+
+update-desktop-database ~/.local/share/applications
+
+#
+# Standard Notes
+#
+
+STANDARD_NOTES_VERSION=$(curl -s https://api.github.com/repos/standardnotes/app/releases/latest | json tag_name | cut -d@ -f3)
+sudo curl -L https://github.com/standardnotes/app/releases/download/%40standardnotes%2Fdesktop%40${STANDARD_NOTES_VERSION}/standard-notes-${STANDARD_NOTES_VERSION}-linux-x86_64.AppImage \
+  -o ~/.local/bin/standard-notes.AppImage
+sudo chmod +x ~/.local/bin/standard-notes.AppImage
+
+curl -L https://github.com/standardnotes/app/raw/main/packages/web/src/favicon/android-chrome-512x512.png -o ~/.icons/standard-notes.png
+touch ~/.local/share/applications/standard-notes.desktop
+desktop-file-edit \
+  --set-name=Standard\ Notes \
+  --set-key=Type --set-value=Application \
+  --set-key=Terminal --set-value=false \
+  --set-key=Exec --set-value=$HOME/.local/bin/standard-notes.AppImage \
+  --set-key=Icon --set-value=standard-notes \
+  ~/.local/share/applications/standard-notes.desktop
+sudo desktop-file-install ~/.local/share/applications/standard-notes.desktop
 
 #
 # Android studio
