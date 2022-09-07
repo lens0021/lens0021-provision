@@ -336,8 +336,10 @@ pip3 install ec2instanceconnectcli
 # Require json
 #
 curl -fsSL https://get.docker.com | sh -
-# sudo groupadd docker
+# https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
+sudo groupadd docker || True
 sudo usermod -aG docker "$USER"
+newgrp docker
 # Docker Compose
 DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | json tag_name | sed -e s/v//)
 sudo curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m)" \
