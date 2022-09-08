@@ -79,6 +79,21 @@ case $LINUX_ID in
 esac
 
 #
+# Change the background color of grub
+#
+case $LINUX_ID in
+  "Debian")
+    cat <<EOF > /boot/grub/custom.cfg 
+# set color_normal=light-gray/black
+# set color_highlight=white/cyan
+
+set menu_color_normal=white/black
+set menu_color_highlight=black/white
+    EOF
+    ;;
+esac
+
+#
 # Gnome
 # Uses unstable because the version of Bullseye's gnome is 38
 #
