@@ -1,23 +1,30 @@
 #!/bin/bash
 set -euo pipefail; IFS=$'\n\t'
 
-export LINUX_ID="$(lsb_release --id --short)"
+export LINUX_NODENAME="$(uname -n)"
+# export LINUX_ID="$(lsb_release --id --short)"
 
 #
 # Bluetooth
 #
 rfkill block bluetooth
 
-# (Debian) Setup wifi
-# https://unix.stackexchange.com/a/673848/389523
-
 # curl
-sudo apt install -y curl
+# TODO: Do Ubuntu and Debian have curl?
+if [ $LINUX_NODENAME != 'fedora' ]; then
+  sudo apt install -y curl
+fi
 
 # Google Chrome
-curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome-stable_current_amd64.deb
-sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
-rm ~/Downloads/google-chrome-stable_current_amd64.deb
+case $LINUX_NODENAME in
+  "fedora")
+    curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm -o ~/Downloads/google-chrome.deb
+    ;;
+  "debian")
+    curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
+    sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
+    ;;
+rm ~/Downloads/google-chrome.*
 
 
 #
@@ -30,6 +37,10 @@ case $LINUX_ID in
       fzf \
       xclip \
       htop \
+      vim \
+      git-review \
+      ShellCheck \
+      ImageMagick
 
       ;;
   "Debian"|"Ubuntu")
@@ -153,7 +164,7 @@ desktop-file-install ~/.local/share/applications/Bitwarden.desktop
 #
 case $LINUX_ID in
   "Fedora")
-    dnf install -y \
+    sudo dnf install -y \
       python3-pip \
     ;;
   "Ubuntu")
@@ -199,22 +210,38 @@ echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc
 #
 # Fonts
 #
+sudo dnf -y install naver-nanum-gothic-fonts
 sudo apt-get install -y fonts-nanum*
 
 #
 # Keybase
 #
-curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb -o ~/Downloads/keybase_amd64.deb
-sudo apt install -y ~/Downloads/keybase_amd64.deb
-rm ~/Downloads/keybase_amd64.deb
+
+case $LINUX_NODENAME in
+  "fedora")
+    sudo dnf install -y https://prerelease.keybase.io/keybase_amd64.rpmgoogle-chrome.deb
+    ;;
+  "debian")
+    curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb -o ~/Downloads/keybase_amd64.deb
+    sudo apt install -y ~/Downloads/keybase_amd64.deb
+    rm ~/Downloads/keybase_amd64.deb
+  ;;
+esac
 
 #
 # yarn
 #
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt update && sudo apt install -y yarn
-echo 'export PATH="$PATH:$HOME/.yarn/bin"' >> ~/.bashrc
+case $LINUX_NODENAME in
+  "fedora")
+    # TODO
+    ;;
+  "debian")
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    sudo apt update && sudo apt install -y yarn
+    echo 'export PATH="$PATH:$HOME/.yarn/bin"' >> ~/.bashrc
+      ;;
+esac
 
 # JSON (npm package)
 sudo yarn global add json
@@ -402,14 +429,14 @@ complete -C /usr/local/bin/nomad nomad
 # Consul
 # Require json
 #
-CONSUL_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | json current_version)
-curl "https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip" \
+# CONSUL_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | json current_version)
+# curl "https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip" \
     -Lo "$HOME/Downloads/consul_linux_amd64.zip"
-unzip "$HOME/Downloads/consul_linux_amd64.zip" -d ~/Downloads
-sudo mv ~/Downloads/consul /usr/local/bin/consul
-rm "$HOME/Downloads/consul_linux_amd64.zip"
-consul -autocomplete-install
-complete -C /usr/bin/consul consul
+# unzip "$HOME/Downloads/consul_linux_amd64.zip" -d ~/Downloads
+# sudo mv ~/Downloads/consul /usr/local/bin/consul
+# rm "$HOME/Downloads/consul_linux_amd64.zip"
+# consul -autocomplete-install
+# complete -C /usr/bin/consul consul
 
 #
 # Steam
@@ -428,11 +455,11 @@ mkdir -p ~/git/lens0021 ~/git/femiwiki ~/git/gerrit
 #
 # Caddy
 #
-XCADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/xcaddy/releases/latest | json tag_name | cut -dv -f2)
-curl -L https://github.com/caddyserver/xcaddy/releases/download/v${XCADDY_VERSION}/xcaddy_${XCADDY_VERSION}_linux_amd64.deb \
-  -o ~/Downloads/xcaddy_linux_amd64.deb
-sudo dpkg -i ~/Downloads/xcaddy_linux_amd64.deb
-rm ~/Downloads/xcaddy_linux_amd64.deb
+# XCADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/xcaddy/releases/latest | json tag_name | cut -dv -f2)
+# curl -L https://github.com/caddyserver/xcaddy/releases/download/v${XCADDY_VERSION}/xcaddy_${XCADDY_VERSION}_linux_amd64.deb \
+#   -o ~/Downloads/xcaddy_linux_amd64.deb
+# sudo dpkg -i ~/Downloads/xcaddy_linux_amd64.deb
+# rm ~/Downloads/xcaddy_linux_amd64.deb
 
 #
 # aws-mfa
