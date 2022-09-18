@@ -61,9 +61,14 @@ turn off Settings &rarr; Advanced &rarr; "Open Keybase on startup"
 ibus-setup
 ```
 
+- Input Method &rarr; Add &rarr; Korean &rarr; Hangul
+- Emoji &rarr; Ctrl + Shift + e
+
 ```sh
-gnome-control-center region
+gnome-control-center keyboard
 ```
+
+Input Sources &rarr; Korean &rarr; Hangul &rarr; Preferences &rarr; Sebeolsik final, Start in Hangul mode
 
 ```
 ibus-setup-hangul
