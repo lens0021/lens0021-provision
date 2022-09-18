@@ -15,16 +15,36 @@ if [ $LINUX_NODENAME != 'fedora' ]; then
   sudo apt install -y curl
 fi
 
+#
+# Bitwarden
+#
+BITWARDEN_VERSION=$(curl -s https://api.github.com/repos/bitwarden/clients/releases/latest | jq -r .tag_name | cut -dv -f2)
+sudo curl -L https://github.com/bitwarden/clients/releases/download/desktop-v${BITWARDEN_VERSION}/Bitwarden-${BITWARDEN_VERSION}-x86_64.AppImage \
+  -o ~/.local/bin/Bitwarden.AppImage
+sudo chmod +x ~/.local/bin/Bitwarden.AppImage
+
+curl -L https://github.com/bitwarden/brand/raw/master/icons/512x512.png -o ~/.icons/bitwarden.png
+touch ~/.local/share/applications/Bitwarden.desktop
+desktop-file-edit \
+  --set-name=Bitwarden \
+  --set-key=Type --set-value=Application \
+  --set-key=Terminal --set-value=false \
+  --set-key=Exec --set-value=$HOME/.local/bin/Bitwarden.AppImage \
+  --set-key=Icon --set-value=bitwarden \
+  ~/.local/share/applications/Bitwarden.desktop
+
+desktop-file-install ~/.local/share/applications/Bitwarden.desktop
+
 # Google Chrome
 case $LINUX_NODENAME in
   "fedora")
-    curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm -o ~/Downloads/google-chrome.deb
+    sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
     ;;
   "debian")
     curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
     sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
+    rm ~/Downloads/google-chrome.deb
     ;;
-rm ~/Downloads/google-chrome.*
 
 
 #
@@ -35,7 +55,6 @@ case $LINUX_ID in
   "Fedora")
     # openssh → kdeconnect
     sudo dnf install -y \
-      fzf \
       xclip \
       htop \
       vim \
@@ -48,7 +67,6 @@ case $LINUX_ID in
   "Debian"|"Ubuntu")
     sudo apt install -y \
       curl \
-      fzf \
       xclip \
       htop \
       mssh \
@@ -68,20 +86,24 @@ case $LINUX_ID in
       baobab \
       ruby-full \
       ssh-askpass \
-      sqlite3
+      sqlite3 \
+      jq
 
     # Ubuntu
     #  "$(check-language-support)" \
     #  "$(check-language-support -l ja)" \
-    # https://developer.android.com/studio/install#64bit-libs
-    sudo apt install -y
-      libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386
     # sudo apt install -y \
     #   evolution-data-server
       ;;
   *)
       ;;
 esac
+
+#
+# fzf
+#
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
 
 case $LINUX_ID in
   "Debian"|"Ubuntu")
@@ -102,7 +124,7 @@ case $LINUX_ID in
 
 set menu_color_normal=white/black
 set menu_color_highlight=black/white
-    EOF
+EOF
     ;;
 esac
 
@@ -110,23 +132,23 @@ esac
 # Gnome
 # Uses unstable because the version of Bullseye's gnome is 38
 #
-case $LINUX_ID in
-  "Debian")
-    sudo apt -t unstable install -y \
-      gnome-clocks \
-      gnome-tweaks \
-      gnome-colors \
-      gnome-session \
-      gnome-shell \
-      gnome-backgrounds \
-      gnome-applets \
-      gnome-control-center \
-      mutter \
-      gjs \
-      tracker-miner-fs \
-      ssh-askpass-gnome
-  ;;
-esac
+# case $LINUX_ID in
+#   "Debian")
+#     sudo apt -t unstable install -y \
+#       gnome-clocks \
+#       gnome-tweaks \
+#       gnome-colors \
+#       gnome-session \
+#       gnome-shell \
+#       gnome-backgrounds \
+#       gnome-applets \
+#       gnome-control-center \
+#       mutter \
+#       gjs \
+#       tracker-miner-fs \
+#       ssh-askpass-gnome
+#   ;;
+# esac
 
 #
 # gsettings
@@ -142,26 +164,6 @@ gsettings set org.gnome.desktop.interface gtk-enable-primary-paste false
 # gsettings set org.gnome.shell.extensions.desktop-icons show-home false
 
 #
-# BITWARDEN
-#
-BITWARDEN_VERSION=$(curl -s https://api.github.com/repos/bitwarden/clients/releases/latest | json tag_name | cut -dv -f2)
-sudo curl -L https://github.com/bitwarden/clients/releases/download/desktop-v${BITWARDEN_VERSION}/Bitwarden-${BITWARDEN_VERSION}-x86_64.AppImage \
-  -o ~/.local/bin/Bitwarden.AppImage
-sudo chmod +x ~/.local/bin/Bitwarden.AppImage
-
-curl -L https://github.com/bitwarden/brand/raw/master/icons/512x512.png -o ~/.icons/bitwarden.png
-touch ~/.local/share/applications/Bitwarden.desktop
-desktop-file-edit \
-  --set-name=Bitwarden \
-  --set-key=Type --set-value=Application \
-  --set-key=Terminal --set-value=false \
-  --set-key=Exec --set-value=$HOME/.local/bin/Bitwarden.AppImage \
-  --set-key=Icon --set-value=bitwarden \
-  ~/.local/share/applications/Bitwarden.desktop
-
-desktop-file-install ~/.local/share/applications/Bitwarden.desktop
-
-#
 # Python
 #
 case $LINUX_ID in
@@ -175,7 +177,7 @@ case $LINUX_ID in
       python3-venv \
     ;;
 esac
-sudo ln -s /usr/bin/python3 /usr/bin/python
+sudo ln -s /usr/bin/python3 /usr/bin/python || True
 sudo ln -s /usr/bin/pip3 /usr/bin/pip || True
 pip install -U \
   flake8 \
@@ -212,8 +214,14 @@ echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc
 #
 # Fonts
 #
-sudo dnf -y install naver-nanum-gothic-fonts
-sudo apt-get install -y fonts-nanum*
+case $LINUX_NODENAME in
+"fedora")
+  sudo dnf -y install naver-nanum-gothic-fonts
+;;
+"debian")
+  sudo apt-get install -y fonts-nanum*
+;;
+esac
 
 #
 # Keybase
@@ -221,7 +229,7 @@ sudo apt-get install -y fonts-nanum*
 
 case $LINUX_NODENAME in
   "fedora")
-    sudo dnf install -y https://prerelease.keybase.io/keybase_amd64.rpmgoogle-chrome.deb
+    sudo dnf install -y https://prerelease.keybase.io/keybase_amd64.rpm
     ;;
   "debian")
     curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb -o ~/Downloads/keybase_amd64.deb
@@ -231,44 +239,57 @@ case $LINUX_NODENAME in
 esac
 
 #
+# asdf
+#
+ASDF_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
+echo '. $HOME/.asdf/asdf.sh' >>  ~/.bashrc
+echo '. $HOME/.asdf/completions/asdf.bash' >>  ~/.bashrc
+. $HOME/.asdf/asdf.sh
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+asdf reshim nodejs
+asdf install nodejs latest
+asdf global nodejs latest
+
 # yarn
-#
-case $LINUX_NODENAME in
-  "fedora")
-    # TODO
-    ;;
-  "debian")
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-    sudo apt update && sudo apt install -y yarn
-    echo 'export PATH="$PATH:$HOME/.yarn/bin"' >> ~/.bashrc
-      ;;
-esac
+asdf plugin add yarn
+asdf install yarn latest
+asdf global yarn latest
 
-# JSON (npm package)
-sudo yarn global add json
-
-# jq
-sudo apt install -y jq
+# php
+asdf plugin add php https://github.com/asdf-community/asdf-php.git
+asdf reshim php
 
 #
-# PHP & Composer
+# ETC yarn packages
+#
+sudo yarn global add \
+  prettier \
+  eslint \
+  stylelint stylelint-config-standard
+
+#
+# Composer
 #
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 sudo php composer-setup.php --install-dir=/usr/bin --filename=composer --quiet
 rm composer-setup.php
 
-composer global require mediawiki/mediawiki-codesniffer -W
-
 #
 # Github CLI
-# require JSON
 #
-GITHUB_CLI_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | json tag_name | cut -dv -f2)
-curl -L https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.deb \
-  -o ~/Downloads/gh_linux_amd64.deb
-sudo dpkg -i ~/Downloads/gh_linux_amd64.deb
-rm ~/Downloads/gh_linux_amd64.deb
+GITHUB_CLI_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | cut -dv -f2)
+case $LINUX_NODENAME in
+  "fedora")
+    sudo dnf install -y https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.rpm
+  ;;
+  "debian")
+    curl -L https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.deb \
+      -o ~/Downloads/gh_linux_amd64.deb
+    sudo dpkg -i ~/Downloads/gh_linux_amd64.deb
+    rm ~/Downloads/gh_linux_amd64.deb
+  ;;
+esac
 
 #
 # Git
@@ -278,22 +299,10 @@ git config --global user.email "lorentz0021@gmail.com"
 git config --global core.editor "code --wait"
 git config --global --add gitreview.username "lens0021"
 git config --global commit.gpgsign true
-git config --global core.excludesfile ~/.gitignore
 git config --global pull.rebase true
 git config --global credential.credentialStore secretservice
 echo 'export GPG_TTY=$(tty)' >> ~/.bashrc
 echo 'default-cache-ttl 3600' >> gpg-agent.conf
-cat << EOF > ~/.gitignore
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
-
-# Local History for Visual Studio Code
-.history/
-EOF
 
 #
 # Git Credential Manager Core
@@ -305,32 +314,35 @@ sudo apt-get install -y gcmcore
 git-credential-manager-core configure
 
 #
-# ETC yarn packages
-#
-sudo yarn global add \
-  prettier \
-  eslint \
-  stylelint stylelint-config-standard
-
-#
 # VS Code
 #
-curl -L https://update.code.visualstudio.com/latest/linux-deb-x64/stable -o ~/Downloads/code_amd64.deb
-sudo dpkg -i ~/Downloads/code_amd64.deb
-rm ~/Downloads/code_amd64.deb
+case $LINUX_NODENAME in
+  "fedora")
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+    dnf check-update
+    sudo dnf install -y code
+  ;;
+  "debian")
+    curl -L https://update.code.visualstudio.com/latest/linux-deb-x64/stable -o ~/Downloads/code_amd64.deb
+    sudo dpkg -i ~/Downloads/code_amd64.deb
+    rm ~/Downloads/code_amd64.deb
+  ;;
+esac
 
 #
 # Wine
 # Reference: https://wiki.winehq.org/Ubuntu
 #
-sudo dpkg --add-architecture i386
-wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
-
 case $LINUX_ID in
   "Fedora")
-    # TODO
+    # https://wiki.winehq.org/Fedora
+    VERSION_ID=$(cat /etc/os-release | grep VERSION_ID | cut -d= -f2)
+    sudo dnf config-manager --add-repo https://dl.winehq.org/wine-builds/fedora/${VERSION_ID}/winehq.repo
     ;;
   "Ubuntu")
+    sudo dpkg --add-architecture i386
+    wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
     CODE_NAME=$(cat /etc/os-release | grep UBUNTU_CODENAME | cut -d= -f2)
     sudo add-apt-repository "deb https://dl.winehq.org/wine-builds/ubuntu/ ${CODE_NAME} main"
     ;;
@@ -341,9 +353,15 @@ case $LINUX_ID in
     ;;
 esac
 
-sudo apt update
-
-sudo apt install -y --install-recommends winehq-staging
+case $LINUX_NODENAME in
+  "fedora")
+    sudo dnf install -y winehq-staging
+  ;;
+  "debian"|'ubuntu')
+    sudo apt update
+    sudo apt install -y --install-recommends winehq-staging
+  ;;
+esac
 
 WINEPREFIX=~/.wine wine wineboot
 # Change Wine system font (NanumGothic.ttf)
@@ -352,7 +370,14 @@ sed -i 's/"MS Shell Dlg 2"="Tahoma"/"MS Shell Dlg 2"="NanumGothic"/' ~/.wine/sys
 
 # Setup font
 mkdir -p ~/.wine/drive_c/windows/Fonts/
-cp /usr/share/fonts/truetype/nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
+case $LINUX_NODENAME in
+  "fedora")
+    cp /usr/share/fonts/naver-nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
+  ;;
+  "debian"|'ubuntu')
+    cp /usr/share/fonts/truetype/nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
+  ;;
+esac
 
 #
 # KakaoTalk
@@ -379,34 +404,34 @@ pip3 install ec2instanceconnectcli
 # Docker
 # Require json
 #
-curl -fsSL https://get.docker.com | sh -
+curl -fsSL https://get.docker.com | sudo sh -
 # https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
 sudo groupadd docker || True
 sudo usermod -aG docker "$USER"
 newgrp docker
 # Docker Compose
-DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | json tag_name | sed -e s/v//)
+DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name | sed -e s/v//)
 sudo curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m)" \
   -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 # Docker buildx
 # Reference: https://medium.com/@artur.klauser/building-multi-architecture-docker-images-with-buildx-27d80f7e2408
-mkdir -p "$HOME/.docker/cli-plugins"
-DOCKER_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | json tag_name)
-sudo curl -L "https://github.com/docker/buildx/releases/download/${DOCKER_BUILDX_VERSION}/buildx-${DOCKER_BUILDX_VERSION}.linux-$(dpkg --print-architecture)" \
-  -o "$HOME/.docker/cli-plugins/docker-buildx"
-sudo chmod +x "$HOME/.docker/cli-plugins/docker-buildx"
-sudo apt-get install -y \
-  binfmt-support \
-  qemu-user-static
-sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-docker buildx install
+# mkdir -p "$HOME/.docker/cli-plugins"
+# DOCKER_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | json tag_name)
+# sudo curl -L "https://github.com/docker/buildx/releases/download/${DOCKER_BUILDX_VERSION}/buildx-${DOCKER_BUILDX_VERSION}.linux-$(dpkg --print-architecture)" \
+#   -o "$HOME/.docker/cli-plugins/docker-buildx"
+# sudo chmod +x "$HOME/.docker/cli-plugins/docker-buildx"
+# sudo apt-get install -y \
+#   binfmt-support \
+#   qemu-user-static
+# sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+# docker buildx install
 
 #
 # Terraform
 # Require json
 #
-TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | json current_version)
+TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
 curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
     -Lo "$HOME/Downloads/terraform_linux_amd64.zip"
 unzip "$HOME/Downloads/terraform_linux_amd64.zip" -d ~/Downloads
@@ -443,7 +468,14 @@ complete -C /usr/local/bin/nomad nomad
 #
 # Steam
 #
-sudo apt install -y libgl1-mesa-dri:i386 libgl1:i386 steam
+case $LINUX_NODENAME in
+  "fedora")
+    # TODO: flatpak or rpmfusion
+  ;;
+  "debian"|'ubuntu')
+    sudo apt install -y libgl1-mesa-dri:i386 libgl1:i386 steam
+  ;;
+esac
 # curl "https://steamcdn-a.akamaihd.net/client/installer/steam.deb" -Lo ~/Downloads/steam.deb
 # sudo apt install ~/Downloads/steam.deb
 # rm ~/Downloads/steam.deb
@@ -483,7 +515,7 @@ INSTANCE_ID=\$(aws --profile femiwiki-mfa \\
 
 mssh "\$INSTANCE_ID"
 EOF
-chmod +x aws-connect
+sudo chmod +x aws-connect
 sudo mv ~/aws-connect /usr/local/bin/
 
 update-desktop-database ~/.local/share/applications
@@ -511,6 +543,9 @@ sudo desktop-file-install ~/.local/share/applications/standard-notes.desktop
 #
 # Android studio
 #
+# https://developer.android.com/studio/install#64bit-libs
+# sudo apt install -y
+#   libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386
 # curl https://redirector.gvt1.com/edgedl/android/studio/ide-zips/4.0.0.16/android-studio-ide-193.6514223-linux.tar.gz -Lo ~/Downloads/android-studio-ide.tar.xz
 # sudo tar -xzf ~/Downloads/android-studio-ide.tar.xz -C /usr/local
 # rm ~/Downloads/android-studio-ide.tar.xz
