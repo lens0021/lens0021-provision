@@ -33,6 +33,7 @@ rm ~/Downloads/google-chrome.*
 sudo apt update
 case $LINUX_ID in
   "Fedora")
+    # openssh → kdeconnect
     sudo dnf install -y \
       fzf \
       xclip \
@@ -40,7 +41,8 @@ case $LINUX_ID in
       vim \
       git-review \
       ShellCheck \
-      ImageMagick
+      ImageMagick \
+      openssh
 
       ;;
   "Debian"|"Ubuntu")
