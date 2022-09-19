@@ -1,5 +1,6 @@
 #!/bin/bash
-set -euo pipefail; IFS=$'\n\t'
+set -euo pipefail
+IFS=$'\n\t'
 
 export LINUX_NODENAME="$(uname -n)"
 # export LINUX_ID="$(lsb_release --id --short)"
@@ -45,7 +46,7 @@ case $LINUX_NODENAME in
     sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
     rm ~/Downloads/google-chrome.deb
     ;;
-
+esac
 
 #
 # Installs softwares
@@ -63,8 +64,8 @@ case $LINUX_ID in
       ImageMagick \
       openssh
 
-      ;;
-  "Debian"|"Ubuntu")
+    ;;
+  "Debian" | "Ubuntu")
     sudo apt install -y \
       curl \
       xclip \
@@ -94,9 +95,9 @@ case $LINUX_ID in
     #  "$(check-language-support -l ja)" \
     # sudo apt install -y \
     #   evolution-data-server
-      ;;
-  *)
-      ;;
+    ;;
+  *) ;;
+
 esac
 
 #
@@ -106,7 +107,7 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ~/.fzf/install
 
 case $LINUX_ID in
-  "Debian"|"Ubuntu")
+  "Debian" | "Ubuntu")
     sudo apt install -y \
       ibus-hangul \
       fonts-unfonts-core
@@ -118,7 +119,7 @@ esac
 #
 case $LINUX_ID in
   "Debian")
-    cat <<EOF > /boot/grub/custom.cfg 
+    cat << EOF > /boot/grub/custom.cfg
 # set color_normal=light-gray/black
 # set color_highlight=white/cyan
 
@@ -169,12 +170,12 @@ gsettings set org.gnome.desktop.interface gtk-enable-primary-paste false
 case $LINUX_ID in
   "Fedora")
     sudo dnf install -y \
-      python3-pip \
+      python3-pip
     ;;
   "Ubuntu")
     sudo apt install -y \
       python3-pip \
-      python3-venv \
+      python3-venv
     ;;
 esac
 sudo ln -s /usr/bin/python3 /usr/bin/python || True
@@ -215,12 +216,12 @@ echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc
 # Fonts
 #
 case $LINUX_NODENAME in
-"fedora")
-  sudo dnf -y install naver-nanum-gothic-fonts
-;;
-"debian")
-  sudo apt-get install -y fonts-nanum*
-;;
+  "fedora")
+    sudo dnf -y install naver-nanum-gothic-fonts
+    ;;
+  "debian")
+    sudo apt-get install -y fonts-nanum*
+    ;;
 esac
 
 #
@@ -235,7 +236,7 @@ case $LINUX_NODENAME in
     curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb -o ~/Downloads/keybase_amd64.deb
     sudo apt install -y ~/Downloads/keybase_amd64.deb
     rm ~/Downloads/keybase_amd64.deb
-  ;;
+    ;;
 esac
 
 #
@@ -243,8 +244,8 @@ esac
 #
 ASDF_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
-echo '. $HOME/.asdf/asdf.sh' >>  ~/.bashrc
-echo '. $HOME/.asdf/completions/asdf.bash' >>  ~/.bashrc
+echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
+echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
 . $HOME/.asdf/asdf.sh
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 asdf reshim nodejs
@@ -282,13 +283,13 @@ GITHUB_CLI_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/lates
 case $LINUX_NODENAME in
   "fedora")
     sudo dnf install -y https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.rpm
-  ;;
+    ;;
   "debian")
     curl -L https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.deb \
       -o ~/Downloads/gh_linux_amd64.deb
     sudo dpkg -i ~/Downloads/gh_linux_amd64.deb
     rm ~/Downloads/gh_linux_amd64.deb
-  ;;
+    ;;
 esac
 
 #
@@ -322,12 +323,12 @@ case $LINUX_NODENAME in
     sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
     dnf check-update
     sudo dnf install -y code
-  ;;
+    ;;
   "debian")
     curl -L https://update.code.visualstudio.com/latest/linux-deb-x64/stable -o ~/Downloads/code_amd64.deb
     sudo dpkg -i ~/Downloads/code_amd64.deb
     rm ~/Downloads/code_amd64.deb
-  ;;
+    ;;
 esac
 
 #
@@ -356,11 +357,11 @@ esac
 case $LINUX_NODENAME in
   "fedora")
     sudo dnf install -y winehq-staging
-  ;;
-  "debian"|'ubuntu')
+    ;;
+  "debian" | 'ubuntu')
     sudo apt update
     sudo apt install -y --install-recommends winehq-staging
-  ;;
+    ;;
 esac
 
 WINEPREFIX=~/.wine wine wineboot
@@ -373,10 +374,10 @@ mkdir -p ~/.wine/drive_c/windows/Fonts/
 case $LINUX_NODENAME in
   "fedora")
     cp /usr/share/fonts/naver-nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
-  ;;
-  "debian"|'ubuntu')
+    ;;
+  "debian" | 'ubuntu')
     cp /usr/share/fonts/truetype/nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
-  ;;
+    ;;
 esac
 
 #
@@ -392,7 +393,6 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/a
 unzip ~/Downloads/awscliv2.zip -d ~/Downloads
 sudo ~/Downloads/aws/install
 rm -rf ~/Downloads/awscliv2.zip ~/Downloads/aws/
-
 
 #
 # EC2 Instance Connect CLI
@@ -433,7 +433,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 #
 TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
 curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
-    -Lo "$HOME/Downloads/terraform_linux_amd64.zip"
+  -Lo "$HOME/Downloads/terraform_linux_amd64.zip"
 unzip "$HOME/Downloads/terraform_linux_amd64.zip" -d ~/Downloads
 sudo mv ~/Downloads/terraform /usr/local/bin/terraform
 rm "$HOME/Downloads/terraform_linux_amd64.zip"
@@ -445,7 +445,7 @@ terraform -install-autocomplete
 #
 NOMAD_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | json current_version)
 curl "https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip" \
-    -Lo "$HOME/Downloads/nomad_linux_amd64.zip"
+  -Lo "$HOME/Downloads/nomad_linux_amd64.zip"
 unzip "$HOME/Downloads/nomad_linux_amd64.zip" -d ~/Downloads
 sudo mv ~/Downloads/nomad /usr/local/bin/nomad
 rm "$HOME/Downloads/nomad_linux_amd64.zip"
@@ -458,7 +458,7 @@ complete -C /usr/local/bin/nomad nomad
 #
 # CONSUL_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | json current_version)
 # curl "https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip" \
-    -Lo "$HOME/Downloads/consul_linux_amd64.zip"
+#   -Lo "$HOME/Downloads/consul_linux_amd64.zip"
 # unzip "$HOME/Downloads/consul_linux_amd64.zip" -d ~/Downloads
 # sudo mv ~/Downloads/consul /usr/local/bin/consul
 # rm "$HOME/Downloads/consul_linux_amd64.zip"
@@ -471,10 +471,10 @@ complete -C /usr/local/bin/nomad nomad
 case $LINUX_NODENAME in
   "fedora")
     # TODO: flatpak or rpmfusion
-  ;;
-  "debian"|'ubuntu')
+    ;;
+  "debian" | 'ubuntu')
     sudo apt install -y libgl1-mesa-dri:i386 libgl1:i386 steam
-  ;;
+    ;;
 esac
 # curl "https://steamcdn-a.akamaihd.net/client/installer/steam.deb" -Lo ~/Downloads/steam.deb
 # sudo apt install ~/Downloads/steam.deb
