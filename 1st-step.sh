@@ -239,17 +239,21 @@ asdf reshim nodejs
 asdf install nodejs latest
 asdf global nodejs latest
 
-# yarn
+# Yarn
 asdf plugin add yarn
 asdf install yarn latest
 asdf global yarn latest
 
-# php
+# PHP
 asdf plugin add php https://github.com/asdf-community/asdf-php.git
 asdf reshim php
 
-# golang
+# Golang
 asdf plugin-add golang https://github.com/kennyp/asdf-golang.git
+# TODO?
+
+# Rust
+asdf plugin-add rust https://github.com/code-lever/asdf-rust.git
 # TODO?
 
 #
