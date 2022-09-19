@@ -248,6 +248,10 @@ asdf global yarn latest
 asdf plugin add php https://github.com/asdf-community/asdf-php.git
 asdf reshim php
 
+# golang
+asdf plugin-add golang https://github.com/kennyp/asdf-golang.git
+# TODO?
+
 #
 # ETC yarn packages
 #
