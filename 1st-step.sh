@@ -152,19 +152,6 @@ esac
 # esac
 
 #
-# gsettings
-#
-# gsettings set org.gnome.desktop.background picture-options 'scaled'
-# gsettings set org.gnome.desktop.background primary-color '#000'
-# gsettings set org.gnome.desktop.interface enable-hot-corners true
-gsettings set org.gnome.desktop.interface gtk-enable-primary-paste false
-# gsettings set org.gnome.desktop.interface gtk-theme 'Yaru-dark'
-# gsettings set org.gnome.desktop.screensaver picture-options 'scaled'
-
-# No such schema:
-# gsettings set org.gnome.shell.extensions.desktop-icons show-home false
-
-#
 # Python
 #
 case $LINUX_ID in
