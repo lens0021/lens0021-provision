@@ -96,10 +96,6 @@ Visit https://extensions.gnome.org/extension/1486/extensions-sync/ and install.
 Go to `chrome://flags` and enable 'Desktop PWA launch handler'.
 Install Webapp from https://music.youtube.com/.
 
-# Slack
-
-Go to https://slack.com/intl/ko-kr/downloads/instructions/ubuntu and download the installer.
-
 # Wikimedia Gerrit
 
 _TODO_

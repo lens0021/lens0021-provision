@@ -551,6 +551,12 @@ sudo desktop-file-install ~/.local/share/applications/standard-notes.desktop
 mkdir ~/Wallpapers
 
 #
+# Slack
+#
+SLACK_URL=$(curl -L https://slack.com/downloads/instructions/fedora | grep -oE 'https://downloads.slack-edge.com/releases/linux/.+/prod/x64/slack-.+\.x86_64\.rpm')
+sudo dnf install -y "$SLACK_URL"
+
+#
 # GIMP
 #
 
