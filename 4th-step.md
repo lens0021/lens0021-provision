@@ -12,8 +12,8 @@ rm ~/Downloads/gpg.pub ~/secrets/gpg
 ```sh
 eval "$(ssh-agent -s)"
 chmod go-rw "$HOME/.ssh/id_rsa"
-chmod go-rw "$HOME/.ssh/id_ed25519"
-ssh-add ~/.ssh/id_rsa
+chmod go-rw "$HOME/.ssh/id_ed25519_2019"
+ssh-add ~/.ssh/id_ed25519_2019
 ```
 
 ## git clone
