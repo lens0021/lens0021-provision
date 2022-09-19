@@ -74,9 +74,10 @@ Input Sources &rarr; Korean &rarr; Hangul &rarr; Preferences &rarr; Sebeolsik fi
 ibus-setup-hangul
 ```
 
-## Configure Wine
+## Wine
 
 ```
+WINEPREFIX=~/.wine wine wineboot
 winecfg
 ```
 

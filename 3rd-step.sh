@@ -35,6 +35,24 @@ gsettings set org.gnome.shell favorite-apps "[
   'wine-Programs-카카오톡-카카오톡.desktop'
 ]"
 
+#
+# Wine
+#
+WINEPREFIX=~/.wine wine wineboot
+# Change Wine system font (NanumGothic.ttf)
+sed -i 's/"MS Shell Dlg"="Tahoma"/"MS Shell Dlg"="NanumGothic"/' ~/.wine/system.reg
+sed -i 's/"MS Shell Dlg 2"="Tahoma"/"MS Shell Dlg 2"="NanumGothic"/' ~/.wine/system.reg
+# Setup font
+mkdir -p ~/.wine/drive_c/windows/Fonts/
+case $LINUX_NODENAME in
+  "fedora")
+    cp /usr/share/fonts/naver-nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
+    ;;
+  "debian" | 'ubuntu')
+    cp /usr/share/fonts/truetype/nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
+    ;;
+esac
+
 # ADB
 sudo ln -s "$HOME/Android/Sdk/platform-tools/adb" /usr/bin/adb
 

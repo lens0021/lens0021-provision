@@ -3,7 +3,6 @@ set -euo pipefail
 IFS=$'\n\t'
 
 export LINUX_NODENAME="$(uname -n)"
-# export LINUX_ID="$(lsb_release --id --short)"
 
 #
 # Bluetooth
@@ -52,8 +51,8 @@ esac
 # Installs softwares
 #
 sudo apt update
-case $LINUX_ID in
-  "Fedora")
+case $LINUX_NODENAME in
+  "fedora")
     # openssh → kdeconnect
     sudo dnf install -y \
       xclip \
@@ -65,7 +64,7 @@ case $LINUX_ID in
       openssh
 
     ;;
-  "Debian" | "Ubuntu")
+  "debian" | "ubuntu")
     sudo apt install -y \
       curl \
       xclip \
@@ -88,7 +87,9 @@ case $LINUX_ID in
       ruby-full \
       ssh-askpass \
       sqlite3 \
-      jq
+      jq \
+      ibus-hangul \
+      fonts-unfonts-core
 
     # Ubuntu
     #  "$(check-language-support)" \
@@ -96,8 +97,6 @@ case $LINUX_ID in
     # sudo apt install -y \
     #   evolution-data-server
     ;;
-  *) ;;
-
 esac
 
 #
@@ -106,35 +105,25 @@ esac
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ~/.fzf/install
 
-case $LINUX_ID in
-  "Debian" | "Ubuntu")
-    sudo apt install -y \
-      ibus-hangul \
-      fonts-unfonts-core
-    ;;
-esac
-
 #
 # Change the background color of grub
 #
-case $LINUX_ID in
-  "Debian")
-    cat << EOF > /boot/grub/custom.cfg
+if [ "$LINUX_NODENAME" = "debian" ]; then
+  cat << EOF > /boot/grub/custom.cfg
 # set color_normal=light-gray/black
 # set color_highlight=white/cyan
 
 set menu_color_normal=white/black
 set menu_color_highlight=black/white
 EOF
-    ;;
-esac
+fi
 
 #
 # Gnome
 # Uses unstable because the version of Bullseye's gnome is 38
 #
-# case $LINUX_ID in
-#   "Debian")
+# case $LINUX_NODENAME in
+#   "debian")
 #     sudo apt -t unstable install -y \
 #       gnome-clocks \
 #       gnome-tweaks \
@@ -154,12 +143,12 @@ esac
 #
 # Python
 #
-case $LINUX_ID in
-  "Fedora")
+case $LINUX_NODENAME in
+  'fedora')
     sudo dnf install -y \
       python3-pip
     ;;
-  "Ubuntu")
+  'ubuntu' | 'debian')
     sudo apt install -y \
       python3-pip \
       python3-venv
@@ -214,7 +203,6 @@ esac
 #
 # Keybase
 #
-
 case $LINUX_NODENAME in
   "fedora")
     sudo dnf install -y https://prerelease.keybase.io/keybase_amd64.rpm
@@ -267,9 +255,22 @@ sudo yarn global add \
 #
 # Composer
 #
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-sudo php composer-setup.php --install-dir=/usr/bin --filename=composer --quiet
-rm composer-setup.php
+# php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+# sudo php composer-setup.php --install-dir=/usr/bin --filename=composer --quiet
+# rm composer-setup.php
+
+#
+# Git
+#
+git config --global user.name "lens0021"
+git config --global user.email "lorentz0021@gmail.com"
+git config --global core.editor "code --wait"
+git config --global --add gitreview.username "lens0021"
+git config --global commit.gpgsign true
+git config --global pull.rebase true
+git config --global credential.credentialStore secretservice
+echo 'export GPG_TTY=$(tty)' >> ~/.bashrc
+echo 'default-cache-ttl 3600' >> gpg-agent.conf
 
 #
 # Github CLI
@@ -288,17 +289,9 @@ case $LINUX_NODENAME in
 esac
 
 #
-# Git
+# GitLab CLI
 #
-git config --global user.name "lens0021"
-git config --global user.email "lorentz0021@gmail.com"
-git config --global core.editor "code --wait"
-git config --global --add gitreview.username "lens0021"
-git config --global commit.gpgsign true
-git config --global pull.rebase true
-git config --global credential.credentialStore secretservice
-echo 'export GPG_TTY=$(tty)' >> ~/.bashrc
-echo 'default-cache-ttl 3600' >> gpg-agent.conf
+# TODO: Build from soruce - requires Golang
 
 #
 # Git Credential Manager Core
@@ -319,7 +312,7 @@ case $LINUX_NODENAME in
     dnf check-update
     sudo dnf install -y code
     ;;
-  "debian")
+  "debian" | "ubuntu")
     curl -L https://update.code.visualstudio.com/latest/linux-deb-x64/stable -o ~/Downloads/code_amd64.deb
     sudo dpkg -i ~/Downloads/code_amd64.deb
     rm ~/Downloads/code_amd64.deb
@@ -330,19 +323,19 @@ esac
 # Wine
 # Reference: https://wiki.winehq.org/Ubuntu
 #
-case $LINUX_ID in
-  "Fedora")
+case $LINUX_NODENAME in
+  "fedora")
     # https://wiki.winehq.org/Fedora
     VERSION_ID=$(cat /etc/os-release | grep VERSION_ID | cut -d= -f2)
     sudo dnf config-manager --add-repo https://dl.winehq.org/wine-builds/fedora/${VERSION_ID}/winehq.repo
     ;;
-  "Ubuntu")
+  "ubuntu")
     sudo dpkg --add-architecture i386
     wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
     CODE_NAME=$(cat /etc/os-release | grep UBUNTU_CODENAME | cut -d= -f2)
     sudo add-apt-repository "deb https://dl.winehq.org/wine-builds/ubuntu/ ${CODE_NAME} main"
     ;;
-  "Debian")
+  "debian")
     sudo wget -nc -O /usr/share/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
     CODE_NAME=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d= -f2)
     sudo wget -nc -P /etc/apt/sources.list.d/ "https://dl.winehq.org/wine-builds/debian/dists/${CODE_NAME}/winehq-${CODE_NAME}.sources"
@@ -356,22 +349,6 @@ case $LINUX_NODENAME in
   "debian" | 'ubuntu')
     sudo apt update
     sudo apt install -y --install-recommends winehq-staging
-    ;;
-esac
-
-WINEPREFIX=~/.wine wine wineboot
-# Change Wine system font (NanumGothic.ttf)
-sed -i 's/"MS Shell Dlg"="Tahoma"/"MS Shell Dlg"="NanumGothic"/' ~/.wine/system.reg
-sed -i 's/"MS Shell Dlg 2"="Tahoma"/"MS Shell Dlg 2"="NanumGothic"/' ~/.wine/system.reg
-
-# Setup font
-mkdir -p ~/.wine/drive_c/windows/Fonts/
-case $LINUX_NODENAME in
-  "fedora")
-    cp /usr/share/fonts/naver-nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
-    ;;
-  "debian" | 'ubuntu')
-    cp /usr/share/fonts/truetype/nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
     ;;
 esac
 
@@ -559,7 +536,6 @@ sudo dnf install -y "$SLACK_URL"
 #
 # GIMP
 #
-
 sudo flatpak install -y https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref
 
 ################################################################################
