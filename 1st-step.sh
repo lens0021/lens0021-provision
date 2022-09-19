@@ -235,13 +235,15 @@ asdf global yarn latest
 # PHP
 asdf plugin add php https://github.com/asdf-community/asdf-php.git
 asdf reshim php
+asdf global php latest
 
 # Golang
-asdf plugin-add golang https://github.com/kennyp/asdf-golang.git
+asdf plugin add golang https://github.com/kennyp/asdf-golang.git
+asdf global golang latest
 # TODO?
 
 # Rust
-asdf plugin-add rust https://github.com/code-lever/asdf-rust.git
+asdf plugin add rust https://github.com/code-lever/asdf-rust.git
 # TODO?
 
 #
@@ -291,7 +293,13 @@ esac
 #
 # GitLab CLI
 #
-# TODO: Build from soruce - requires Golang
+# TODO: Use GLAB api
+# GLAB_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
+GLAB_VERSION=v1.22.0
+git clone https://gitlab.com/gitlab-org/cli.git ~/git/glab --branch "$GLAB_VERSION"
+cd ~/git/glab
+make
+sudo cp bin/glab /usr/local/bin/glab
 
 #
 # Git Credential Manager Core
