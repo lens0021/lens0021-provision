@@ -46,8 +46,6 @@ curl -L https://gitlab.com/lens0021/provision/-/blob/main/public_keys/id_rsa.pub
 # GPG
 curl -L https://gitlab.com/lens0021/provision/-/blob/main/public_keys/gpg.pub -o ~/Downloads/gpg.pub
 gpg --import ~/Downloads/gpg.pub
-gpg --allow-secret-key-import --import ~/secrets/gpg
-rm ~/Downloads/gpg.pub ~/secrets/gpg
 
 # VS Code extension Settings Sync
 json -I -f "$HOME/.config/Code/User/settings.json" -e "this['sync.gist']=\"d96773286d3d0b34c84581c5078d34ad\""

@@ -1,5 +1,11 @@
 # Manual tasks
 
+## import gpg
+```sh
+gpg --allow-secret-key-import --import ~/secrets/gpg
+rm ~/Downloads/gpg.pub ~/secrets/gpg
+```
+
 ## ssh
 
 ```sh
