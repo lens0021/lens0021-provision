@@ -61,7 +61,8 @@ case $LINUX_NODENAME in
       git-review \
       ShellCheck \
       ImageMagick \
-      openssh
+      openssh \
+      openfortivpn
 
     ;;
   "debian" | "ubuntu")
@@ -89,7 +90,7 @@ case $LINUX_NODENAME in
       sqlite3 \
       jq \
       ibus-hangul \
-      fonts-unfonts-core
+      openfortivpn
 
     # Ubuntu
     #  "$(check-language-support)" \
