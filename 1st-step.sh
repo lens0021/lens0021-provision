@@ -274,7 +274,8 @@ git config --global --add gitreview.username "lens0021"
 git config --global commit.gpgsign true
 git config --global pull.rebase true
 git config --global credential.credentialStore secretservice
-echo 'export GPG_TTY=$(tty)' >> ~/.bashrc
+# shellcheck disable=2016
+echo 'GPG_TTY=$(tty); export GPG_TTY' >> ~/.bashrc
 echo 'default-cache-ttl 3600' >> gpg-agent.conf
 
 #
