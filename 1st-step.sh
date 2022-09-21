@@ -326,6 +326,7 @@ case $LINUX_NODENAME in
     rm ~/Downloads/code_amd64.deb
     ;;
 esac
+mkdir -p ~/code-workspaces
 
 #
 # Wine
