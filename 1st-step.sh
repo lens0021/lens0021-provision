@@ -266,6 +266,7 @@ sudo yarn global add \
 #
 # Git
 #
+git config --global init.defaultBranch main
 git config --global user.name "lens0021"
 git config --global user.email "lorentz0021@gmail.com"
 git config --global core.editor "code --wait"
