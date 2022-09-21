@@ -385,18 +385,27 @@ pip3 install ec2instanceconnectcli
 
 #
 # Docker
-# Require json
 #
-curl -fsSL https://get.docker.com | sudo sh -
-# https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
-sudo groupadd docker || True
-sudo usermod -aG docker "$USER"
-newgrp docker
-# Docker Compose
-DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name | sed -e s/v//)
-sudo curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m)" \
-  -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+case $LINUX_NODENAME in
+  'fedora')
+    # https://docs.docker.com/engine/install/fedora/
+    sudo dnf -y install dnf-plugins-core
+    sudo dnf config-manager \
+      --add-repo \
+      https://download.docker.com/linux/fedora/docker-ce.repo
+    sudo dnf install -y \ docker-ce \
+      docker-ce-cli \
+      containerd.io \
+      docker-compose-plugin
+    sudo systemctl start docker
+    ;;
+  'ubuntu') #TODO
+    ;;
+
+  'debian') #TODO
+    ;;
+
+esac
 # Docker buildx
 # Reference: https://medium.com/@artur.klauser/building-multi-architecture-docker-images-with-buildx-27d80f7e2408
 # mkdir -p "$HOME/.docker/cli-plugins"
