@@ -404,8 +404,10 @@ case $LINUX_NODENAME in
 
   'debian') #TODO
     ;;
-
 esac
+sudo sh -c "echo 'docker compose \"\$@\"' > /usr/local/bin/docker-compose"
+sudo chmod +x /usr/local/bin/docker-compose
+
 # Docker buildx
 # Reference: https://medium.com/@artur.klauser/building-multi-architecture-docker-images-with-buildx-27d80f7e2408
 # mkdir -p "$HOME/.docker/cli-plugins"
