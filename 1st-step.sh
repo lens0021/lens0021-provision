@@ -2,7 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-export LINUX_NODENAME="$(uname -n)"
+LINUX_NODENAME="$(uname -n)"
+expoch LINUX_NODENAME
 
 #
 # Bluetooth
