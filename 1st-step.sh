@@ -197,7 +197,7 @@ case $LINUX_NODENAME in
     sudo dnf -y install naver-nanum-gothic-fonts
     ;;
   "debian")
-    sudo apt-get install -y fonts-nanum*
+    sudo apt-get install -y fonts-nanum* fonts-unfonts-core
     ;;
 esac
 
