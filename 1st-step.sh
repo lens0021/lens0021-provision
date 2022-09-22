@@ -174,18 +174,6 @@ pip install -U \
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
 
 #
-# Golang
-#
-GOLANG_VERSION="$(curl -sL https://golang.org/VERSION?m=text)"
-curl -L https://golang.org/dl/${GOLANG_VERSION}.linux-amd64.tar.gz \
-  -o ~/Downloads/go.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf ~/Downloads/go.linux-amd64.tar.gz
-rm ~/Downloads/go.linux-amd64.tar.gz
-echo 'export PATH="\$PATH:/usr/local/go/bin"' >> ~/.bashrc
-echo 'export PATH="\$HOME/go/bin:/usr/local/go/bin"' >> ~/.bashrc
-export PATH="$HOME/go/bin:$PATH"
-
-#
 # Rust
 #
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
