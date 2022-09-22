@@ -5,11 +5,6 @@ IFS=$'\n\t'
 LINUX_NODENAME="$(uname -n)"
 expoch LINUX_NODENAME
 
-#
-# Bluetooth
-#
-rfkill block bluetooth
-
 # curl
 # TODO: Do Ubuntu and Debian have curl?
 if [ $LINUX_NODENAME != 'fedora' ]; then
