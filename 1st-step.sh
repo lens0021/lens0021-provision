@@ -499,7 +499,9 @@ complete -C /usr/local/bin/nomad nomad
 #
 case $LINUX_NODENAME in
   "fedora")
-    # TODO: flatpak or rpmfusion
+    sudo dnf install -y \
+      https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install -y steam
     ;;
   "debian" | 'ubuntu')
     sudo apt install -y libgl1-mesa-dri:i386 libgl1:i386 steam

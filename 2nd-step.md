@@ -44,6 +44,9 @@ Please re-login.
 LANG=ko_KR.UTF-8 wine ~/Downloads/KakaoTalk_Setup.exe
 ```
 
+## Steam
+Steam &rarr; Settings &rarr; Downloads &rarr; STEAM LIBRARY FOLDERS &rarr; ??? &rarr; Make Default
+
 ## Keybase
 
 ```sh
@@ -121,12 +124,6 @@ sudo docker login -u lens0021
 ```
 
 Click on Tools menu -> Create Desktop Entry.
-
-# VS Code extension
-
-```sh
-code --install-extension Shan.code-settings-sync
-```
 
 # Wallpapers
 
