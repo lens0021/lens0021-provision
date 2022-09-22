@@ -221,7 +221,6 @@ echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
 echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
 . $HOME/.asdf/asdf.sh
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-asdf reshim nodejs
 asdf install nodejs latest
 asdf global nodejs latest
 
@@ -330,7 +329,6 @@ mkdir -p ~/code-workspaces
 
 #
 # Wine
-# Reference: https://wiki.winehq.org/Ubuntu
 #
 case $LINUX_NODENAME in
   "fedora")
@@ -339,6 +337,7 @@ case $LINUX_NODENAME in
     sudo dnf config-manager --add-repo https://dl.winehq.org/wine-builds/fedora/${VERSION_ID}/winehq.repo
     ;;
   "ubuntu")
+    # https://wiki.winehq.org/Ubuntu
     sudo dpkg --add-architecture i386
     wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
     CODE_NAME=$(cat /etc/os-release | grep UBUNTU_CODENAME | cut -d= -f2)
