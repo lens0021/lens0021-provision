@@ -282,8 +282,8 @@ asdf global php latest
 
 # Golang
 asdf plugin add golang https://github.com/kennyp/asdf-golang.git
+asdf install golang latest
 asdf global golang latest
-# TODO?
 
 # Rust
 asdf plugin add rust https://github.com/code-lever/asdf-rust.git
