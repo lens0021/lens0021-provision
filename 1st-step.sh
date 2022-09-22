@@ -294,6 +294,7 @@ asdf plugin add rust https://github.com/code-lever/asdf-rust.git
 #
 sudo yarn global add \
   prettier \
+  @prettier/plugin-xml \
   eslint \
   stylelint stylelint-config-standard
 
