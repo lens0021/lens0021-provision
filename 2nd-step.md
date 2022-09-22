@@ -39,6 +39,7 @@ sudo snap login lorentz0021@gmail.com
 Please re-login.
 
 ## Steam
+
 Steam &rarr; Settings &rarr; Downloads &rarr; STEAM LIBRARY FOLDERS &rarr; ??? &rarr; Make Default
 
 ## Keybase
