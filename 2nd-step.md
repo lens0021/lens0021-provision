@@ -4,6 +4,7 @@ Login to
 
 - Google
 - Microsoft
+- 1Password
 
 <details>
 <summary>Ubuntu</summary>
@@ -11,10 +12,6 @@ Login to
 Login to
 
 - Ubuntu SSO
-
-and Open Snap store to install
-
-- Cheese
 
 also install below from the console:
 
