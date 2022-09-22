@@ -332,9 +332,7 @@ esac
 #
 # GitLab CLI
 #
-# TODO: Use GLAB api
-# GLAB_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
-GLAB_VERSION=v1.22.0
+GLAB_VERSION=$(curl -s https://gitlab.com/api/v4/projects/34675721/repository/tags | jq -r .[0].name)
 git clone https://gitlab.com/gitlab-org/cli.git ~/git/glab --branch "$GLAB_VERSION"
 cd ~/git/glab
 make
