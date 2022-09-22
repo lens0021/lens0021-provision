@@ -24,3 +24,7 @@ git clone "git@github.com:femiwiki/docker-mediawiki.git" ~/git/femiwiki/mediawik
 git clone "git@github.com:femiwiki/FemiwikiSkin.git" ~/git/femiwiki/skin
 git clone "ssh://lens0021@gerrit.wikimedia.org:29418/mediawiki/skins/Vector" ~/git/wikimedia/vector
 ```
+
+## Kakaotalk
+
+https://hamonikr.org/used_hamonikr/82280
