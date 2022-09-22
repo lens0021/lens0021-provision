@@ -371,8 +371,8 @@ mkdir -p ~/code-workspaces
 case $LINUX_NODENAME in
   "fedora")
     # https://wiki.winehq.org/Fedora
-    VERSION_ID=$(cat /etc/os-release | grep VERSION_ID | cut -d= -f2)
-    sudo dnf config-manager --add-repo https://dl.winehq.org/wine-builds/fedora/${VERSION_ID}/winehq.repo
+    VERSION_ID=$(rpm -E %fedora)
+    sudo dnf config-manager --add-repo "https://dl.winehq.org/wine-builds/fedora/${VERSION_ID}/winehq.repo"
     ;;
   "ubuntu")
     # https://wiki.winehq.org/Ubuntu
