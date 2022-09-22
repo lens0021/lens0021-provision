@@ -299,13 +299,6 @@ sudo yarn global add \
   stylelint stylelint-config-standard
 
 #
-# Composer
-#
-# php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-# sudo php composer-setup.php --install-dir=/usr/bin --filename=composer --quiet
-# rm composer-setup.php
-
-#
 # Git
 #
 git config --global init.defaultBranch main
