@@ -38,12 +38,6 @@ sudo snap login lorentz0021@gmail.com
 
 Please re-login.
 
-## Kakaotalk
-
-```sh
-LANG=ko_KR.UTF-8 wine ~/Downloads/KakaoTalk_Setup.exe
-```
-
 ## Steam
 Steam &rarr; Settings &rarr; Downloads &rarr; STEAM LIBRARY FOLDERS &rarr; ??? &rarr; Make Default
 
@@ -81,21 +75,21 @@ WINEPREFIX=~/.wine wine wineboot
 winecfg
 ```
 
+## Kakaotalk
+
+```sh
+LANG=ko_KR.UTF-8 wine ~/Downloads/KakaoTalk_Setup.exe
+```
+
 ## Login
 
 - KakaoTalk
-- Google Chrome
 - Steam
 - Discord
 
 ## GNOME Extensions Sync
 
 Visit https://extensions.gnome.org/extension/1486/extensions-sync/ and install.
-
-## YouTube Music
-
-Go to `chrome://flags` and enable 'Desktop PWA launch handler'.
-Install Webapp from https://music.youtube.com/.
 
 # Wikimedia Gerrit
 
@@ -117,13 +111,13 @@ https://hub.docker.com/settings/security
 sudo docker login -u lens0021
 ```
 
-# Android studio
+<!-- # Android studio
 
 ```sh
 /usr/local/android-studio/bin/studio.sh
 ```
 
-Click on Tools menu -> Create Desktop Entry.
+Click on Tools menu -> Create Desktop Entry. -->
 
 # Wallpapers
 
@@ -138,12 +132,6 @@ sudo chmod 600 "$HOME/.ssh/id_ed25519_2019"
 mkdir -p ~/secrets
 curl https://gitlab.com/lens0021/provision/-/raw/main/secrets/tokens/github/lens0021/gist.pgp | keybase pgp decrypt -o ~/secrets/github-gist-token.txt
 curl https://gitlab.com/lens0021/provision/-/raw/main/secrets/gpg/gpg.pgp | keybase pgp decrypt -o ~/secrets/gpg
-```
-
-# GSConnect
-
-```sh
-gapplication action org.gnome.Shell.Extensions.GSConnect preferences
 ```
 
 # ~~Removed~~
