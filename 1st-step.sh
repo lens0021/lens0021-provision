@@ -518,6 +518,19 @@ esac
 sudo dnf install -y discord
 
 #
+# mwcli
+#
+mkdir -p ~/go/src/gitlab.wikimedia.org/repos/releng
+cd ~/go/src/gitlab.wikimedia.org/repos/releng/
+git clone https://gitlab.wikimedia.org/repos/releng/cli.git
+cd cli
+go install github.com/bwplotka/bingo@latest
+asdf reshim golang
+bingo get
+make build
+echo "alias mwdev='~/go/src/gitlab.wikimedia.org/repos/releng/cli/bin/mw'" >> ~/.bashrc
+
+#
 # Clone Github Repositories
 #
 mkdir -p ~/git/lens0021 ~/git/femiwiki ~/git/gerrit
