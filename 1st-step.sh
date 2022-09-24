@@ -513,6 +513,11 @@ esac
 # rm ~/Desktop/steam.desktop || True
 
 #
+# Discord
+#
+sudo dnf install -y discord
+
+#
 # Clone Github Repositories
 #
 mkdir -p ~/git/lens0021 ~/git/femiwiki ~/git/gerrit
