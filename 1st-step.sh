@@ -440,6 +440,8 @@ case $LINUX_NODENAME in
   'debian') #TODO
     ;;
 esac
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
 sudo sh -c "echo 'docker compose \"\$@\"' > /usr/local/bin/docker-compose"
 sudo chmod +x /usr/local/bin/docker-compose
 
