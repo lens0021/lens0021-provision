@@ -428,11 +428,18 @@ case $LINUX_NODENAME in
     sudo dnf config-manager \
       --add-repo \
       https://download.docker.com/linux/fedora/docker-ce.repo
-    sudo dnf install -y \ docker-ce \
+    sudo dnf install -y \
+      docker-ce \
       docker-ce-cli \
       containerd.io \
       docker-compose-plugin
     sudo systemctl start docker
+
+    # https://phabricator.wikimedia.org/T283484
+    sudo dnf install -y docker-compose
+
+    # DOCKER_DESKTOP_URL=$(curl -sL https://docs.docker.com/desktop/install/linux-install/ | grep -oE 'https://desktop\.docker\.com/linux/main/amd64/docker-desktop-.+-x86_64\.rpm')
+    # sudo dnf install -y "$DOCKER_DESKTOP_URL"
     ;;
   'ubuntu') #TODO
     ;;
@@ -609,7 +616,7 @@ mkdir ~/Wallpapers
 #
 # Slack
 #
-SLACK_URL=$(curl -L https://slack.com/downloads/instructions/fedora | grep -oE 'https://downloads.slack-edge.com/releases/linux/.+/prod/x64/slack-.+\.x86_64\.rpm')
+SLACK_URL=$(curl -sL https://slack.com/downloads/instructions/fedora | grep -oE 'https://downloads.slack-edge.com/releases/linux/.+/prod/x64/slack-.+\.x86_64\.rpm')
 sudo dnf install -y "$SLACK_URL"
 
 #
