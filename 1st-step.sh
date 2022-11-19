@@ -657,8 +657,16 @@ sudo flatpak install -y https://flathub.org/repo/appstream/org.gimp.GIMP.flatpak
 # chmod +x k3s-install
 # sudo mv ~/k3s-install /usr/local/bin/
 
-# #
-# # Howdy (Removed)
-# #
-# sudo add-apt-repository -y ppa:boltgolt/howdy
-# sudo apt update
+#
+# Howdy (Removed)
+#
+case $LINUX_NODENAME in
+  "fedora")
+    sudo dnf copr enable -y principis/howdy
+    sudo dnf --refresh install -y howdy
+    ;;
+  "debian")
+    sudo add-apt-repository -y ppa:boltgolt/howdy
+    sudo apt update
+    ;;
+esac

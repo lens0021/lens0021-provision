@@ -135,11 +135,10 @@ curl https://gitlab.com/lens0021/provision/-/raw/main/secrets/tokens/github/lens
 curl https://gitlab.com/lens0021/provision/-/raw/main/secrets/gpg/gpg.pgp | keybase pgp decrypt -o ~/secrets/gpg
 ```
 
-# ~~Removed~~
-
-## ~~Howdy~~
+## Howdy
 
 ```sh
-sudo apt install -y howdy
 sudo howdy add
 ```
+
+# ~~Removed~~
