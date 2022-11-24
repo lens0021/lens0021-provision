@@ -29,7 +29,7 @@ desktop-file-edit \
   --set-key=Icon --set-value=bitwarden \
   ~/.local/share/applications/Bitwarden.desktop
 
-desktop-file-install ~/.local/share/applications/Bitwarden.desktop
+sudo desktop-file-install ~/.local/share/applications/Bitwarden.desktop
 
 #
 # 1Password
@@ -370,6 +370,24 @@ case $LINUX_NODENAME in
 esac
 mkdir -p ~/code-workspaces
 
+# BloomRPC
+BLOOMRPC_VERSION=$(curl -s https://api.github.com/repos/bloomrpc/bloomrpc/releases/latest | jq -r .tag_name | cut -dv -f2)
+sudo curl -L https://github.com/bloomrpc/bloomrpc/releases/download/${BLOOMRPC_VERSION}/BloomRPC-${BLOOMRPC_VERSION}.AppImage \
+  -o ~/.local/bin/BloomRPC.AppImage
+sudo chmod +x ~/.local/bin/BloomRPC.AppImage
+
+curl -L https://github.com/bloomrpc/bloomrpc/raw/master/resources/logo.png -o ~/.icons/bloomrpc.png
+touch ~/.local/share/applications/BloomRPC.desktop
+desktop-file-edit \
+  --set-name=BloomRPC \
+  --set-key=Type --set-value=Application \
+  --set-key=Terminal --set-value=false \
+  --set-key=Exec --set-value=$HOME/.local/bin/BloomRPC.AppImage \
+  --set-key=Icon --set-value=bloomrpc \
+  ~/.local/share/applications/BloomRPC.desktop
+
+sudo desktop-file-install ~/.local/share/applications/BloomRPC.desktop
+
 #
 # Wine
 #
@@ -601,6 +619,7 @@ desktop-file-edit \
   --set-key=Exec --set-value=$HOME/.local/bin/standard-notes.AppImage \
   --set-key=Icon --set-value=standard-notes \
   ~/.local/share/applications/standard-notes.desktop
+  
 sudo desktop-file-install ~/.local/share/applications/standard-notes.desktop
 
 #
