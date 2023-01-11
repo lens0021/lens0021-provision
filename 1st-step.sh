@@ -478,7 +478,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 # Docker buildx
 # Reference: https://medium.com/@artur.klauser/building-multi-architecture-docker-images-with-buildx-27d80f7e2408
 # mkdir -p "$HOME/.docker/cli-plugins"
-# DOCKER_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | json tag_name)
+# DOCKER_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | jq -r .tag_name)
 # sudo curl -L "https://github.com/docker/buildx/releases/download/${DOCKER_BUILDX_VERSION}/buildx-${DOCKER_BUILDX_VERSION}.linux-$(dpkg --print-architecture)" \
 #   -o "$HOME/.docker/cli-plugins/docker-buildx"
 # sudo chmod +x "$HOME/.docker/cli-plugins/docker-buildx"
@@ -490,7 +490,6 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 #
 # Terraform
-# Require json
 #
 TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
 curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
@@ -502,9 +501,8 @@ terraform -install-autocomplete
 
 #
 # Nomad
-# Require json
 #
-NOMAD_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | json current_version)
+NOMAD_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r .current_version)
 curl "https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip" \
   -Lo "$HOME/Downloads/nomad_linux_amd64.zip"
 unzip "$HOME/Downloads/nomad_linux_amd64.zip" -d ~/Downloads
@@ -515,9 +513,8 @@ complete -C /usr/local/bin/nomad nomad
 
 #
 # Consul
-# Require json
 #
-# CONSUL_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | json current_version)
+# CONSUL_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/consul | jq -r .current_version)
 # curl "https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip" \
 #   -Lo "$HOME/Downloads/consul_linux_amd64.zip"
 # unzip "$HOME/Downloads/consul_linux_amd64.zip" -d ~/Downloads
@@ -570,7 +567,7 @@ mkdir -p ~/git/lens0021 ~/git/femiwiki ~/git/gerrit
 #
 # Caddy
 #
-# XCADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/xcaddy/releases/latest | json tag_name | cut -dv -f2)
+# XCADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/xcaddy/releases/latest | jq -r .tag_name | cut -dv -f2)
 # curl -L https://github.com/caddyserver/xcaddy/releases/download/v${XCADDY_VERSION}/xcaddy_${XCADDY_VERSION}_linux_amd64.deb \
 #   -o ~/Downloads/xcaddy_linux_amd64.deb
 # sudo dpkg -i ~/Downloads/xcaddy_linux_amd64.deb
@@ -605,7 +602,7 @@ update-desktop-database ~/.local/share/applications
 # Standard Notes
 #
 
-STANDARD_NOTES_VERSION=$(curl -s https://api.github.com/repos/standardnotes/app/releases/latest | json tag_name | cut -d@ -f3)
+STANDARD_NOTES_VERSION=$(curl -s https://api.github.com/repos/standardnotes/app/releases/latest | jq -r .tag_name | cut -d@ -f3)
 sudo curl -L https://github.com/standardnotes/app/releases/download/%40standardnotes%2Fdesktop%40${STANDARD_NOTES_VERSION}/standard-notes-${STANDARD_NOTES_VERSION}-linux-x86_64.AppImage \
   -o ~/.local/bin/standard-notes.AppImage
 sudo chmod +x ~/.local/bin/standard-notes.AppImage
