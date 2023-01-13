@@ -308,6 +308,8 @@ git config --global core.editor "code --wait"
 git config --global --add gitreview.username "lens0021"
 git config --global commit.gpgsign true
 git config --global pull.rebase true
+git config --global rerere.enabled true
+git config --global merge.conflictstyle diff3 true
 git config --global credential.credentialStore secretservice
 # shellcheck disable=2016
 echo 'GPG_TTY=$(tty); export GPG_TTY' >> ~/.bashrc
