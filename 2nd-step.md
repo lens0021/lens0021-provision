@@ -4,7 +4,10 @@ Login to
 
 - Google
 - Microsoft
-- 1Password
+
+on `gnome-control-center online-accounts`.
+
+TODO
 
 <details>
 <summary>Ubuntu</summary>
@@ -22,13 +25,26 @@ snap install \
   inkscape
 ```
 
+## Bitwarden
+
+## 1Password
+
 ## Login gh cli
 
 ```sh
 gh auth login
 ```
 
+## Login glab cli
+
+TODO: Read token from bitwarden
+```sh
+glab auth login
+```
+
 ## Login Snap store
+
+TODO: is required?
 
 ```sh
 sudo snap login lorentz0021@gmail.com
@@ -54,6 +70,8 @@ turn off Settings &rarr; Advanced &rarr; "Open Keybase on startup"
 
 ```sh
 ibus-setup
+#or
+/usr/bin/python /usr/share/ibus/setup/main.py
 ```
 
 - Input Method &rarr; Add &rarr; Korean &rarr; Hangul
@@ -86,7 +104,6 @@ LANG=ko_KR.UTF-8 wine ~/Downloads/KakaoTalk_Setup.exe
 
 - KakaoTalk
 - Steam
-- Discord
 
 ## GNOME Extensions Sync
 

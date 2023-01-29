@@ -72,6 +72,17 @@ if ! command -v 1password >/dev/null; then
 # esac
 
 #
+# Wavebox
+#
+if ! dnf list --installed | grep Wavebox >/dev/null; then
+  echo 'Install Wavebox'
+  sudo rpm --import https://download.wavebox.app/static/wavebox_repo.key
+  sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo 
+  sudo dnf install -y Wavebox
+fi
+# TODO: default browser
+
+#
 # Installs softwares
 #
 case $LINUX_NODENAME in
@@ -86,6 +97,8 @@ case $LINUX_NODENAME in
       ImageMagick \
       openssh \
       openfortivpn \
+      ibus-hangul \
+      gnome-extensions-app \
     ;
     ;;
   "debian" | "ubuntu")
@@ -123,7 +136,9 @@ esac
 #
 if ! command -v fzf >/dev/null; then
   echo 'Install fzf'
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  if [ ! -d ~/.fzf ]; then
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  fi
   ~/.fzf/install --all
 fi
 
@@ -232,9 +247,13 @@ fi
 if ! command -v asdf >/dev/null; then
   echo 'Install asdf'
   ASDF_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
+  if [ !-d ~/.asdf ]; then
   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
+  fi
+  if ! echo ~/.bashrc | grep asdf.sh >/dev/null; then
   echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
   echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
+  fi
 fi
 . $HOME/.asdf/asdf.sh
 
@@ -255,6 +274,13 @@ if ! command -v yarn >/dev/null; then
   asdf install yarn latest
   asdf global yarn latest
 fi
+
+# Python
+if ! asdf plugin list | grep python >/dev/null; then
+  asdf plugin-add python
+fi
+asdf install python latest
+asdf global python latest
 
 # PHP
 if ! asdf plugin list | grep php >/dev/null; then
@@ -425,6 +451,7 @@ fi
 # Codium
 #
 if ! command -v codium >/dev/null; then
+  echo 'Install Codium'
   case $LINUX_NODENAME in
     "fedora")
       # VSCodium
@@ -442,6 +469,7 @@ mkdir -p ~/code-workspaces
 
 # BloomRPC
 if [ ! -e ~/.local/bin/BloomRPC.AppImage ]; then
+echo 'Install BloomRPC'
   BLOOMRPC_VERSION=$(curl -s https://api.github.com/repos/bloomrpc/bloomrpc/releases/latest | jq -r .tag_name | cut -dv -f2)
   sudo curl -L https://github.com/bloomrpc/bloomrpc/releases/download/${BLOOMRPC_VERSION}/BloomRPC-${BLOOMRPC_VERSION}.AppImage \
     -o ~/.local/bin/BloomRPC.AppImage
@@ -483,15 +511,18 @@ case $LINUX_NODENAME in
     ;;
 esac
 
-case $LINUX_NODENAME in
-  "fedora")
-    sudo dnf install -y winehq-staging
-    ;;
-  "debian" | 'ubuntu')
-    sudo apt update
-    sudo apt install -y --install-recommends winehq-staging
-    ;;
-esac
+if ! command -v wine >/dev/null; then
+echo 'install WineHQ'
+  case $LINUX_NODENAME in
+    "fedora")
+      sudo dnf install -y winehq-staging
+      ;;
+    "debian" | 'ubuntu')
+      sudo apt update
+      sudo apt install -y --install-recommends winehq-staging
+      ;;
+  esac
+  fi
 
 #
 # KakaoTalk
@@ -505,6 +536,7 @@ fi
 # Reference: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
 #
 if ! command -v aws >/dev/null; then
+echo 'Install AWS CLI'
   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/awscliv2.zip
   unzip ~/Downloads/awscliv2.zip -d ~/Downloads
   sudo ~/Downloads/aws/install
@@ -515,12 +547,16 @@ fi
 # EC2 Instance Connect CLI
 # Reference: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html#ec2-instance-connect-install
 #
-pip3 install ec2instanceconnectcli
+if ! pip list | grep ec2instanceconnectcli >/dev/null; then
+  echo 'Install EC2 Instance Connect CLI'
+  pip3 install ec2instanceconnectcli
+fi
 
 #
 # Docker
 #
 if ! command -v docker >/dev/null; then
+echo 'Install Docker'
   case $LINUX_NODENAME in
     'fedora')
       # https://docs.docker.com/engine/install/fedora/
@@ -570,6 +606,7 @@ fi
 # Terraform
 #
 if ! command -v terraform >/dev/null; then
+echo 'Install Terraform'
 TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
 curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
   -Lo "$HOME/Downloads/terraform_linux_amd64.zip"
@@ -606,6 +643,8 @@ fi
 #
 # Steam
 #
+if ! command -v steam >/dev/null; then
+echo 'Install Steam'
 case $LINUX_NODENAME in
   "fedora")
     sudo dnf install -y \
@@ -616,6 +655,7 @@ case $LINUX_NODENAME in
     sudo apt install -y libgl1-mesa-dri:i386 libgl1:i386 steam
     ;;
 esac
+fi
 # curl "https://steamcdn-a.akamaihd.net/client/installer/steam.deb" -Lo ~/Downloads/steam.deb
 # sudo apt install ~/Downloads/steam.deb
 # rm ~/Downloads/steam.deb
@@ -644,7 +684,11 @@ fi
 #
 # Clone Github Repositories
 #
-mkdir -p ~/git/lens0021 ~/git/femiwiki ~/git/gerrit
+mkdir -p \
+  ~/git/lens0021 \
+  ~/git/femiwiki \
+  ~/git/gerrit \
+;
 
 #
 # Caddy
@@ -660,7 +704,7 @@ mkdir -p ~/git/lens0021 ~/git/femiwiki ~/git/gerrit
 #
 if ! command -v aws-connect >/dev/null; then
 sudo curl -fsSL https://raw.githubusercontent.com/simnalamburt/snippets/fa7c39e01c00e7394edf22f4e9a24fe171969b9b/sh/aws-mfa -o /usr/local/bin/aws-mfa
-chmod +x /usr/local/bin/
+sudo chmod +x /usr/local/bin/
 cat << EOF > ~/aws-connect
 #!/bin/bash
 

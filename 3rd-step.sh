@@ -2,16 +2,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# Auto remove
-case $LINUX_NODENAME in
-  "fedora")
-    # TODO
-    ;;
-  "debian")
-    sudo apt autoremove
-    ;;
-esac
-
 # KakaoTalk
 sed -i 's/Exec=env WINEPREFIX/Exec=env LANG="ko_KR.UTF-8" WINEPREFIX/' \
   ~/.local/share/applications/wine/Programs/카카오톡/카카오톡.desktop
@@ -24,8 +14,8 @@ rm -f \
 
 # gsettings
 # TODO
-gsettings set org.gnome.shell.extensions.extensions-sync github-gist-id '664f4ff3d51321454848b469817d22b2'
-gsettings set org.gnome.shell.extensions.extensions-sync github-user-token "'$(cat ~/secrets/github-gist-token.txt)'"
+gsettings set org.gnome.shell.extensions.extensions-sync gitlab-gist-id '2401246'
+gsettings set org.gnome.shell.extensions.extensions-sync gitlab-user-token "'$(cat ~/secrets/TODO.txt)'"
 
 #
 # Wine
@@ -52,10 +42,11 @@ esac
 # sudo chown -R $USER:$USER android-studio/
 
 # ssh
-curl -L https://gitlab.com/lens0021/provision/-/blob/main/public_keys/id_rsa.pub -o "$HOME/.ssh/id_rsa.pub"
+mkdir -p $HOME/.ssh
+curl -L https://gitlab.com/lens0021/provision/-/raw/main/public_keys/id_rsa.pub -o "$HOME/.ssh/id_rsa.pub"
 
 # GPG
-curl -L https://gitlab.com/lens0021/provision/-/blob/main/public_keys/gpg.pub -o ~/Downloads/gpg.pub
+curl -L https://gitlab.com/lens0021/provision/-/raw/main/public_keys/gpg.pub -o ~/Downloads/gpg.pub
 gpg --import ~/Downloads/gpg.pub
 
 # VS Code extension Settings Sync
@@ -63,7 +54,5 @@ gpg --import ~/Downloads/gpg.pub
 # json -I -f "$HOME/.config/Code/User/syncLocalSettings.json" -e "this.token=\"$(cat ~/secrets/github-gist-token.txt)\""
 
 # Purge
-rm -rf ~/secrets
-rm ~/Downloads/*
-rm ~/Desktop/chrome-*-Default.desktop
-rm ~/Desktop/steam.desktop
+rm ~/Desktop/chrome-*-Default.desktop || true
+rm ~/Desktop/steam.desktop || true
