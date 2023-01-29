@@ -2,64 +2,78 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+sudo -v
+
 LINUX_NODENAME="$(uname -n)"
-expoch LINUX_NODENAME
+echo "LINUX_NODENAME: $LINUX_NODENAME"
+
+mkdir -p \
+  ~/.local/bin \
+  ~/.icons \
+;
 
 # curl
 # TODO: Do Ubuntu and Debian have curl?
-if [ $LINUX_NODENAME != 'fedora' ]; then
-  sudo apt install -y curl
+if ! command -v curl >/dev/null; then
+  if [ $LINUX_NODENAME != 'fedora' ]; then
+    sudo apt install -y curl
+  fi
 fi
 
 #
 # Bitwarden
 #
-BITWARDEN_VERSION=$(curl -s https://api.github.com/repos/bitwarden/clients/releases/latest | jq -r .tag_name | cut -dv -f2)
-sudo curl -L https://github.com/bitwarden/clients/releases/download/desktop-v${BITWARDEN_VERSION}/Bitwarden-${BITWARDEN_VERSION}-x86_64.AppImage \
-  -o ~/.local/bin/Bitwarden.AppImage
-sudo chmod +x ~/.local/bin/Bitwarden.AppImage
+if [ ! -e ~/.local/bin/Bitwarden.AppImage ]; then
+  echo 'Install Bitwarden'
+  BITWARDEN_VERSION=$(curl -s https://api.github.com/repos/bitwarden/clients/releases/latest | jq -r .tag_name | cut -dv -f2)
+  sudo curl -L https://github.com/bitwarden/clients/releases/download/desktop-v${BITWARDEN_VERSION}/Bitwarden-${BITWARDEN_VERSION}-x86_64.AppImage \
+    -o ~/.local/bin/Bitwarden.AppImage
+  sudo chmod +x ~/.local/bin/Bitwarden.AppImage
 
-curl -L https://github.com/bitwarden/brand/raw/master/icons/512x512.png -o ~/.icons/bitwarden.png
-touch ~/.local/share/applications/Bitwarden.desktop
-desktop-file-edit \
-  --set-name=Bitwarden \
-  --set-key=Type --set-value=Application \
-  --set-key=Terminal --set-value=false \
-  --set-key=Exec --set-value=$HOME/.local/bin/Bitwarden.AppImage \
-  --set-key=Icon --set-value=bitwarden \
-  ~/.local/share/applications/Bitwarden.desktop
+  curl -L https://github.com/bitwarden/brand/raw/master/icons/512x512.png -o ~/.icons/bitwarden.png
+  touch ~/.local/share/applications/Bitwarden.desktop
+  desktop-file-edit \
+    --set-name=Bitwarden \
+    --set-key=Type --set-value=Application \
+    --set-key=Terminal --set-value=false \
+    --set-key=Exec --set-value=$HOME/.local/bin/Bitwarden.AppImage \
+    --set-key=Icon --set-value=bitwarden \
+    ~/.local/share/applications/Bitwarden.desktop
 
-sudo desktop-file-install ~/.local/share/applications/Bitwarden.desktop
+  sudo desktop-file-install ~/.local/share/applications/Bitwarden.desktop
+fi
 
 #
 # 1Password
 #
-case $LINUX_NODENAME in
-  "fedora")
-    sudo rpm --import https://downloads.1password.com/linux/keys/1password.asc
-    sudo sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
-    sudo dnf install -y 1password 1password-cli
-    ;;
-  "debian") ;;
-    # TODO
-esac
+if ! command -v 1password >/dev/null; then
+  echo 'install 1Password'
+  case $LINUX_NODENAME in
+    "fedora")
+      sudo rpm --import https://downloads.1password.com/linux/keys/1password.asc
+      sudo sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
+      sudo dnf install -y 1password 1password-cli
+      ;;
+    "debian") ;;
+      # TODO
+  esac
+ fi
 
 # Google Chrome
-case $LINUX_NODENAME in
-  "fedora")
-    sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-    ;;
-  "debian")
-    curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
-    sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
-    rm ~/Downloads/google-chrome.deb
-    ;;
-esac
+# case $LINUX_NODENAME in
+#   "fedora")
+#     sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+#     ;;
+#   "debian")
+#     curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
+#     sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
+#     rm ~/Downloads/google-chrome.deb
+#     ;;
+# esac
 
 #
 # Installs softwares
 #
-sudo apt update
 case $LINUX_NODENAME in
   "fedora")
     # openssh → kdeconnect
@@ -71,10 +85,11 @@ case $LINUX_NODENAME in
       ShellCheck \
       ImageMagick \
       openssh \
-      openfortivpn
-
+      openfortivpn \
+    ;
     ;;
   "debian" | "ubuntu")
+    sudo apt update
     sudo apt install -y \
       curl \
       xclip \
@@ -82,16 +97,10 @@ case $LINUX_NODENAME in
       mssh \
       vim \
       git-review \
-      php-xml \
-      php-ast \
-      php-curl \
-      php-intl \
-      php-mbstring \
       mysql-client-core-8.0 \
       shellcheck \
       tree \
       imagemagick \
-      npm \
       flatpak \
       baobab \
       ruby-full \
@@ -112,8 +121,11 @@ esac
 #
 # fzf
 #
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
+if ! command -v fzf >/dev/null; then
+  echo 'Install fzf'
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ~/.fzf/install --all
+fi
 
 #
 # Change the background color of grub
@@ -153,73 +165,79 @@ fi
 #
 # Python
 #
-case $LINUX_NODENAME in
-  'fedora')
-    sudo dnf install -y \
-      python3-pip
-    ;;
-  'ubuntu' | 'debian')
-    sudo apt install -y \
-      python3-pip \
-      python3-venv
-    ;;
-esac
-sudo ln -s /usr/bin/python3 /usr/bin/python || True
-sudo ln -s /usr/bin/pip3 /usr/bin/pip || True
-pip install -U \
-  flake8 \
-  pytest \
-  wheel \
-  pre-commit
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
-
-#
-# Rust
-#
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-sudo apt-get install musl-tools
+# case $LINUX_NODENAME in
+#   'fedora')
+#     sudo dnf install -y \
+#       python3-pip
+#     ;;
+#   'ubuntu' | 'debian')
+#     sudo apt install -y \
+#       python3-pip \
+#       python3-venv
+#     ;;
+# esac
+# sudo ln -s /usr/bin/python3 /usr/bin/python || true
+# sudo ln -s /usr/bin/pip3 /usr/bin/pip || true
+# pip install -U \
+#   flake8 \
+#   pytest \
+#   wheel \
+#   pre-commit
+# curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
 
 #
 # Ruby
+# TODO: asdf
 #
-echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc
-echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc
-echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc
+# echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc
+# echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc
+# echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc
 
 #
 # Fonts
 #
-case $LINUX_NODENAME in
-  "fedora")
-    sudo dnf -y install naver-nanum-gothic-fonts
-    ;;
-  "debian")
-    sudo apt-get install -y fonts-nanum* fonts-unfonts-core
-    ;;
-esac
+if ! fc-list | grep nanum >/dev/null; then
+  echo 'Install fonts'
+  case $LINUX_NODENAME in
+    "fedora")
+      sudo dnf -y install naver-nanum-gothic-fonts
+      ;;
+    "debian")
+      sudo apt-get install -y fonts-nanum* fonts-unfonts-core
+      ;;
+  esac
+fi
 
 #
 # Keybase
 #
-case $LINUX_NODENAME in
-  "fedora")
-    sudo dnf install -y https://prerelease.keybase.io/keybase_amd64.rpm
-    ;;
-  "debian")
-    curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb -o ~/Downloads/keybase_amd64.deb
-    sudo apt install -y ~/Downloads/keybase_amd64.deb
-    rm ~/Downloads/keybase_amd64.deb
-    ;;
-esac
+if ! command -v keybase >/dev/null; then
+  echo 'Install Keybase'
+  case $LINUX_NODENAME in
+    "fedora")
+      sudo dnf install -y https://prerelease.keybase.io/keybase_amd64.rpm
+      ;;
+    "debian")
+      curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb -o ~/Downloads/keybase_amd64.deb
+      sudo apt install -y ~/Downloads/keybase_amd64.deb
+      rm ~/Downloads/keybase_amd64.deb
+      ;;
+  esac
+fi
 
 #
 # asdf
 #
-ASDF_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
-echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
-echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
-. $HOME/.asdf/asdf.sh
+
+if ! command -v asdf >/dev/null; then
+  echo 'Install asdf'
+  ASDF_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
+  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
+  echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
+  echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
+  . $HOME/.asdf/asdf.sh
+fi
+
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 asdf install nodejs latest
 asdf global nodejs latest
@@ -235,6 +253,7 @@ case $LINUX_NODENAME in
   "fedora")
     sudo dnf install -y \
       autoconf \
+      bison \
       gcc \
       gcc-c++ \
       gd-devel \
@@ -360,9 +379,9 @@ case $LINUX_NODENAME in
     sudo dnf install -y code
 
     # VSCodium
-    # sudo rpmkeys --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
-    # printf "[gitlab.com_paulcarroty_vscodium_repo]\nname=download.vscodium.com\nbaseurl=https://download.vscodium.com/rpms/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg\nmetadata_expire=1h" | sudo tee -a /etc/yum.repos.d/vscodium.repo
-    # sudo dnf install -y codium
+     sudo rpmkeys --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
+     printf "[gitlab.com_paulcarroty_vscodium_repo]\nname=download.vscodium.com\nbaseurl=https://download.vscodium.com/rpms/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg\nmetadata_expire=1h" | sudo tee -a /etc/yum.repos.d/vscodium.repo
+     sudo dnf install -y codium
     ;;
   "debian" | "ubuntu")
     curl -L https://update.code.visualstudio.com/latest/linux-deb-x64/stable -o ~/Downloads/code_amd64.deb
