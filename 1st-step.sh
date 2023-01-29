@@ -235,83 +235,103 @@ if ! command -v asdf >/dev/null; then
   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
   echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
   echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
-  . $HOME/.asdf/asdf.sh
+fi
+. $HOME/.asdf/asdf.sh
+
+# Node
+if ! asdf plugin list | grep nodejs >/dev/null; then
+  asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+fi
+if ! command -v node >/dev/null; then
+  asdf install nodejs latest
+  asdf global nodejs latest
 fi
 
-asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-asdf install nodejs latest
-asdf global nodejs latest
-
 # Yarn
-asdf plugin add yarn
-asdf install yarn latest
-asdf global yarn latest
+if ! asdf plugin list | grep yarn >/dev/null; then
+  asdf plugin add yarn
+fi
+if ! command -v yarn >/dev/null; then
+  asdf install yarn latest
+  asdf global yarn latest
+fi
 
 # PHP
-asdf plugin add php https://github.com/asdf-community/asdf-php.git
-case $LINUX_NODENAME in
-  "fedora")
-    sudo dnf install -y \
-      autoconf \
-      bison \
-      gcc \
-      gcc-c++ \
-      gd-devel \
-      libcurl-devel \
-      libxml2-devel \
-      re2c \
-      sqlite-devel \
-      oniguruma-devel \
-      postgresql-devel \
-      readline-devel \
-      libzip-devel \
-      ;
-    ;;
-  "ubuntu" | "debian")
-    sudo apt-get install -y \
-      autoconf \
-      bison \
-      build-essential \
-      curl \
-      gettext \
-      git \
-      libcurl4-openssl-dev \
-      libedit-dev \
-      libgd-dev \
-      libicu-dev \
-      libjpeg-dev \
-      libmysqlclient-dev \
-      libonig-dev \
-      libpng-dev \
-      libpq-dev \
-      libreadline-dev \
-      libsqlite3-dev \
-      libssl-dev \
-      libxml2-dev \
-      libzip-dev \
-      openssl \
-      pkg-config \
-      re2c \
-      zlib1g-dev \
-      ;
-    ;;
-esac
-asdf install php latest
-asdf global php latest
+if ! asdf plugin list | grep php >/dev/null; then
+  asdf plugin add php https://github.com/asdf-community/asdf-php.git
+fi
+if ! command -v php >/dev/null; then
+  case $LINUX_NODENAME in
+    "fedora")
+      sudo dnf install -y \
+        autoconf \
+        bison \
+        gcc \
+        gcc-c++ \
+        gd-devel \
+        libcurl-devel \
+        libxml2-devel \
+        re2c \
+        sqlite-devel \
+        oniguruma-devel \
+        postgresql-devel \
+        readline-devel \
+        libzip-devel \
+        ;
+      ;;
+    "ubuntu" | "debian")
+      sudo apt-get install -y \
+        autoconf \
+        bison \
+        build-essential \
+        curl \
+        gettext \
+        git \
+        libcurl4-openssl-dev \
+        libedit-dev \
+        libgd-dev \
+        libicu-dev \
+        libjpeg-dev \
+        libmysqlclient-dev \
+        libonig-dev \
+        libpng-dev \
+        libpq-dev \
+        libreadline-dev \
+        libsqlite3-dev \
+        libssl-dev \
+        libxml2-dev \
+        libzip-dev \
+        openssl \
+        pkg-config \
+        re2c \
+        zlib1g-dev \
+        ;
+      ;;
+  esac
+  asdf install php latest
+  asdf global php latest
+fi
 
 # Golang
-asdf plugin add golang https://github.com/kennyp/asdf-golang.git
-asdf install golang latest
-asdf global golang latest
+if ! asdf plugin list | grep go >/dev/null; then
+  asdf plugin add golang https://github.com/kennyp/asdf-golang.git
+fi
+if ! command -v go >/dev/null; then
+  asdf install golang latest
+  asdf global golang latest
+fi
 
 # Rust
-asdf plugin add rust https://github.com/code-lever/asdf-rust.git
+if ! asdf plugin list | grep rust >/dev/null; then
+  asdf plugin add rust https://github.com/code-lever/asdf-rust.git
+fi
 # TODO?
 
 #
 # ETC yarn packages
 #
-sudo yarn global add \
+echo 'Install npm packages'
+yarn global add \
   prettier \
   @prettier/plugin-xml \
   eslint \
@@ -337,77 +357,108 @@ echo 'default-cache-ttl 3600' >> gpg-agent.conf
 #
 # Github CLI
 #
-GITHUB_CLI_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | cut -dv -f2)
-case $LINUX_NODENAME in
-  "fedora")
-    sudo dnf install -y https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.rpm
-    ;;
-  "debian")
-    curl -L https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.deb \
-      -o ~/Downloads/gh_linux_amd64.deb
-    sudo dpkg -i ~/Downloads/gh_linux_amd64.deb
-    rm ~/Downloads/gh_linux_amd64.deb
-    ;;
-esac
+if ! command -v gh >/dev/null; then
+  echo 'Install Github CLI'
+  GITHUB_CLI_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | cut -dv -f2)
+  case $LINUX_NODENAME in
+    "fedora")
+      sudo dnf install -y https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.rpm
+      ;;
+    "debian")
+      curl -L https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.deb \
+        -o ~/Downloads/gh_linux_amd64.deb
+      sudo dpkg -i ~/Downloads/gh_linux_amd64.deb
+      rm ~/Downloads/gh_linux_amd64.deb
+      ;;
+  esac
+fi
 
 #
 # GitLab CLI
 #
-GLAB_VERSION=$(curl -s https://gitlab.com/api/v4/projects/34675721/repository/tags | jq -r .[0].name)
-git clone https://gitlab.com/gitlab-org/cli.git ~/git/glab --branch "$GLAB_VERSION"
-cd ~/git/glab
-make
-sudo cp bin/glab /usr/local/bin/glab
+if ! command -v glab >/dev/null; then
+  echo 'Install GitLab CLI'
+  GLAB_VERSION=$(curl -s https://gitlab.com/api/v4/projects/34675721/repository/tags | jq -r .[0].name)
+  git clone https://gitlab.com/gitlab-org/cli.git ~/git/glab --branch "$GLAB_VERSION"
+  cd ~/git/glab
+  make
+  sudo cp bin/glab /usr/local/bin/glab
+fi
 
 #
 # Git Credential Manager Core
 #
-curl -sSL https://packages.microsoft.com/config/ubuntu/21.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft-prod.list
-curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
-sudo apt-get update
-sudo apt-get install -y gcmcore
-git-credential-manager-core configure
+case $LINUX_NODENAME in
+  "fedora")
+    #TODO
+    ;;
+  "debian")
+    echo 'Install Git Credential Manager Core'
+    curl -sSL https://packages.microsoft.com/config/ubuntu/21.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft-prod.list
+    curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
+    sudo apt-get update
+    sudo apt-get install -y gcmcore
+    git-credential-manager-core configure
+    ;;
+esac
 
 #
 # VS Code
 #
-case $LINUX_NODENAME in
-  "fedora")
-    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-    sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-    dnf check-update
-    sudo dnf install -y code
+if ! command -v code >/dev/null; then
+  case $LINUX_NODENAME in
+    "fedora")
+      # sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+      # sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+      # dnf check-update
+      # sudo dnf install -y code
+      ;;
+    "debian" | "ubuntu")
+      # curl -L https://update.code.visualstudio.com/latest/linux-deb-x64/stable -o ~/Downloads/code_amd64.deb
+      # sudo dpkg -i ~/Downloads/code_amd64.deb
+      # rm ~/Downloads/code_amd64.deb
+      ;;
+  esac
+fi
 
-    # VSCodium
-     sudo rpmkeys --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
-     printf "[gitlab.com_paulcarroty_vscodium_repo]\nname=download.vscodium.com\nbaseurl=https://download.vscodium.com/rpms/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg\nmetadata_expire=1h" | sudo tee -a /etc/yum.repos.d/vscodium.repo
-     sudo dnf install -y codium
-    ;;
-  "debian" | "ubuntu")
-    curl -L https://update.code.visualstudio.com/latest/linux-deb-x64/stable -o ~/Downloads/code_amd64.deb
-    sudo dpkg -i ~/Downloads/code_amd64.deb
-    rm ~/Downloads/code_amd64.deb
-    ;;
-esac
+#
+# Codium
+#
+if ! command -v codium >/dev/null; then
+  case $LINUX_NODENAME in
+    "fedora")
+      # VSCodium
+      sudo rpmkeys --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
+      printf "[gitlab.com_paulcarroty_vscodium_repo]\nname=download.vscodium.com\nbaseurl=https://download.vscodium.com/rpms/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg\nmetadata_expire=1h" | sudo tee -a /etc/yum.repos.d/vscodium.repo
+      sudo dnf install -y codium
+      ;;
+    "debian" | "ubuntu")
+      # TODO
+      ;;
+  esac
+fi
+
 mkdir -p ~/code-workspaces
 
 # BloomRPC
-BLOOMRPC_VERSION=$(curl -s https://api.github.com/repos/bloomrpc/bloomrpc/releases/latest | jq -r .tag_name | cut -dv -f2)
-sudo curl -L https://github.com/bloomrpc/bloomrpc/releases/download/${BLOOMRPC_VERSION}/BloomRPC-${BLOOMRPC_VERSION}.AppImage \
-  -o ~/.local/bin/BloomRPC.AppImage
-sudo chmod +x ~/.local/bin/BloomRPC.AppImage
+if [ ! -e ~/.local/bin/BloomRPC.AppImage ]; then
+  BLOOMRPC_VERSION=$(curl -s https://api.github.com/repos/bloomrpc/bloomrpc/releases/latest | jq -r .tag_name | cut -dv -f2)
+  sudo curl -L https://github.com/bloomrpc/bloomrpc/releases/download/${BLOOMRPC_VERSION}/BloomRPC-${BLOOMRPC_VERSION}.AppImage \
+    -o ~/.local/bin/BloomRPC.AppImage
+  sudo chmod +x ~/.local/bin/BloomRPC.AppImage
 
-curl -L https://github.com/bloomrpc/bloomrpc/raw/master/resources/logo.png -o ~/.icons/bloomrpc.png
-touch ~/.local/share/applications/BloomRPC.desktop
-desktop-file-edit \
-  --set-name=BloomRPC \
-  --set-key=Type --set-value=Application \
-  --set-key=Terminal --set-value=false \
-  --set-key=Exec --set-value=$HOME/.local/bin/BloomRPC.AppImage \
-  --set-key=Icon --set-value=bloomrpc \
-  ~/.local/share/applications/BloomRPC.desktop
+  curl -L https://github.com/bloomrpc/bloomrpc/raw/master/resources/logo.png -o ~/.icons/bloomrpc.png
+  touch ~/.local/share/applications/BloomRPC.desktop
+  desktop-file-edit \
+    --set-name=BloomRPC \
+    --set-key=Type --set-value=Application \
+    --set-key=Terminal --set-value=false \
+    --set-key=Exec --set-value=$HOME/.local/bin/BloomRPC.AppImage \
+    --set-key=Icon --set-value=bloomrpc \
+    ~/.local/share/applications/BloomRPC.desktop
 
-sudo desktop-file-install ~/.local/share/applications/BloomRPC.desktop
+  sudo desktop-file-install ~/.local/share/applications/BloomRPC.desktop
+fi
 
 #
 # Wine
@@ -445,16 +496,20 @@ esac
 #
 # KakaoTalk
 #
-curl -L http://app.pc.kakao.com/talk/win32/KakaoTalk_Setup.exe -o ~/Downloads/KakaoTalk_Setup.exe
+if [ ! -d ~/Downloads/KakaoTalk_Setup.exe ]; then
+  curl -L http://app.pc.kakao.com/talk/win32/KakaoTalk_Setup.exe -o ~/Downloads/KakaoTalk_Setup.exe
+fi
 
 #
 # AWS CLI
 # Reference: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
 #
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/awscliv2.zip
-unzip ~/Downloads/awscliv2.zip -d ~/Downloads
-sudo ~/Downloads/aws/install
-rm -rf ~/Downloads/awscliv2.zip ~/Downloads/aws/
+if ! command -v aws >/dev/null; then
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/awscliv2.zip
+  unzip ~/Downloads/awscliv2.zip -d ~/Downloads
+  sudo ~/Downloads/aws/install
+  rm -rf ~/Downloads/awscliv2.zip ~/Downloads/aws/
+fi
 
 #
 # EC2 Instance Connect CLI
@@ -465,36 +520,38 @@ pip3 install ec2instanceconnectcli
 #
 # Docker
 #
-case $LINUX_NODENAME in
-  'fedora')
-    # https://docs.docker.com/engine/install/fedora/
-    sudo dnf -y install dnf-plugins-core
-    sudo dnf config-manager \
-      --add-repo \
-      https://download.docker.com/linux/fedora/docker-ce.repo
-    sudo dnf install -y \
-      docker-ce \
-      docker-ce-cli \
-      containerd.io \
-      docker-compose-plugin
-    sudo systemctl start docker
+if ! command -v docker >/dev/null; then
+  case $LINUX_NODENAME in
+    'fedora')
+      # https://docs.docker.com/engine/install/fedora/
+      sudo dnf -y install dnf-plugins-core
+      sudo dnf config-manager \
+        --add-repo \
+        https://download.docker.com/linux/fedora/docker-ce.repo
+      sudo dnf install -y \
+        docker-ce \
+        docker-ce-cli \
+        containerd.io \
+        docker-compose-plugin
+      sudo systemctl start docker
 
-    # https://phabricator.wikimedia.org/T283484
-    sudo dnf install -y docker-compose
+      # https://phabricator.wikimedia.org/T283484
+      sudo dnf install -y docker-compose
 
-    # DOCKER_DESKTOP_URL=$(curl -sL https://docs.docker.com/desktop/install/linux-install/ | grep -oE 'https://desktop\.docker\.com/linux/main/amd64/docker-desktop-.+-x86_64\.rpm')
-    # sudo dnf install -y "$DOCKER_DESKTOP_URL"
-    ;;
-  'ubuntu') #TODO
-    ;;
+      # DOCKER_DESKTOP_URL=$(curl -sL https://docs.docker.com/desktop/install/linux-install/ | grep -oE 'https://desktop\.docker\.com/linux/main/amd64/docker-desktop-.+-x86_64\.rpm')
+      # sudo dnf install -y "$DOCKER_DESKTOP_URL"
+      ;;
+    'ubuntu') #TODO
+      ;;
 
-  'debian') #TODO
-    ;;
-esac
-sudo systemctl enable docker.service
-sudo systemctl enable containerd.service
-sudo sh -c "echo 'docker compose \"\$@\"' > /usr/local/bin/docker-compose"
-sudo chmod +x /usr/local/bin/docker-compose
+    'debian') #TODO
+      ;;
+  esac
+  sudo systemctl enable docker.service
+  sudo systemctl enable containerd.service
+  sudo sh -c "echo 'docker compose \"\$@\"' > /usr/local/bin/docker-compose"
+  sudo chmod +x /usr/local/bin/docker-compose
+fi
 
 # Docker buildx
 # Reference: https://medium.com/@artur.klauser/building-multi-architecture-docker-images-with-buildx-27d80f7e2408
@@ -512,6 +569,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 #
 # Terraform
 #
+if ! command -v terraform >/dev/null; then
 TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
 curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
   -Lo "$HOME/Downloads/terraform_linux_amd64.zip"
@@ -519,18 +577,19 @@ unzip "$HOME/Downloads/terraform_linux_amd64.zip" -d ~/Downloads
 sudo mv ~/Downloads/terraform /usr/local/bin/terraform
 rm "$HOME/Downloads/terraform_linux_amd64.zip"
 terraform -install-autocomplete
+fi
 
 #
 # Nomad
 #
-NOMAD_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r .current_version)
-curl "https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip" \
-  -Lo "$HOME/Downloads/nomad_linux_amd64.zip"
-unzip "$HOME/Downloads/nomad_linux_amd64.zip" -d ~/Downloads
-sudo mv ~/Downloads/nomad /usr/local/bin/nomad
-rm "$HOME/Downloads/nomad_linux_amd64.zip"
-nomad -autocomplete-install
-complete -C /usr/local/bin/nomad nomad
+# NOMAD_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/nomad | jq -r .current_version)
+# curl "https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip" \
+#   -Lo "$HOME/Downloads/nomad_linux_amd64.zip"
+# unzip "$HOME/Downloads/nomad_linux_amd64.zip" -d ~/Downloads
+# sudo mv ~/Downloads/nomad /usr/local/bin/nomad
+# rm "$HOME/Downloads/nomad_linux_amd64.zip"
+# nomad -autocomplete-install
+# complete -C /usr/local/bin/nomad nomad
 
 #
 # Consul
@@ -565,11 +624,12 @@ esac
 #
 # Discord
 #
-sudo dnf install -y discord
+# sudo dnf install -y discord
 
 #
 # mwcli
 #
+if ! command -v mwdev >/dev/null; then
 mkdir -p ~/go/src/gitlab.wikimedia.org/repos/releng
 cd ~/go/src/gitlab.wikimedia.org/repos/releng/
 git clone https://gitlab.wikimedia.org/repos/releng/cli.git
@@ -579,6 +639,7 @@ asdf reshim golang
 bingo get
 make build
 echo "alias mwdev='~/go/src/gitlab.wikimedia.org/repos/releng/cli/bin/mw'" >> ~/.bashrc
+fi
 
 #
 # Clone Github Repositories
@@ -597,6 +658,7 @@ mkdir -p ~/git/lens0021 ~/git/femiwiki ~/git/gerrit
 #
 # aws-mfa
 #
+if ! command -v aws-connect >/dev/null; then
 sudo curl -fsSL https://raw.githubusercontent.com/simnalamburt/snippets/fa7c39e01c00e7394edf22f4e9a24fe171969b9b/sh/aws-mfa -o /usr/local/bin/aws-mfa
 chmod +x /usr/local/bin/
 cat << EOF > ~/aws-connect
@@ -616,6 +678,7 @@ mssh "\$INSTANCE_ID"
 EOF
 sudo chmod +x aws-connect
 sudo mv ~/aws-connect /usr/local/bin/
+fi
 
 update-desktop-database ~/.local/share/applications
 
@@ -623,22 +686,22 @@ update-desktop-database ~/.local/share/applications
 # Standard Notes
 #
 
-STANDARD_NOTES_VERSION=$(curl -s https://api.github.com/repos/standardnotes/app/releases/latest | jq -r .tag_name | cut -d@ -f3)
-sudo curl -L https://github.com/standardnotes/app/releases/download/%40standardnotes%2Fdesktop%40${STANDARD_NOTES_VERSION}/standard-notes-${STANDARD_NOTES_VERSION}-linux-x86_64.AppImage \
-  -o ~/.local/bin/standard-notes.AppImage
-sudo chmod +x ~/.local/bin/standard-notes.AppImage
+# STANDARD_NOTES_VERSION=$(curl -s https://api.github.com/repos/standardnotes/app/releases/latest | jq -r .tag_name | cut -d@ -f3)
+# sudo curl -L https://github.com/standardnotes/app/releases/download/%40standardnotes%2Fdesktop%40${STANDARD_NOTES_VERSION}/standard-notes-${STANDARD_NOTES_VERSION}-linux-x86_64.AppImage \
+#   -o ~/.local/bin/standard-notes.AppImage
+# sudo chmod +x ~/.local/bin/standard-notes.AppImage
 
-curl -L https://github.com/standardnotes/app/raw/main/packages/web/src/favicon/android-chrome-512x512.png -o ~/.icons/standard-notes.png
-touch ~/.local/share/applications/standard-notes.desktop
-desktop-file-edit \
-  --set-name=Standard\ Notes \
-  --set-key=Type --set-value=Application \
-  --set-key=Terminal --set-value=false \
-  --set-key=Exec --set-value=$HOME/.local/bin/standard-notes.AppImage \
-  --set-key=Icon --set-value=standard-notes \
-  ~/.local/share/applications/standard-notes.desktop
+# curl -L https://github.com/standardnotes/app/raw/main/packages/web/src/favicon/android-chrome-512x512.png -o ~/.icons/standard-notes.png
+# touch ~/.local/share/applications/standard-notes.desktop
+# desktop-file-edit \
+#   --set-name=Standard\ Notes \
+#   --set-key=Type --set-value=Application \
+#   --set-key=Terminal --set-value=false \
+#   --set-key=Exec --set-value=$HOME/.local/bin/standard-notes.AppImage \
+#   --set-key=Icon --set-value=standard-notes \
+#   ~/.local/share/applications/standard-notes.desktop
   
-sudo desktop-file-install ~/.local/share/applications/standard-notes.desktop
+# sudo desktop-file-install ~/.local/share/applications/standard-notes.desktop
 
 #
 # Android studio
@@ -658,8 +721,8 @@ mkdir ~/Wallpapers
 #
 # Slack
 #
-SLACK_URL=$(curl -sL https://slack.com/downloads/instructions/fedora | grep -oE 'https://downloads.slack-edge.com/releases/linux/.+/prod/x64/slack-.+\.x86_64\.rpm')
-sudo dnf install -y "$SLACK_URL"
+# SLACK_URL=$(curl -sL https://slack.com/downloads/instructions/fedora | grep -oE 'https://downloads.slack-edge.com/releases/linux/.+/prod/x64/slack-.+\.x86_64\.rpm')
+# sudo dnf install -y "$SLACK_URL"
 
 #
 # GIMP
@@ -697,13 +760,13 @@ sudo flatpak install -y https://flathub.org/repo/appstream/org.gimp.GIMP.flatpak
 #
 # Howdy (Removed)
 #
-case $LINUX_NODENAME in
-  "fedora")
-    sudo dnf copr enable -y principis/howdy
-    sudo dnf --refresh install -y howdy
-    ;;
-  "debian")
-    sudo add-apt-repository -y ppa:boltgolt/howdy
-    sudo apt update
-    ;;
-esac
+# case $LINUX_NODENAME in
+#   "fedora")
+#     sudo dnf copr enable -y principis/howdy
+#     sudo dnf --refresh install -y howdy
+#     ;;
+#   "debian")
+#     sudo add-apt-repository -y ppa:boltgolt/howdy
+#     sudo apt update
+#     ;;
+# esac
