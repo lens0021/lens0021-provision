@@ -562,6 +562,17 @@ if ! pip list | grep ec2instanceconnectcli >/dev/null; then
 fi
 
 #
+# Snap
+#
+sudo dnf install -y snapd
+sudo ln -s /var/lib/snapd/snap /snap
+
+#
+# Authy
+#
+sudo snap install authy
+
+#
 # Docker
 #
 if ! command -v docker >/dev/null; then
