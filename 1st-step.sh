@@ -585,6 +585,10 @@ echo 'Install Docker'
 
       # DOCKER_DESKTOP_URL=$(curl -sL https://docs.docker.com/desktop/install/linux-install/ | grep -oE 'https://desktop\.docker\.com/linux/main/amd64/docker-desktop-.+-x86_64\.rpm')
       # sudo dnf install -y "$DOCKER_DESKTOP_URL"
+      
+      newgrp docker
+      sudo usermod -aG docker $USER
+      # TODO: docker login ghcr.io
       ;;
     'ubuntu') #TODO
       ;;
