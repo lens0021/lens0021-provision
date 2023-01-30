@@ -684,11 +684,20 @@ fi
 #
 # Clone Github Repositories
 #
-mkdir -p \
-  ~/git/lens0021 \
-  ~/git/femiwiki \
-  ~/git/gerrit \
+cd /usr/local
+sudo mkdir -p git
+(
+  _USER="$USER"
+  _GROUP="$(id -g)"
+  sudo chown "$_USER:$_GROUP" git
+)
+cd git
+sudo mkdir -p \
+  lens0021 \
+  femiwiki \
+  gerrit \
 ;
+
 
 #
 # Caddy
