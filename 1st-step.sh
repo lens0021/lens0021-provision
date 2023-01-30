@@ -810,6 +810,15 @@ mkdir ~/Wallpapers
   esac
 
 #
+# Gnucash
+#
+if ! command -v gnucash >/dev/null; then
+  if [ $LINUX_NODENAME != 'fedora' ]; then
+    sudo apt install -y gnucash
+  fi
+fi
+
+#
 # Slack
 #
 # SLACK_URL=$(curl -sL https://slack.com/downloads/instructions/fedora | grep -oE 'https://downloads.slack-edge.com/releases/linux/.+/prod/x64/slack-.+\.x86_64\.rpm')
