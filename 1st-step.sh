@@ -159,23 +159,29 @@ fi
 # Gnome
 # Uses unstable because the version of Bullseye's gnome is 38
 #
-# case $LINUX_NODENAME in
-#   "debian")
-#     sudo apt -t unstable install -y \
-#       gnome-clocks \
-#       gnome-tweaks \
-#       gnome-colors \
-#       gnome-session \
-#       gnome-shell \
-#       gnome-backgrounds \
-#       gnome-applets \
-#       gnome-control-center \
-#       mutter \
-#       gjs \
-#       tracker-miner-fs \
-#       ssh-askpass-gnome
-#   ;;
-# esac
+case $LINUX_NODENAME in
+"fedora")
+    sudo dnf instally -y \
+      gnome-tweaks \
+      openssh-askpass \
+    ;
+  ;;
+  "debian")
+    sudo apt -t unstable install -y \
+      gnome-clocks \
+      gnome-tweaks \
+      gnome-colors \
+      gnome-session \
+      gnome-shell \
+      gnome-backgrounds \
+      gnome-applets \
+      gnome-control-center \
+      mutter \
+      gjs \
+      tracker-miner-fs \
+      ssh-askpass-gnome
+  ;;
+esac
 
 #
 # Python
@@ -464,8 +470,6 @@ if ! command -v codium >/dev/null; then
       ;;
   esac
 fi
-
-mkdir -p ~/code-workspaces
 
 # BloomRPC
 if [ ! -e ~/.local/bin/BloomRPC.AppImage ]; then
@@ -770,6 +774,19 @@ update-desktop-database ~/.local/share/applications
 # Wallpapers
 #
 mkdir ~/Wallpapers
+
+#
+# Dropbox
+#
+  case $LINUX_NODENAME in
+    "fedora")
+      sudo dnf install -y \
+        libgnome \
+      ;
+      curl -L 'https://www.dropbox.com/download?dl=packages/fedora/nautilus-dropbox-2022.12.05-1.fedora.x86_64.rpm' -O ~/Downloads/dropbox.rpm
+      sudo rpm -i ~/Downloads/dropbox.rpm
+    ;;
+  esac
 
 #
 # Slack

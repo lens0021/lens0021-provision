@@ -17,6 +17,8 @@ rm -f \
 gsettings set org.gnome.shell.extensions.extensions-sync gitlab-gist-id '2401246'
 gsettings set org.gnome.shell.extensions.extensions-sync gitlab-user-token "'$(cat ~/secrets/TODO.txt)'"
 
+mkdir -p ~/Dropbox/code-workspaces
+
 #
 # Wine
 #
