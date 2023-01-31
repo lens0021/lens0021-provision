@@ -72,12 +72,36 @@ if ! command -v 1password >/dev/null; then
 # esac
 
 #
+# Edge
+#
+# if ! command -v microsoft-edge >/dev/null; then
+#   case $LINUX_NODENAME in
+#     "fedora")
+#       sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+#       sudo dnf config-manager --add-repo https://packages.microsoft.com/yumrepos/edge
+#       sudo dnf install microsoft-edge-stable
+#       ;;
+#     "debian")
+#       curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
+#       sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
+#       rm ~/Downloads/google-chrome.deb
+#       ;;
+#   esac
+# fi
+
+#
+# Vivaldi
+#
+# sudo dnf config-manager --add-repo https://repo.vivaldi.com/archive/vivaldi-fedora.repo
+# sudo dnf install vivaldi-stable
+
+#
 # Wavebox
 #
 if ! dnf list --installed | grep Wavebox >/dev/null; then
   echo 'Install Wavebox'
   sudo rpm --import https://download.wavebox.app/static/wavebox_repo.key
-  sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo 
+  sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo
   sudo dnf install -y Wavebox
 fi
 # TODO: default browser
@@ -468,7 +492,7 @@ if ! command -v codium >/dev/null; then
   if ! echo ~/.bashrc | grep codium >/dev/null; then
   echo 'alias code=codium' >> ~/.bashrc
   fi
-      
+
       ;;
     "debian" | "ubuntu")
       # TODO
@@ -596,7 +620,7 @@ echo 'Install Docker'
 
       # DOCKER_DESKTOP_URL=$(curl -sL https://docs.docker.com/desktop/install/linux-install/ | grep -oE 'https://desktop\.docker\.com/linux/main/amd64/docker-desktop-.+-x86_64\.rpm')
       # sudo dnf install -y "$DOCKER_DESKTOP_URL"
-      
+
       sudo groupadd docker
       sudo usermod -aG docker $USER
       newgrp docker
@@ -778,7 +802,7 @@ update-desktop-database ~/.local/share/applications
 #   --set-key=Exec --set-value=$HOME/.local/bin/standard-notes.AppImage \
 #   --set-key=Icon --set-value=standard-notes \
 #   ~/.local/share/applications/standard-notes.desktop
-  
+
 # sudo desktop-file-install ~/.local/share/applications/standard-notes.desktop
 
 #
