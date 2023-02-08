@@ -208,6 +208,19 @@ case $LINUX_NODENAME in
 esac
 
 #
+# Askpass
+#
+echo '🚀 Installaskpass'
+case $LINUX_NODENAME in
+"fedora")
+    sudo dnf install -y openssh-askpass
+  ;;
+  "debian")
+    sudo apt -t unstable install -y ssh-askpass-gnome
+  ;;
+esac
+
+#
 # Python
 #
 # case $LINUX_NODENAME in
@@ -289,6 +302,7 @@ fi
 
 # Node
 if ! asdf plugin list | grep nodejs >/dev/null; then
+  echo 'Add nodejs plugin to asdf'
   asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 fi
 if ! command -v node >/dev/null; then
