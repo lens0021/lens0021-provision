@@ -24,7 +24,7 @@ fi
 # Bitwarden
 #
 if [ ! -e ~/.local/bin/Bitwarden.AppImage ]; then
-  echo 'Install Bitwarden'
+  echo '🚀 Install Bitwarden'
   BITWARDEN_VERSION=$(curl -s https://api.github.com/repos/bitwarden/clients/releases/latest | jq -r .tag_name | cut -dv -f2)
   sudo curl -L https://github.com/bitwarden/clients/releases/download/desktop-v${BITWARDEN_VERSION}/Bitwarden-${BITWARDEN_VERSION}-x86_64.AppImage \
     -o ~/.local/bin/Bitwarden.AppImage
@@ -47,7 +47,7 @@ fi
 # 1Password
 #
 if ! command -v 1password >/dev/null; then
-  echo 'install 1Password'
+  echo '🚀 Install 1Password'
   case $LINUX_NODENAME in
     "fedora")
       sudo rpm --import https://downloads.1password.com/linux/keys/1password.asc
@@ -99,7 +99,7 @@ if ! command -v 1password >/dev/null; then
 # Wavebox
 #
 if ! dnf list --installed | grep Wavebox >/dev/null; then
-  echo 'Install Wavebox'
+  echo '🚀 Install Wavebox'
   sudo rpm --import https://download.wavebox.app/static/wavebox_repo.key
   sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo
   sudo dnf install -y Wavebox
@@ -159,7 +159,7 @@ esac
 # fzf
 #
 if ! command -v fzf >/dev/null; then
-  echo 'Install fzf'
+  echo '🚀 Install fzf'
   if [ ! -d ~/.fzf ]; then
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   fi
@@ -181,11 +181,11 @@ fi
 
 #
 # Gnome
-# Uses unstable because the version of Bullseye's gnome is 38
 #
+echo '🚀 Install Gnome stuff'
 case $LINUX_NODENAME in
 "fedora")
-    sudo dnf instally -y \
+    sudo dnf install -y \
       gnome-tweaks \
       openssh-askpass \
     ;
@@ -242,7 +242,7 @@ esac
 # Fonts
 #
 if ! fc-list | grep nanum >/dev/null; then
-  echo 'Install fonts'
+  echo '🚀 Install fonts'
   case $LINUX_NODENAME in
     "fedora")
       sudo dnf -y install naver-nanum-gothic-fonts
@@ -257,7 +257,7 @@ fi
 # Keybase
 #
 if ! command -v keybase >/dev/null; then
-  echo 'Install Keybase'
+  echo '🚀 Install Keybase'
   case $LINUX_NODENAME in
     "fedora")
       sudo dnf install -y https://prerelease.keybase.io/keybase_amd64.rpm
@@ -275,7 +275,7 @@ fi
 #
 
 if ! command -v asdf >/dev/null; then
-  echo 'Install asdf'
+  echo '🚀 Install asdf'
   ASDF_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
   if [ !-d ~/.asdf ]; then
   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
@@ -386,7 +386,7 @@ fi
 #
 # ETC yarn packages
 #
-echo 'Install npm packages'
+echo '🚀 Install npm packages'
 yarn global add \
   prettier \
   @prettier/plugin-xml \
@@ -414,7 +414,7 @@ echo 'default-cache-ttl 3600' >> gpg-agent.conf
 # Github CLI
 #
 if ! command -v gh >/dev/null; then
-  echo 'Install Github CLI'
+  echo '🚀 Install Github CLI'
   GITHUB_CLI_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | cut -dv -f2)
   case $LINUX_NODENAME in
     "fedora")
@@ -433,7 +433,7 @@ fi
 # GitLab CLI
 #
 if ! command -v glab >/dev/null; then
-  echo 'Install GitLab CLI'
+  echo '🚀 Install GitLab CLI'
   GLAB_VERSION=$(curl -s https://gitlab.com/api/v4/projects/34675721/repository/tags | jq -r .[0].name)
   git clone https://gitlab.com/gitlab-org/cli.git ~/git/glab --branch "$GLAB_VERSION"
   cd ~/git/glab
@@ -449,7 +449,7 @@ case $LINUX_NODENAME in
     #TODO
     ;;
   "debian")
-    echo 'Install Git Credential Manager Core'
+    echo '🚀 Install Git Credential Manager Core'
     curl -sSL https://packages.microsoft.com/config/ubuntu/21.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft-prod.list
     curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
     sudo apt-get update
@@ -464,15 +464,15 @@ esac
 if ! command -v code >/dev/null; then
   case $LINUX_NODENAME in
     "fedora")
-      # sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-      # sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-      # dnf check-update
-      # sudo dnf install -y code
+      sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+      sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+      dnf check-update
+      sudo dnf install -y code
       ;;
     "debian" | "ubuntu")
-      # curl -L https://update.code.visualstudio.com/latest/linux-deb-x64/stable -o ~/Downloads/code_amd64.deb
-      # sudo dpkg -i ~/Downloads/code_amd64.deb
-      # rm ~/Downloads/code_amd64.deb
+      curl -L https://update.code.visualstudio.com/latest/linux-deb-x64/stable -o ~/Downloads/code_amd64.deb
+      sudo dpkg -i ~/Downloads/code_amd64.deb
+      rm ~/Downloads/code_amd64.deb
       ;;
   esac
 fi
@@ -480,29 +480,29 @@ fi
 #
 # Codium
 #
-if ! command -v codium >/dev/null; then
-  echo 'Install Codium'
-  case $LINUX_NODENAME in
-    "fedora")
-      # VSCodium
-      sudo rpmkeys --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
-      printf "[gitlab.com_paulcarroty_vscodium_repo]\nname=download.vscodium.com\nbaseurl=https://download.vscodium.com/rpms/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg\nmetadata_expire=1h" | sudo tee -a /etc/yum.repos.d/vscodium.repo
-      sudo dnf install -y codium
+# if ! command -v codium >/dev/null; then
+#   echo '🚀 Install Codium'
+#   case $LINUX_NODENAME in
+#     "fedora")
+#       # VSCodium
+#       sudo rpmkeys --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg
+#       printf "[gitlab.com_paulcarroty_vscodium_repo]\nname=download.vscodium.com\nbaseurl=https://download.vscodium.com/rpms/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg\nmetadata_expire=1h" | sudo tee -a /etc/yum.repos.d/vscodium.repo
+#       sudo dnf install -y codium
 
-  if ! echo ~/.bashrc | grep codium >/dev/null; then
-  echo 'alias code=codium' >> ~/.bashrc
-  fi
+#   if ! echo ~/.bashrc | grep codium >/dev/null; then
+#   echo 'alias code=codium' >> ~/.bashrc
+#   fi
 
-      ;;
-    "debian" | "ubuntu")
-      # TODO
-      ;;
-  esac
-fi
+#       ;;
+#     "debian" | "ubuntu")
+#       # TODO
+#       ;;
+#   esac
+# fi
 
 # BloomRPC
 if [ ! -e ~/.local/bin/BloomRPC.AppImage ]; then
-echo 'Install BloomRPC'
+echo '🚀 Install BloomRPC'
   BLOOMRPC_VERSION=$(curl -s https://api.github.com/repos/bloomrpc/bloomrpc/releases/latest | jq -r .tag_name | cut -dv -f2)
   sudo curl -L https://github.com/bloomrpc/bloomrpc/releases/download/${BLOOMRPC_VERSION}/BloomRPC-${BLOOMRPC_VERSION}.AppImage \
     -o ~/.local/bin/BloomRPC.AppImage
@@ -545,7 +545,7 @@ case $LINUX_NODENAME in
 esac
 
 if ! command -v wine >/dev/null; then
-echo 'install WineHQ'
+echo '🚀 Install WineHQ'
   case $LINUX_NODENAME in
     "fedora")
       sudo dnf install -y winehq-staging
@@ -560,7 +560,8 @@ echo 'install WineHQ'
 #
 # KakaoTalk
 #
-if [ ! -d ~/Downloads/KakaoTalk_Setup.exe ]; then
+if [ ! -e ~/Downloads/KakaoTalk_Setup.exe ]; then
+  echo '🚀 Install KakaoTalk'
   curl -L http://app.pc.kakao.com/talk/win32/KakaoTalk_Setup.exe -o ~/Downloads/KakaoTalk_Setup.exe
 fi
 
@@ -569,7 +570,7 @@ fi
 # Reference: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
 #
 if ! command -v aws >/dev/null; then
-echo 'Install AWS CLI'
+echo '🚀 Install AWS CLI'
   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/awscliv2.zip
   unzip ~/Downloads/awscliv2.zip -d ~/Downloads
   sudo ~/Downloads/aws/install
@@ -581,15 +582,22 @@ fi
 # Reference: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html#ec2-instance-connect-install
 #
 if ! pip list | grep ec2instanceconnectcli >/dev/null; then
-  echo 'Install EC2 Instance Connect CLI'
+  echo '🚀 Install EC2 Instance Connect CLI'
   pip3 install ec2instanceconnectcli
 fi
 
 #
 # Snap
 #
-sudo dnf install -y snapd
-sudo ln -s /var/lib/snapd/snap /snap
+if ! command -v snap >/dev/null; then
+  echo '🚀 Install Snap'
+    sudo dnf install -y snapd
+    sudo ln -s /var/lib/snapd/snap /snap
+    while ! snap --version >/dev/null; do
+    sleep 1
+    done
+fi
+
 
 #
 # Authy
@@ -600,7 +608,7 @@ sudo snap install authy
 # Docker
 #
 if ! command -v docker >/dev/null; then
-echo 'Install Docker'
+echo '🚀 Install Docker'
   case $LINUX_NODENAME in
     'fedora')
       # https://docs.docker.com/engine/install/fedora/
@@ -655,7 +663,7 @@ fi
 # Terraform
 #
 if ! command -v terraform >/dev/null; then
-echo 'Install Terraform'
+echo '🚀 Install Terraform'
 TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
 curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
   -Lo "$HOME/Downloads/terraform_linux_amd64.zip"
@@ -693,7 +701,7 @@ fi
 # Steam
 #
 if ! command -v steam >/dev/null; then
-echo 'Install Steam'
+echo '🚀 Install Steam'
 case $LINUX_NODENAME in
   "fedora")
     sudo dnf install -y \
