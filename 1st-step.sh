@@ -79,7 +79,8 @@ if ! command -v google-chrome >/dev/null; then
   echo '🚀 Install Google Chrome'
   case $LINUX_NODENAME in
     "fedora")
-      sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+      dnf-install-package -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm \
+         "$DNF_INSTALLED"
       ;;
     "debian")
       curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
