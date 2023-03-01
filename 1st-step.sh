@@ -410,12 +410,19 @@ fi
 #
 # ETC yarn packages
 #
-echo "🚀 Install npm packages ($0:$LINENO)"
-yarn global add \
-  prettier \
-  @prettier/plugin-xml \
-  eslint \
-  stylelint stylelint-config-standard
+YARN_INSTALLED=$(yarn global list)
+yarn-add() {
+  PACKAGE=$1
+
+  if ! echo "$YARN_INSTALLED" | grep "$PACKAGE"; then
+    echo "🚀 Install npm packages ($0:$LINENO)"
+    yarn global add "$PACKAGE"
+  fi
+}
+yarn-add prettier
+yarn-add eslint
+yarn-add stylelint
+yarn-add bats
 
 #
 # Git
