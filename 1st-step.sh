@@ -501,6 +501,12 @@ if ! command -v code >/dev/null; then
 fi
 
 #
+# Starship
+#
+sudo dnf copr enable -y atim/starship
+dnf-install-package starship "$DNF_INSTALLED"
+
+#
 # Codium
 #
 # if ! command -v codium >/dev/null; then
