@@ -273,7 +273,12 @@ if ! fc-list | grep nanum >/dev/null; then
       sudo dnf -y install naver-nanum-gothic-fonts
       ;;
     "debian")
-      sudo apt-get install -y fonts-nanum* fonts-unfonts-core
+      sudo apt-get install -y \
+        fonts-nanum* \
+        fonts-unfonts-core \
+        fonts-noto-color-emoji \
+        fonts-recommended \
+        ;
       ;;
   esac
 else
