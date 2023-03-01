@@ -349,7 +349,7 @@ asdf-install-plugin() {
 }
 
 asdf-install-plugin yarn
-asdf-install-plugin python
+# asdf-install-plugin python
 asdf-install-plugin golang
 asdf-install-plugin rust
 # Install LTS
@@ -629,9 +629,9 @@ fi
 # EC2 Instance Connect CLI
 # Reference: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html#ec2-instance-connect-install
 #
-if ! pip list | grep ec2instanceconnectcli >/dev/null; then
+if ! python -m pip list | grep ec2instanceconnectcli >/dev/null; then
   echo "🚀 Install EC2 Instance Connect CLI ($0:$LINENO)"
-  pip3 install ec2instanceconnectcli
+  python -m pip install ec2instanceconnectcli
 fi
 
 #
