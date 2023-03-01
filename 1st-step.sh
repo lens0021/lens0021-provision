@@ -324,6 +324,7 @@ fi
 
 asdf-install-plugin() {
   PLUGIN=$1
+  VERSION="${2:-latest}"
 
   if ! asdf plugin list | grep "$PLUGIN" >/dev/null; then
     echo "🚀 Add $PLUGIN plugin to asdf"
@@ -332,20 +333,25 @@ asdf-install-plugin() {
     echo "Skip to add $PLUGIN plugin to asdf"
   fi
 
-  if ! asdf list "$PLUGIN" | grep "$(asdf latest "$PLUGIN")" >/dev/null; then
+  if [ "$VERSION" = 'latest' ]; then
+    VERSION="$(asdf latest "$PLUGIN")"
+  fi
+
+  if ! asdf list "$PLUGIN" | grep "$VERSION" >/dev/null; then
     echo "🚀 Install $PLUGIN plugin for asdf"
-    asdf install "$PLUGIN" latest
+    asdf install "$PLUGIN" "$VERSION"
   else
     echo "Skip to install $PLUGIN plugin for asdf"
   fi
-  asdf global "$PLUGIN" latest
+  asdf global "$PLUGIN" "$VERSION"
 }
 
-asdf-install-plugin nodejs
 asdf-install-plugin yarn
 asdf-install-plugin python
 asdf-install-plugin golang
 asdf-install-plugin rust
+# Install LTS
+asdf-install-plugin nodejs 18.12.0
 
 # PHP
 if ! asdf plugin list | grep php >/dev/null; then
