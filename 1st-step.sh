@@ -76,10 +76,9 @@ if ! command -v 1password >/dev/null; then
 
 # Google Chrome
 if ! command -v google-chrome >/dev/null; then
-  echo '🚀 Install Google Chrome'
   case $LINUX_NODENAME in
     "fedora")
-      dnf-install-package -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm \
+      dnf-install-package https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm \
          "$DNF_INSTALLED"
       ;;
     "debian")
