@@ -2,6 +2,19 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+DNF_INSTALLED="$(dnf list --installed)"
+dnf-install-package() {
+  PACKAGE=$1
+  DNF_INSTALLED=$2
+
+  if ! echo $DNF_INSTALLED | grep $PACKAGE >/dev/null; then
+    echo "🚀 install $PACKAGE"
+    sudo dnf -y install $PACKAGE
+  else
+    echo "Skip install $PACKAGE"
+  fi
+}
+
 sudo -v
 
 LINUX_NODENAME="$(uname -n)"
@@ -18,6 +31,8 @@ if ! command -v curl >/dev/null; then
   if [ $LINUX_NODENAME != 'fedora' ]; then
     sudo apt install -y curl
   fi
+else
+  echo 'Skip install curl'
 fi
 
 #
@@ -60,16 +75,19 @@ if ! command -v 1password >/dev/null; then
  fi
 
 # Google Chrome
-# case $LINUX_NODENAME in
-#   "fedora")
-#     sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-#     ;;
-#   "debian")
-#     curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
-#     sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
-#     rm ~/Downloads/google-chrome.deb
-#     ;;
-# esac
+if ! command -v google-chrome >/dev/null; then
+  echo '🚀 Install Google Chrome'
+  case $LINUX_NODENAME in
+    "fedora")
+      sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+      ;;
+    "debian")
+      curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
+      sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
+      rm ~/Downloads/google-chrome.deb
+      ;;
+  esac
+fi
 
 #
 # Edge
@@ -111,19 +129,17 @@ fi
 #
 case $LINUX_NODENAME in
   "fedora")
+    dnf-install-package xclip "$DNF_INSTALLED"
+    dnf-install-package htop "$DNF_INSTALLED"
+    dnf-install-package vim "$DNF_INSTALLED"
+    dnf-install-package git-review "$DNF_INSTALLED"
+    dnf-install-package ShellCheck "$DNF_INSTALLED"
+    dnf-install-package ImageMagick "$DNF_INSTALLED"
     # openssh → kdeconnect
-    sudo dnf install -y \
-      xclip \
-      htop \
-      vim \
-      git-review \
-      ShellCheck \
-      ImageMagick \
-      openssh \
-      openfortivpn \
-      ibus-hangul \
-      gnome-extensions-app \
-    ;
+    dnf-install-package openssh "$DNF_INSTALLED"
+    dnf-install-package openfortivpn "$DNF_INSTALLED"
+    dnf-install-package ibus-hangul "$DNF_INSTALLED"
+    dnf-install-package gnome-extensions-app "$DNF_INSTALLED"
     ;;
   "debian" | "ubuntu")
     sudo apt update
@@ -141,7 +157,6 @@ case $LINUX_NODENAME in
       flatpak \
       baobab \
       ruby-full \
-      ssh-askpass \
       sqlite3 \
       jq \
       ibus-hangul \
@@ -182,15 +197,12 @@ fi
 #
 # Gnome
 #
-echo '🚀 Install Gnome stuff'
+dnf-install-package gnome-tweaks "$DNF_INSTALLED"
 case $LINUX_NODENAME in
 "fedora")
-    sudo dnf install -y \
-      gnome-tweaks \
-      openssh-askpass \
-    ;
   ;;
   "debian")
+    echo '🚀 Install Gnome stuff'
     sudo apt -t unstable install -y \
       gnome-clocks \
       gnome-tweaks \
@@ -203,19 +215,19 @@ case $LINUX_NODENAME in
       mutter \
       gjs \
       tracker-miner-fs \
-      ssh-askpass-gnome
+      ;
   ;;
 esac
 
 #
 # Askpass
 #
-echo '🚀 Installaskpass'
 case $LINUX_NODENAME in
 "fedora")
-    sudo dnf install -y openssh-askpass
+  dnf-install-package openssh-askpass "$DNF_INSTALLED"
   ;;
   "debian")
+    echo '🚀 Install askpass'
     sudo apt -t unstable install -y ssh-askpass-gnome
   ;;
 esac
@@ -264,6 +276,8 @@ if ! fc-list | grep nanum >/dev/null; then
       sudo apt-get install -y fonts-nanum* fonts-unfonts-core
       ;;
   esac
+else
+  echo 'Skip install fonts'
 fi
 
 #
@@ -281,73 +295,74 @@ if ! command -v keybase >/dev/null; then
       rm ~/Downloads/keybase_amd64.deb
       ;;
   esac
+  else
+  echo 'Skip install keybase'
 fi
 
 #
 # asdf
 #
-
 if ! command -v asdf >/dev/null; then
   echo '🚀 Install asdf'
   ASDF_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
   if [ !-d ~/.asdf ]; then
-  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
+    git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
   fi
   if ! echo ~/.bashrc | grep asdf.sh >/dev/null; then
-  echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
-  echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
+    echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
+    echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
   fi
-fi
+
 . $HOME/.asdf/asdf.sh
-
-# Node
-if ! asdf plugin list | grep nodejs >/dev/null; then
-  echo 'Add nodejs plugin to asdf'
-  asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-fi
-if ! command -v node >/dev/null; then
-  asdf install nodejs latest
-  asdf global nodejs latest
+else
+  echo 'Skip install asdf'
 fi
 
-# Yarn
-if ! asdf plugin list | grep yarn >/dev/null; then
-  asdf plugin add yarn
-fi
-if ! command -v yarn >/dev/null; then
-  asdf install yarn latest
-  asdf global yarn latest
-fi
+asdf-install-plugin() {
+  PLUGIN=$1
 
-# Python
-if ! asdf plugin list | grep python >/dev/null; then
-  asdf plugin-add python
-fi
-asdf install python latest
-asdf global python latest
+  if ! asdf plugin list | grep $PLUGIN >/dev/null; then
+    echo "🚀 Add $PLUGIN plugin to asdf"
+    asdf plugin-add $PLUGIN
+    else
+    echo "Skip to add $PLUGIN plugin to asdf"
+  fi
+
+  if ! asdf list $PLUGIN | grep $(asdf latest $PLUGIN) >/dev/null; then
+    echo "🚀 Install $PLUGIN plugin for asdf"
+    asdf install $PLUGIN latest
+    asdf global $PLUGIN latest
+    else
+    echo "Skip to install $PLUGIN plugin for asdf"
+  fi
+}
+
+# asdf-install-plugin nodejs
+asdf-install-plugin yarn
+asdf-install-plugin python
+asdf-install-plugin golang
+asdf-install-plugin rust
 
 # PHP
 if ! asdf plugin list | grep php >/dev/null; then
-  asdf plugin add php https://github.com/asdf-community/asdf-php.git
+  asdf plugin-add php https://github.com/asdf-community/asdf-php.git
 fi
 if ! command -v php >/dev/null; then
   case $LINUX_NODENAME in
     "fedora")
-      sudo dnf install -y \
-        autoconf \
-        bison \
-        gcc \
-        gcc-c++ \
-        gd-devel \
-        libcurl-devel \
-        libxml2-devel \
-        re2c \
-        sqlite-devel \
-        oniguruma-devel \
-        postgresql-devel \
-        readline-devel \
-        libzip-devel \
-        ;
+        dnf-install-package autoconf "$DNF_INSTALLED"
+        dnf-install-package bison "$DNF_INSTALLED"
+        dnf-install-package gcc "$DNF_INSTALLED"
+        dnf-install-package gcc-c++ "$DNF_INSTALLED"
+        dnf-install-package gd-devel "$DNF_INSTALLED"
+        dnf-install-package libcurl-devel "$DNF_INSTALLED"
+        dnf-install-package libxml2-devel "$DNF_INSTALLED"
+        dnf-install-package re2c "$DNF_INSTALLED"
+        dnf-install-package sqlite-devel "$DNF_INSTALLED"
+        dnf-install-package oniguruma-devel "$DNF_INSTALLED"
+        dnf-install-package postgresql-devel "$DNF_INSTALLED"
+        dnf-install-package readline-devel "$DNF_INSTALLED"
+        dnf-install-package libzip-devel "$DNF_INSTALLED"
       ;;
     "ubuntu" | "debian")
       sudo apt-get install -y \
@@ -381,21 +396,6 @@ if ! command -v php >/dev/null; then
   asdf install php latest
   asdf global php latest
 fi
-
-# Golang
-if ! asdf plugin list | grep go >/dev/null; then
-  asdf plugin add golang https://github.com/kennyp/asdf-golang.git
-fi
-if ! command -v go >/dev/null; then
-  asdf install golang latest
-  asdf global golang latest
-fi
-
-# Rust
-if ! asdf plugin list | grep rust >/dev/null; then
-  asdf plugin add rust https://github.com/code-lever/asdf-rust.git
-fi
-# TODO?
 
 #
 # ETC yarn packages
