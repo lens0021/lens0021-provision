@@ -606,9 +606,11 @@ if ! command -v wine >/dev/null; then
 #
 # KakaoTalk
 #
-if [ ! -e ~/Downloads/KakaoTalk_Setup.exe ]; then
-  echo "🚀 Install KakaoTalk ($0:$LINENO)"
-  curl -L http://app.pc.kakao.com/talk/win32/KakaoTalk_Setup.exe -o ~/Downloads/KakaoTalk_Setup.exe
+if [ ! -d "$USER_HOME/.local/share/applications/wine/Programs/카카오톡" ]; then
+  if [ ! -e ~/Downloads/KakaoTalk_Setup.exe ]; then
+    echo "🚀 Install KakaoTalk ($0:$LINENO)"
+    curl -L http://app.pc.kakao.com/talk/win32/KakaoTalk_Setup.exe -o ~/Downloads/KakaoTalk_Setup.exe
+  fi
 fi
 
 #
