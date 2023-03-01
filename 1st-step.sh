@@ -429,27 +429,25 @@ yarn-add bats
 #
 # Git
 #
-echo "Setup git($0:$LINENO)"
 git config --global user.name "lens0021"
 git config --global user.email "lorentz0021@gmail.com"
 git config --global core.editor "code --wait"
 git config --global --add gitreview.username "lens0021"
 
-echo "Setup git 2($0:$LINENO)"
 git config --global color.status always
 git config --global commit.gpgsign true
 git config --global credential.credentialStore secretservice
 git config --global init.defaultBranch main
 git config --global merge.conflictstyle diff3 true
 git config --global pull.rebase true
-git config --global rebase.autostash
+git config --global rebase.autostash true
 git config --global rerere.enabled true
 
-if ! grep 'GPG_TTY' ~/.bashrc; then
-  echo "Setup git 3($0:$LINENO)"
+if ! grep 'GPG_TTY' "$USER_HOME/.bashrc" >/dev/null; then
   # shellcheck disable=2016
   echo 'GPG_TTY=$(tty); export GPG_TTY' >> "$USER_HOME/.bashrc"
-  echo 'default-cache-ttl 3600' >> gpg-agent.conf
+  mkdir -p "$USER_HOME/.gnupg"
+  echo 'default-cache-ttl 3600' >> "$USER_HOME/.gnupg/gpg-agent.conf"
 fi
 
 #
@@ -593,7 +591,7 @@ case $LINUX_NODENAME in
 esac
 
 if ! command -v wine >/dev/null; then
-echo "🚀 Install WineHQ ($0:$LINENO)"
+  echo "🚀 Install WineHQ ($0:$LINENO)"
   case $LINUX_NODENAME in
     "fedora")
       sudo dnf install -y winehq-staging
