@@ -2,6 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+USER_HOME=$(sudo -u#1000 bash -c 'echo $HOME')
+
 DNF_INSTALLED="$(dnf list --installed)"
 dnf-install-package() {
   PACKAGE=$1
@@ -427,11 +429,13 @@ yarn-add bats
 #
 # Git
 #
+echo "Setup git($0:$LINENO)"
 git config --global user.name "lens0021"
 git config --global user.email "lorentz0021@gmail.com"
 git config --global core.editor "code --wait"
 git config --global --add gitreview.username "lens0021"
 
+echo "Setup git 2($0:$LINENO)"
 git config --global color.status always
 git config --global commit.gpgsign true
 git config --global credential.credentialStore secretservice
@@ -440,9 +444,13 @@ git config --global merge.conflictstyle diff3 true
 git config --global pull.rebase true
 git config --global rebase.autostash
 git config --global rerere.enabled true
-# shellcheck disable=2016
-echo 'GPG_TTY=$(tty); export GPG_TTY' >> ~/.bashrc
-echo 'default-cache-ttl 3600' >> gpg-agent.conf
+
+if ! grep 'GPG_TTY' ~/.bashrc; then
+  echo "Setup git 3($0:$LINENO)"
+  # shellcheck disable=2016
+  echo 'GPG_TTY=$(tty); export GPG_TTY' >> "$USER_HOME/.bashrc"
+  echo 'default-cache-ttl 3600' >> gpg-agent.conf
+fi
 
 #
 # Github CLI
