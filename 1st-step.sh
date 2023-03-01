@@ -410,16 +410,19 @@ yarn global add \
 #
 # Git
 #
-git config --global init.defaultBranch main
 git config --global user.name "lens0021"
 git config --global user.email "lorentz0021@gmail.com"
 git config --global core.editor "code --wait"
 git config --global --add gitreview.username "lens0021"
+
+git config --global color.status always
 git config --global commit.gpgsign true
-git config --global pull.rebase true
-git config --global rerere.enabled true
-git config --global merge.conflictstyle diff3 true
 git config --global credential.credentialStore secretservice
+git config --global init.defaultBranch main
+git config --global merge.conflictstyle diff3 true
+git config --global pull.rebase true
+git config --global rebase.autostash
+git config --global rerere.enabled true
 # shellcheck disable=2016
 echo 'GPG_TTY=$(tty); export GPG_TTY' >> ~/.bashrc
 echo 'default-cache-ttl 3600' >> gpg-agent.conf
