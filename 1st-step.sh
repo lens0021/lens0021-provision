@@ -343,7 +343,7 @@ asdf-install-plugin() {
   fi
 }
 
-# asdf-install-plugin nodejs
+asdf-install-plugin nodejs
 asdf-install-plugin yarn
 asdf-install-plugin python
 asdf-install-plugin golang
