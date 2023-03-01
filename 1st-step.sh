@@ -5,11 +5,10 @@ IFS=$'\n\t'
 DNF_INSTALLED="$(dnf list --installed)"
 dnf-install-package() {
   PACKAGE=$1
-  DNF_INSTALLED=$2
 
-  if ! echo $DNF_INSTALLED | grep $PACKAGE >/dev/null; then
+  if ! echo "$DNF_INSTALLED" | grep "$PACKAGE" >/dev/null; then
     echo "🚀 install $PACKAGE"
-    sudo dnf -y install $PACKAGE
+    sudo dnf -y install "$PACKAGE"
   else
     echo "Skip install $PACKAGE"
   fi
@@ -28,7 +27,7 @@ mkdir -p \
 # curl
 # TODO: Do Ubuntu and Debian have curl?
 if ! command -v curl >/dev/null; then
-  if [ $LINUX_NODENAME != 'fedora' ]; then
+  if [ "$LINUX_NODENAME" != 'fedora' ]; then
     sudo apt install -y curl
   fi
 else
@@ -39,9 +38,9 @@ fi
 # Bitwarden
 #
 if [ ! -e ~/.local/bin/Bitwarden.AppImage ]; then
-  echo '🚀 Install Bitwarden'
+  echo "🚀 Install Bitwarden ($0:$LINENO)"
   BITWARDEN_VERSION=$(curl -s https://api.github.com/repos/bitwarden/clients/releases/latest | jq -r .tag_name | cut -dv -f2)
-  sudo curl -L https://github.com/bitwarden/clients/releases/download/desktop-v${BITWARDEN_VERSION}/Bitwarden-${BITWARDEN_VERSION}-x86_64.AppImage \
+  sudo curl -L https://github.com/bitwarden/clients/releases/download/desktop-v"${BITWARDEN_VERSION}"/Bitwarden-"${BITWARDEN_VERSION}"-x86_64.AppImage \
     -o ~/.local/bin/Bitwarden.AppImage
   sudo chmod +x ~/.local/bin/Bitwarden.AppImage
 
@@ -51,7 +50,7 @@ if [ ! -e ~/.local/bin/Bitwarden.AppImage ]; then
     --set-name=Bitwarden \
     --set-key=Type --set-value=Application \
     --set-key=Terminal --set-value=false \
-    --set-key=Exec --set-value=$HOME/.local/bin/Bitwarden.AppImage \
+    --set-key=Exec --set-value="$HOME"/.local/bin/Bitwarden.AppImage \
     --set-key=Icon --set-value=bitwarden \
     ~/.local/share/applications/Bitwarden.desktop
 
@@ -62,7 +61,7 @@ fi
 # 1Password
 #
 if ! command -v 1password >/dev/null; then
-  echo '🚀 Install 1Password'
+  echo "🚀 Install 1Password ($0:$LINENO)"
   case $LINUX_NODENAME in
     "fedora")
       sudo rpm --import https://downloads.1password.com/linux/keys/1password.asc
@@ -78,8 +77,8 @@ if ! command -v 1password >/dev/null; then
 if ! command -v google-chrome >/dev/null; then
   case $LINUX_NODENAME in
     "fedora")
-      dnf-install-package https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm \
-         "$DNF_INSTALLED"
+      sudo dnf config-manager --set-enabled google-chrome
+      dnf-install-package google-chrome-stable
       ;;
     "debian")
       curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
@@ -117,7 +116,7 @@ fi
 # Wavebox
 #
 if ! dnf list --installed | grep Wavebox >/dev/null; then
-  echo '🚀 Install Wavebox'
+  echo "🚀 Install Wavebox ($0:$LINENO)"
   sudo rpm --import https://download.wavebox.app/static/wavebox_repo.key
   sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo
   sudo dnf install -y Wavebox
@@ -129,17 +128,17 @@ fi
 #
 case $LINUX_NODENAME in
   "fedora")
-    dnf-install-package xclip "$DNF_INSTALLED"
-    dnf-install-package htop "$DNF_INSTALLED"
-    dnf-install-package vim "$DNF_INSTALLED"
-    dnf-install-package git-review "$DNF_INSTALLED"
-    dnf-install-package ShellCheck "$DNF_INSTALLED"
-    dnf-install-package ImageMagick "$DNF_INSTALLED"
+    dnf-install-package xclip
+    dnf-install-package htop
+    dnf-install-package vim
+    dnf-install-package git-review
+    dnf-install-package ShellCheck
+    dnf-install-package ImageMagick
     # openssh → kdeconnect
-    dnf-install-package openssh "$DNF_INSTALLED"
-    dnf-install-package openfortivpn "$DNF_INSTALLED"
-    dnf-install-package ibus-hangul "$DNF_INSTALLED"
-    dnf-install-package gnome-extensions-app "$DNF_INSTALLED"
+    dnf-install-package openssh
+    dnf-install-package openfortivpn
+    dnf-install-package ibus-hangul
+    dnf-install-package gnome-extensions-app
     ;;
   "debian" | "ubuntu")
     sudo apt update
@@ -174,7 +173,7 @@ esac
 # fzf
 #
 if ! command -v fzf >/dev/null; then
-  echo '🚀 Install fzf'
+  echo "🚀 Install fzf ($0:$LINENO)"
   if [ ! -d ~/.fzf ]; then
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   fi
@@ -197,12 +196,12 @@ fi
 #
 # Gnome
 #
-dnf-install-package gnome-tweaks "$DNF_INSTALLED"
+dnf-install-package gnome-tweaks
 case $LINUX_NODENAME in
 "fedora")
   ;;
   "debian")
-    echo '🚀 Install Gnome stuff'
+    echo "🚀 Install Gnome stuff ($0:$LINENO)"
     sudo apt -t unstable install -y \
       gnome-clocks \
       gnome-tweaks \
@@ -224,10 +223,10 @@ esac
 #
 case $LINUX_NODENAME in
 "fedora")
-  dnf-install-package openssh-askpass "$DNF_INSTALLED"
+  dnf-install-package openssh-askpass
   ;;
   "debian")
-    echo '🚀 Install askpass'
+    echo "🚀 Install askpass ($0:$LINENO)"
     sudo apt -t unstable install -y ssh-askpass-gnome
   ;;
 esac
@@ -267,7 +266,7 @@ esac
 # Fonts
 #
 if ! fc-list | grep nanum >/dev/null; then
-  echo '🚀 Install fonts'
+  echo "🚀 Install fonts ($0:$LINENO)"
   case $LINUX_NODENAME in
     "fedora")
       sudo dnf -y install naver-nanum-gothic-fonts
@@ -289,7 +288,7 @@ fi
 # Keybase
 #
 if ! command -v keybase >/dev/null; then
-  echo '🚀 Install Keybase'
+  echo "🚀 Install Keybase ($0:$LINENO)"
   case $LINUX_NODENAME in
     "fedora")
       sudo dnf install -y https://prerelease.keybase.io/keybase_amd64.rpm
@@ -308,9 +307,9 @@ fi
 # asdf
 #
 if ! command -v asdf >/dev/null; then
-  echo '🚀 Install asdf'
+  echo "🚀 Install asdf ($0:$LINENO)"
   ASDF_VERSION=$(curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | jq -r .tag_name)
-  if [ !-d ~/.asdf ]; then
+  if [ ! -d ~/.asdf ]; then
     git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
   fi
   if ! echo ~/.bashrc | grep asdf.sh >/dev/null; then
@@ -326,20 +325,20 @@ fi
 asdf-install-plugin() {
   PLUGIN=$1
 
-  if ! asdf plugin list | grep $PLUGIN >/dev/null; then
+  if ! asdf plugin list | grep "$PLUGIN" >/dev/null; then
     echo "🚀 Add $PLUGIN plugin to asdf"
     asdf plugin-add $PLUGIN
-    else
+  else
     echo "Skip to add $PLUGIN plugin to asdf"
   fi
 
-  if ! asdf list $PLUGIN | grep $(asdf latest $PLUGIN) >/dev/null; then
+  if ! asdf list "$PLUGIN" | grep "$(asdf latest "$PLUGIN")" >/dev/null; then
     echo "🚀 Install $PLUGIN plugin for asdf"
-    asdf install $PLUGIN latest
-    asdf global $PLUGIN latest
-    else
+    asdf install "$PLUGIN" latest
+  else
     echo "Skip to install $PLUGIN plugin for asdf"
   fi
+  asdf global "$PLUGIN" latest
 }
 
 asdf-install-plugin nodejs
@@ -355,19 +354,19 @@ fi
 if ! command -v php >/dev/null; then
   case $LINUX_NODENAME in
     "fedora")
-        dnf-install-package autoconf "$DNF_INSTALLED"
-        dnf-install-package bison "$DNF_INSTALLED"
-        dnf-install-package gcc "$DNF_INSTALLED"
-        dnf-install-package gcc-c++ "$DNF_INSTALLED"
-        dnf-install-package gd-devel "$DNF_INSTALLED"
-        dnf-install-package libcurl-devel "$DNF_INSTALLED"
-        dnf-install-package libxml2-devel "$DNF_INSTALLED"
-        dnf-install-package re2c "$DNF_INSTALLED"
-        dnf-install-package sqlite-devel "$DNF_INSTALLED"
-        dnf-install-package oniguruma-devel "$DNF_INSTALLED"
-        dnf-install-package postgresql-devel "$DNF_INSTALLED"
-        dnf-install-package readline-devel "$DNF_INSTALLED"
-        dnf-install-package libzip-devel "$DNF_INSTALLED"
+        dnf-install-package autoconf
+        dnf-install-package bison
+        dnf-install-package gcc
+        dnf-install-package gcc-c++
+        dnf-install-package gd-devel
+        dnf-install-package libcurl-devel
+        dnf-install-package libxml2-devel
+        dnf-install-package re2c
+        dnf-install-package sqlite-devel
+        dnf-install-package oniguruma-devel
+        dnf-install-package postgresql-devel
+        dnf-install-package readline-devel
+        dnf-install-package libzip-devel
       ;;
     "ubuntu" | "debian")
       sudo apt-get install -y \
@@ -405,7 +404,7 @@ fi
 #
 # ETC yarn packages
 #
-echo '🚀 Install npm packages'
+echo "🚀 Install npm packages ($0:$LINENO)"
 yarn global add \
   prettier \
   @prettier/plugin-xml \
@@ -436,14 +435,14 @@ echo 'default-cache-ttl 3600' >> gpg-agent.conf
 # Github CLI
 #
 if ! command -v gh >/dev/null; then
-  echo '🚀 Install Github CLI'
+  echo "🚀 Install Github CLI ($0:$LINENO)"
   GITHUB_CLI_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | cut -dv -f2)
   case $LINUX_NODENAME in
     "fedora")
-      sudo dnf install -y https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.rpm
+      sudo dnf install -y "https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.rpm"
       ;;
     "debian")
-      curl -L https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.deb \
+      curl -L "https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.deb" \
         -o ~/Downloads/gh_linux_amd64.deb
       sudo dpkg -i ~/Downloads/gh_linux_amd64.deb
       rm ~/Downloads/gh_linux_amd64.deb
@@ -455,7 +454,7 @@ fi
 # GitLab CLI
 #
 if ! command -v glab >/dev/null; then
-  echo '🚀 Install GitLab CLI'
+  echo "🚀 Install GitLab CLI ($0:$LINENO)"
   GLAB_VERSION=$(curl -s https://gitlab.com/api/v4/projects/34675721/repository/tags | jq -r .[0].name)
   git clone https://gitlab.com/gitlab-org/cli.git ~/git/glab --branch "$GLAB_VERSION"
   cd ~/git/glab
@@ -471,7 +470,7 @@ case $LINUX_NODENAME in
     #TODO
     ;;
   "debian")
-    echo '🚀 Install Git Credential Manager Core'
+    echo "🚀 Install Git Credential Manager Core ($0:$LINENO)"
     curl -sSL https://packages.microsoft.com/config/ubuntu/21.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft-prod.list
     curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
     sudo apt-get update
@@ -503,13 +502,13 @@ fi
 # Starship
 #
 sudo dnf copr enable -y atim/starship
-dnf-install-package starship "$DNF_INSTALLED"
+dnf-install-package starship
 
 #
 # Codium
 #
 # if ! command -v codium >/dev/null; then
-#   echo '🚀 Install Codium'
+#   echo "🚀 Install Codium ($0:$LINENO)"
 #   case $LINUX_NODENAME in
 #     "fedora")
 #       # VSCodium
@@ -530,9 +529,9 @@ dnf-install-package starship "$DNF_INSTALLED"
 
 # BloomRPC
 if [ ! -e ~/.local/bin/BloomRPC.AppImage ]; then
-echo '🚀 Install BloomRPC'
+echo "🚀 Install BloomRPC ($0:$LINENO)"
   BLOOMRPC_VERSION=$(curl -s https://api.github.com/repos/bloomrpc/bloomrpc/releases/latest | jq -r .tag_name | cut -dv -f2)
-  sudo curl -L https://github.com/bloomrpc/bloomrpc/releases/download/${BLOOMRPC_VERSION}/BloomRPC-${BLOOMRPC_VERSION}.AppImage \
+  sudo curl -L "https://github.com/bloomrpc/bloomrpc/releases/download/${BLOOMRPC_VERSION}/BloomRPC-${BLOOMRPC_VERSION}.AppImage" \
     -o ~/.local/bin/BloomRPC.AppImage
   sudo chmod +x ~/.local/bin/BloomRPC.AppImage
 
@@ -573,7 +572,7 @@ case $LINUX_NODENAME in
 esac
 
 if ! command -v wine >/dev/null; then
-echo '🚀 Install WineHQ'
+echo "🚀 Install WineHQ ($0:$LINENO)"
   case $LINUX_NODENAME in
     "fedora")
       sudo dnf install -y winehq-staging
@@ -589,7 +588,7 @@ echo '🚀 Install WineHQ'
 # KakaoTalk
 #
 if [ ! -e ~/Downloads/KakaoTalk_Setup.exe ]; then
-  echo '🚀 Install KakaoTalk'
+  echo "🚀 Install KakaoTalk ($0:$LINENO)"
   curl -L http://app.pc.kakao.com/talk/win32/KakaoTalk_Setup.exe -o ~/Downloads/KakaoTalk_Setup.exe
 fi
 
@@ -598,7 +597,7 @@ fi
 # Reference: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
 #
 if ! command -v aws >/dev/null; then
-echo '🚀 Install AWS CLI'
+echo "🚀 Install AWS CLI ($0:$LINENO)"
   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/awscliv2.zip
   unzip ~/Downloads/awscliv2.zip -d ~/Downloads
   sudo ~/Downloads/aws/install
@@ -610,7 +609,7 @@ fi
 # Reference: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html#ec2-instance-connect-install
 #
 if ! pip list | grep ec2instanceconnectcli >/dev/null; then
-  echo '🚀 Install EC2 Instance Connect CLI'
+  echo "🚀 Install EC2 Instance Connect CLI ($0:$LINENO)"
   pip3 install ec2instanceconnectcli
 fi
 
@@ -618,7 +617,7 @@ fi
 # Snap
 #
 if ! command -v snap >/dev/null; then
-  echo '🚀 Install Snap'
+  echo "🚀 Install Snap ($0:$LINENO)"
     sudo dnf install -y snapd
     sudo ln -s /var/lib/snapd/snap /snap
     while ! snap --version >/dev/null; do
@@ -636,7 +635,7 @@ sudo snap install authy
 # Docker
 #
 if ! command -v docker >/dev/null; then
-echo '🚀 Install Docker'
+echo "🚀 Install Docker ($0:$LINENO)"
   case $LINUX_NODENAME in
     'fedora')
       # https://docs.docker.com/engine/install/fedora/
@@ -659,7 +658,7 @@ echo '🚀 Install Docker'
       # sudo dnf install -y "$DOCKER_DESKTOP_URL"
 
       sudo groupadd docker
-      sudo usermod -aG docker $USER
+      sudo usermod -aG docker "$USER"
       newgrp docker
       # TODO: docker login ghcr.io
       ;;
@@ -692,7 +691,7 @@ fi
 # Terraform
 #
 if ! command -v terraform >/dev/null; then
-echo '🚀 Install Terraform'
+echo "🚀 Install Terraform ($0:$LINENO)"
 TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
 curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
   -Lo "$HOME/Downloads/terraform_linux_amd64.zip"
@@ -730,11 +729,11 @@ fi
 # Steam
 #
 if ! command -v steam >/dev/null; then
-echo '🚀 Install Steam'
+echo "🚀 Install Steam ($0:$LINENO)"
 case $LINUX_NODENAME in
   "fedora")
     sudo dnf install -y \
-      https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+      https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
     sudo dnf install -y steam
     ;;
   "debian" | 'ubuntu')
@@ -874,7 +873,7 @@ mkdir ~/Wallpapers
 # Gnucash
 #
 if ! command -v gnucash >/dev/null; then
-  if [ $LINUX_NODENAME != 'fedora' ]; then
+  if [ "$LINUX_NODENAME" != 'fedora' ]; then
     sudo apt install -y gnucash
   fi
 fi
