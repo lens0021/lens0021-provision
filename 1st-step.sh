@@ -221,6 +221,17 @@ case $LINUX_NODENAME in
 esac
 
 #
+# ripgrep
+#
+case $LINUX_NODENAME in
+  "fedora")
+    dnf-install-package ripgrep
+    ;;
+  "debian")
+    ;;
+esac
+
+#
 # Askpass
 #
 case $LINUX_NODENAME in
