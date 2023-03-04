@@ -573,8 +573,10 @@ fi
 case $LINUX_NODENAME in
   "fedora")
     # https://wiki.winehq.org/Fedora
-    VERSION_ID=$(rpm -E %fedora)
-    sudo dnf config-manager --add-repo "https://dl.winehq.org/wine-builds/fedora/${VERSION_ID}/winehq.repo"
+    if [ ! -d /etc/yum.repos.d/winehq.repo ]; then
+      VERSION_ID=$(rpm -E %fedora)
+      sudo dnf config-manager --add-repo "https://dl.winehq.org/wine-builds/fedora/${VERSION_ID}/winehq.repo"
+    fi
     ;;
   "ubuntu")
     # https://wiki.winehq.org/Ubuntu
@@ -639,18 +641,21 @@ fi
 #
 if ! command -v snap >/dev/null; then
   echo "🚀 Install Snap ($0:$LINENO)"
-    sudo dnf install -y snapd
-    sudo ln -s /var/lib/snapd/snap /snap
-    while ! snap --version >/dev/null; do
-    sleep 1
-    done
+  sudo dnf install -y snapd
+  sudo ln -s /var/lib/snapd/snap /snap
+  while ! snap --version >/dev/null; do
+  sleep 1
+  done
 fi
 
 
 #
 # Authy
 #
-sudo snap install authy
+if ! snap list | grep authy >/dev/null; then
+  echo "🚀 Install Authy ($0:$LINENO)"
+  sudo snap install authy
+fi
 
 #
 # Docker
