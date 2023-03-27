@@ -24,7 +24,7 @@ echo "LINUX_NODENAME: $LINUX_NODENAME"
 mkdir -p \
   ~/.local/bin \
   ~/.icons \
-;
+  ;
 
 # curl
 # TODO: Do Ubuntu and Debian have curl?
@@ -73,7 +73,7 @@ if ! command -v 1password >/dev/null; then
     "debian") ;;
       # TODO
   esac
- fi
+fi
 
 # Google Chrome
 if ! command -v google-chrome >/dev/null; then
@@ -186,7 +186,7 @@ fi
 # Change the background color of grub
 #
 if [ "$LINUX_NODENAME" = "debian" ]; then
-  cat << EOF > /boot/grub/custom.cfg
+  cat <<EOF >/boot/grub/custom.cfg
 # set color_normal=light-gray/black
 # set color_highlight=white/cyan
 
@@ -200,8 +200,8 @@ fi
 #
 dnf-install-package gnome-tweaks
 case $LINUX_NODENAME in
-"fedora")
-  ;;
+  "fedora") ;;
+
   "debian")
     echo "🚀 Install Gnome stuff ($0:$LINENO)"
     sudo apt -t unstable install -y \
@@ -217,7 +217,7 @@ case $LINUX_NODENAME in
       gjs \
       tracker-miner-fs \
       ;
-  ;;
+    ;;
 esac
 
 #
@@ -227,21 +227,21 @@ case $LINUX_NODENAME in
   "fedora")
     dnf-install-package ripgrep
     ;;
-  "debian")
-    ;;
+  "debian") ;;
+
 esac
 
 #
 # Askpass
 #
 case $LINUX_NODENAME in
-"fedora")
-  dnf-install-package openssh-askpass
-  ;;
+  "fedora")
+    dnf-install-package openssh-askpass
+    ;;
   "debian")
     echo "🚀 Install askpass ($0:$LINENO)"
     sudo apt -t unstable install -y ssh-askpass-gnome
-  ;;
+    ;;
 esac
 
 #
@@ -312,7 +312,7 @@ if ! command -v keybase >/dev/null; then
       rm ~/Downloads/keybase_amd64.deb
       ;;
   esac
-  else
+else
   echo 'Skip install keybase'
 fi
 
@@ -326,11 +326,11 @@ if ! command -v asdf >/dev/null; then
     git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch "$ASDF_VERSION"
   fi
   if ! echo ~/.bashrc | grep asdf.sh >/dev/null; then
-    echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
-    echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
+    echo '. $HOME/.asdf/asdf.sh' >>~/.bashrc
+    echo '. $HOME/.asdf/completions/asdf.bash' >>~/.bashrc
   fi
 
-. $HOME/.asdf/asdf.sh
+  . $HOME/.asdf/asdf.sh
 else
   echo 'Skip install asdf'
 fi
@@ -373,19 +373,19 @@ fi
 if ! command -v php >/dev/null; then
   case $LINUX_NODENAME in
     "fedora")
-        dnf-install-package autoconf
-        dnf-install-package bison
-        dnf-install-package gcc
-        dnf-install-package gcc-c++
-        dnf-install-package gd-devel
-        dnf-install-package libcurl-devel
-        dnf-install-package libxml2-devel
-        dnf-install-package re2c
-        dnf-install-package sqlite-devel
-        dnf-install-package oniguruma-devel
-        dnf-install-package postgresql-devel
-        dnf-install-package readline-devel
-        dnf-install-package libzip-devel
+      dnf-install-package autoconf
+      dnf-install-package bison
+      dnf-install-package gcc
+      dnf-install-package gcc-c++
+      dnf-install-package gd-devel
+      dnf-install-package libcurl-devel
+      dnf-install-package libxml2-devel
+      dnf-install-package re2c
+      dnf-install-package sqlite-devel
+      dnf-install-package oniguruma-devel
+      dnf-install-package postgresql-devel
+      dnf-install-package readline-devel
+      dnf-install-package libzip-devel
       ;;
     "ubuntu" | "debian")
       sudo apt-get install -y \
@@ -418,6 +418,18 @@ if ! command -v php >/dev/null; then
   esac
   asdf install php latest
   asdf global php latest
+fi
+
+# shfmt
+if ! command -v shfmt >/dev/null; then
+  case $LINUX_NODENAME in
+    "fedora")
+      dnf-install-package shfmt
+      ;;
+    "debian")
+      # TODO
+      ;;
+  esac
 fi
 
 #
@@ -456,9 +468,9 @@ git config --global rerere.enabled true
 
 if ! grep 'GPG_TTY' "$USER_HOME/.bashrc" >/dev/null; then
   # shellcheck disable=2016
-  echo 'GPG_TTY=$(tty); export GPG_TTY' >> "$USER_HOME/.bashrc"
+  echo 'GPG_TTY=$(tty); export GPG_TTY' >>"$USER_HOME/.bashrc"
   mkdir -p "$USER_HOME/.gnupg"
-  echo 'default-cache-ttl 3600' >> "$USER_HOME/.gnupg/gpg-agent.conf"
+  echo 'default-cache-ttl 3600' >>"$USER_HOME/.gnupg/gpg-agent.conf"
 fi
 
 #
@@ -559,7 +571,7 @@ dnf-install-package starship
 
 # BloomRPC
 if [ ! -e ~/.local/bin/BloomRPC.AppImage ]; then
-echo "🚀 Install BloomRPC ($0:$LINENO)"
+  echo "🚀 Install BloomRPC ($0:$LINENO)"
   BLOOMRPC_VERSION=$(curl -s https://api.github.com/repos/bloomrpc/bloomrpc/releases/latest | jq -r .tag_name | cut -dv -f2)
   sudo curl -L "https://github.com/bloomrpc/bloomrpc/releases/download/${BLOOMRPC_VERSION}/BloomRPC-${BLOOMRPC_VERSION}.AppImage" \
     -o ~/.local/bin/BloomRPC.AppImage
@@ -576,6 +588,8 @@ echo "🚀 Install BloomRPC ($0:$LINENO)"
     ~/.local/share/applications/BloomRPC.desktop
 
   sudo desktop-file-install ~/.local/share/applications/BloomRPC.desktop
+else
+  echo 'Skip install BloomRPC'
 fi
 
 #
@@ -614,7 +628,9 @@ if ! command -v wine >/dev/null; then
       sudo apt install -y --install-recommends winehq-staging
       ;;
   esac
-  fi
+else
+  echo 'Skip install Wine'
+fi
 
 #
 # KakaoTalk
@@ -624,6 +640,8 @@ if [ ! -d "$USER_HOME/.local/share/applications/wine/Programs/카카오톡" ]; t
     echo "🚀 Install KakaoTalk ($0:$LINENO)"
     curl -L http://app.pc.kakao.com/talk/win32/KakaoTalk_Setup.exe -o ~/Downloads/KakaoTalk_Setup.exe
   fi
+else
+  echo 'Skip install KakaoTalk'
 fi
 
 #
@@ -631,11 +649,13 @@ fi
 # Reference: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
 #
 if ! command -v aws >/dev/null; then
-echo "🚀 Install AWS CLI ($0:$LINENO)"
+  echo "🚀 Install AWS CLI ($0:$LINENO)"
   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/awscliv2.zip
   unzip ~/Downloads/awscliv2.zip -d ~/Downloads
   sudo ~/Downloads/aws/install
   rm -rf ~/Downloads/awscliv2.zip ~/Downloads/aws/
+else
+  echo 'Skip install aws'
 fi
 
 #
@@ -645,6 +665,8 @@ fi
 if ! python -m pip list | grep ec2instanceconnectcli >/dev/null; then
   echo "🚀 Install EC2 Instance Connect CLI ($0:$LINENO)"
   python -m pip install ec2instanceconnectcli
+else
+  echo 'Skip install instance connect CLI'
 fi
 
 #
@@ -655,10 +677,11 @@ if ! command -v snap >/dev/null; then
   sudo dnf install -y snapd
   sudo ln -s /var/lib/snapd/snap /snap
   while ! snap --version >/dev/null; do
-  sleep 1
+    sleep 1
   done
+else
+  echo 'Skip install Snap'
 fi
-
 
 #
 # Authy
@@ -666,13 +689,15 @@ fi
 if ! snap list | grep authy >/dev/null; then
   echo "🚀 Install Authy ($0:$LINENO)"
   sudo snap install authy
+else
+  echo 'Skip install Authy'
 fi
 
 #
 # Docker
 #
 if ! command -v docker >/dev/null; then
-echo "🚀 Install Docker ($0:$LINENO)"
+  echo "🚀 Install Docker ($0:$LINENO)"
   case $LINUX_NODENAME in
     'fedora')
       # https://docs.docker.com/engine/install/fedora/
@@ -685,7 +710,7 @@ echo "🚀 Install Docker ($0:$LINENO)"
         docker-ce-cli \
         containerd.io \
         docker-compose-plugin \
-      ;
+        ;
       sudo systemctl start docker
 
       # https://phabricator.wikimedia.org/T283484
@@ -709,6 +734,8 @@ echo "🚀 Install Docker ($0:$LINENO)"
   sudo systemctl enable containerd.service
   sudo sh -c "echo 'docker compose \"\$@\"' > /usr/local/bin/docker-compose"
   sudo chmod +x /usr/local/bin/docker-compose
+else
+  echo 'Skip install Docker'
 fi
 
 # Docker buildx
@@ -728,14 +755,16 @@ fi
 # Terraform
 #
 if ! command -v terraform >/dev/null; then
-echo "🚀 Install Terraform ($0:$LINENO)"
-TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
-curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
-  -Lo "$HOME/Downloads/terraform_linux_amd64.zip"
-unzip "$HOME/Downloads/terraform_linux_amd64.zip" -d ~/Downloads
-sudo mv ~/Downloads/terraform /usr/local/bin/terraform
-rm "$HOME/Downloads/terraform_linux_amd64.zip"
-terraform -install-autocomplete
+  echo "🚀 Install Terraform ($0:$LINENO)"
+  TERRAFORM_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
+  curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
+    -Lo "$HOME/Downloads/terraform_linux_amd64.zip"
+  unzip "$HOME/Downloads/terraform_linux_amd64.zip" -d ~/Downloads
+  sudo mv ~/Downloads/terraform /usr/local/bin/terraform
+  rm "$HOME/Downloads/terraform_linux_amd64.zip"
+  terraform -install-autocomplete
+else
+  echo 'Skip install Terraform'
 fi
 
 #
@@ -766,17 +795,19 @@ fi
 # Steam
 #
 if ! command -v steam >/dev/null; then
-echo "🚀 Install Steam ($0:$LINENO)"
-case $LINUX_NODENAME in
-  "fedora")
-    sudo dnf install -y \
-      https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
-    sudo dnf install -y steam
-    ;;
-  "debian" | 'ubuntu')
-    sudo apt install -y libgl1-mesa-dri:i386 libgl1:i386 steam
-    ;;
-esac
+  echo "🚀 Install Steam ($0:$LINENO)"
+  case $LINUX_NODENAME in
+    "fedora")
+      sudo dnf install -y \
+        https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
+      sudo dnf install -y steam
+      ;;
+    "debian" | 'ubuntu')
+      sudo apt install -y libgl1-mesa-dri:i386 libgl1:i386 steam
+      ;;
+  esac
+else
+  echo 'Skip install Steam'
 fi
 # curl "https://steamcdn-a.akamaihd.net/client/installer/steam.deb" -Lo ~/Downloads/steam.deb
 # sudo apt install ~/Downloads/steam.deb
@@ -791,35 +822,44 @@ fi
 #
 # mwcli
 #
-if ! command -v mwdev >/dev/null; then
-mkdir -p ~/go/src/gitlab.wikimedia.org/repos/releng
-cd ~/go/src/gitlab.wikimedia.org/repos/releng/
-git clone https://gitlab.wikimedia.org/repos/releng/cli.git
-cd cli
-go install github.com/bwplotka/bingo@latest
-asdf reshim golang
-bingo get
-make build
-echo "alias mwdev='~/go/src/gitlab.wikimedia.org/repos/releng/cli/bin/mw'" >> ~/.bashrc
+if [ ! -x ~/go/src/gitlab.wikimedia.org/repos/releng/cli/bin/mw ]; then
+  echo "🚀 Install mwcli ($0:$LINENO)"
+  mkdir -p ~/go/src/gitlab.wikimedia.org/repos/releng
+  cd ~/go/src/gitlab.wikimedia.org/repos/releng/
+  if [ ! -d cli ]; then
+    git clone https://gitlab.wikimedia.org/repos/releng/cli.git
+  fi
+  cd cli
+  go install github.com/bwplotka/bingo@latest
+  asdf reshim golang
+  bingo get
+  make build
+  echo "alias mwdev='~/go/src/gitlab.wikimedia.org/repos/releng/cli/bin/mw'" >>~/.bashrc
+else
+  echo 'Skip install mwdev'
 fi
 
 #
 # Clone Github Repositories
 #
-cd /usr/local
-sudo mkdir -p git
-(
-  _USER="$USER"
-  _GROUP="$(id -g)"
-  sudo chown "$_USER:$_GROUP" git
-)
-cd git
-sudo mkdir -p \
-  lens0021 \
-  femiwiki \
-  gerrit \
-;
-
+if [ ! -d /usr/local/git ]; then
+  cd /usr/local
+  echo "🚀 Clone Git repos ($0:$LINENO)"
+  sudo mkdir -p git
+  (
+    _USER="$USER"
+    _GROUP="$(id -g)"
+    sudo chown "$_USER:$_GROUP" git
+  )
+  cd git
+  sudo mkdir -p \
+    lens0021 \
+    femiwiki \
+    gerrit \
+    ;
+else
+  echo "Skip clonning Git repos ($0:$LINENO)"
+fi
 
 #
 # Caddy
@@ -834,9 +874,9 @@ sudo mkdir -p \
 # aws-mfa
 #
 if ! command -v aws-connect >/dev/null; then
-sudo curl -fsSL https://raw.githubusercontent.com/simnalamburt/snippets/fa7c39e01c00e7394edf22f4e9a24fe171969b9b/sh/aws-mfa -o /usr/local/bin/aws-mfa
-sudo chmod +x /usr/local/bin/
-cat << EOF > ~/aws-connect
+  echo "🚀 Install aws-connect ($0:$LINENO)"
+  sudo curl -fsSL https://raw.githubusercontent.com/simnalamburt/snippets/fa7c39e01c00e7394edf22f4e9a24fe171969b9b/sh/aws-mfa -o /usr/local/bin/aws-mfa
+  cat <<EOF >~/aws-connect
 #!/bin/bash
 
 aws-mfa
@@ -851,8 +891,10 @@ INSTANCE_ID=\$(aws --profile femiwiki-mfa \\
 
 mssh "\$INSTANCE_ID"
 EOF
-sudo chmod +x aws-connect
-sudo mv ~/aws-connect /usr/local/bin/
+  sudo mv ~/aws-connect /usr/local/bin/
+  sudo chmod +x /usr/local/bin/aws-mfa
+else
+  echo 'Skip install aws-connect'
 fi
 
 update-desktop-database ~/.local/share/applications
@@ -891,28 +933,44 @@ update-desktop-database ~/.local/share/applications
 #
 # Wallpapers
 #
-mkdir ~/Wallpapers
+if [ ! -d ~/Wallpapers ]; then
+  mkdir ~/Wallpapers
+fi
 
 #
 # Dropbox
 #
+if ! command -v dropbox >/dev/null; then
+  echo "🚀 Install Dropbox ($0:$LINENO)"
   case $LINUX_NODENAME in
     "fedora")
       sudo dnf install -y \
         libgnome \
-      ;
+        ;
       curl -L 'https://www.dropbox.com/download?dl=packages/fedora/nautilus-dropbox-2022.12.05-1.fedora.x86_64.rpm' -O ~/Downloads/dropbox.rpm
       sudo rpm -i ~/Downloads/dropbox.rpm
-    ;;
+      ;;
   esac
+else
+  echo 'Skip install Dropbox'
+fi
 
 #
 # Gnucash
 #
 if ! command -v gnucash >/dev/null; then
-  if [ "$LINUX_NODENAME" != 'fedora' ]; then
-    sudo apt install -y gnucash
-  fi
+  echo "🚀 Install Gnucash ($0:$LINENO)"
+  case $LINUX_NODENAME in
+    "fedora")
+      dnf-install-package gnucash
+      # TODO
+      ;;
+    "debian" | 'ubuntu')
+      sudo apt install -y gnucash
+      ;;
+  esac
+else
+  echo 'Skip install Gnucash'
 fi
 
 #
@@ -924,7 +982,7 @@ fi
 #
 # GIMP
 #
-sudo flatpak install -y https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref
+# sudo flatpak install -y https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref
 
 ################################################################################
 # Removed
@@ -967,3 +1025,5 @@ sudo flatpak install -y https://flathub.org/repo/appstream/org.gimp.GIMP.flatpak
 #     sudo apt update
 #     ;;
 # esac
+
+echo "🎉 Done installing"
