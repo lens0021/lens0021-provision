@@ -39,7 +39,6 @@ case $LINUX_NODENAME in
       baobab \
       ruby-full \
       sqlite3 \
-      jq \
 
     # Ubuntu
     #  "$(check-language-support)" \
