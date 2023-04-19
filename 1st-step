@@ -4,9 +4,27 @@ IFS=$'\n\t'
 
 sudo -v
 
+echo "📂 Make directories"
+
 mkdir -p \
   ~/.local/bin \
   ~/.icons \
+;
+if [ ! -d /usr/local/git ]; then
+  cd /usr/local
+  sudo mkdir -p git
+  (
+    _USER="$USER"
+    _GROUP="$(id -g)"
+    sudo chown "$_USER:$_GROUP" git
+  )
+  cd git
+  sudo mkdir -p \
+    lens0021 \
+    femiwiki \
+    gerrit \
+    port \
   ;
+fi
 
 python install_package/main.py

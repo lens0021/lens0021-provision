@@ -311,7 +311,6 @@ yarn-add() {
 yarn-add prettier
 yarn-add eslint
 yarn-add stylelint
-yarn-add bats
 
 #
 # Git
@@ -603,28 +602,6 @@ if [ ! -x ~/go/src/gitlab.wikimedia.org/repos/releng/cli/bin/mw ]; then
   echo "alias mwdev='~/go/src/gitlab.wikimedia.org/repos/releng/cli/bin/mw'" >>~/.bashrc
 else
   echo 'Skip install mwdev'
-fi
-
-#
-# Clone Github Repositories
-#
-if [ ! -d /usr/local/git ]; then
-  cd /usr/local
-  echo "🚀 Clone Git repos ($0:$LINENO)"
-  sudo mkdir -p git
-  (
-    _USER="$USER"
-    _GROUP="$(id -g)"
-    sudo chown "$_USER:$_GROUP" git
-  )
-  cd git
-  sudo mkdir -p \
-    lens0021 \
-    femiwiki \
-    gerrit \
-    ;
-else
-  echo "Skip clonning Git repos ($0:$LINENO)"
 fi
 
 #

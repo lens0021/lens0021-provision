@@ -18,8 +18,8 @@ def install_packages():
     try:
       instance = PackageClass(cache)
       not_installed[name] = instance
-    except TypeError:
-      print(module)
+    except TypeError as e:
+      print(str(e), module)
 
   installed = []
   while len(installed) < len(not_installed):
