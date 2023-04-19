@@ -519,64 +519,6 @@ else
 fi
 
 #
-# Docker
-#
-if ! command -v docker >/dev/null; then
-  echo "🚀 Install Docker ($0:$LINENO)"
-  case $LINUX_NODENAME in
-    'fedora')
-      # https://docs.docker.com/engine/install/fedora/
-      sudo dnf -y install dnf-plugins-core
-      sudo dnf config-manager \
-        --add-repo \
-        https://download.docker.com/linux/fedora/docker-ce.repo
-      sudo dnf install -y \
-        docker-ce \
-        docker-ce-cli \
-        containerd.io \
-        docker-compose-plugin \
-        ;
-      sudo systemctl start docker
-
-      # https://phabricator.wikimedia.org/T283484
-      sudo dnf install -y docker-compose
-
-      # DOCKER_DESKTOP_URL=$(curl -sL https://docs.docker.com/desktop/install/linux-install/ | grep -oE 'https://desktop\.docker\.com/linux/main/amd64/docker-desktop-.+-x86_64\.rpm')
-      # sudo dnf install -y "$DOCKER_DESKTOP_URL"
-
-      sudo groupadd docker
-      sudo usermod -aG docker "$USER"
-      newgrp docker
-      # TODO: docker login ghcr.io
-      ;;
-    'ubuntu') #TODO
-      ;;
-
-    'debian') #TODO
-      ;;
-  esac
-  sudo systemctl enable docker.service
-  sudo systemctl enable containerd.service
-  sudo sh -c "echo 'docker compose \"\$@\"' > /usr/local/bin/docker-compose"
-  sudo chmod +x /usr/local/bin/docker-compose
-else
-  echo 'Skip install Docker'
-fi
-
-# Docker buildx
-# Reference: https://medium.com/@artur.klauser/building-multi-architecture-docker-images-with-buildx-27d80f7e2408
-# mkdir -p "$HOME/.docker/cli-plugins"
-# DOCKER_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | jq -r .tag_name)
-# sudo curl -L "https://github.com/docker/buildx/releases/download/${DOCKER_BUILDX_VERSION}/buildx-${DOCKER_BUILDX_VERSION}.linux-$(dpkg --print-architecture)" \
-#   -o "$HOME/.docker/cli-plugins/docker-buildx"
-# sudo chmod +x "$HOME/.docker/cli-plugins/docker-buildx"
-# sudo apt-get install -y \
-#   binfmt-support \
-#   qemu-user-static
-# sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-# docker buildx install
-
-#
 # Terraform
 #
 if ! command -v terraform >/dev/null; then

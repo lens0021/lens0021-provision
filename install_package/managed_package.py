@@ -55,3 +55,6 @@ class ManagedPackage(Package):
 
   def get_package_names(self):
     return [self.get_name()];
+
+  def dnf_add_repo(self, url: str):
+    shell_command.exec(f'sudo dnf config-manager --add-repo {url}')
