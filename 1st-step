@@ -1,0 +1,10 @@
+#!/bin/bash
+
+sudo -v
+
+mkdir -p \
+  ~/.local/bin \
+  ~/.icons \
+  ;
+
+python install_package/main.py

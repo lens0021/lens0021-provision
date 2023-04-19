@@ -21,147 +21,25 @@ sudo -v
 LINUX_NODENAME="$(uname -n)"
 echo "LINUX_NODENAME: $LINUX_NODENAME"
 
-mkdir -p \
-  ~/.local/bin \
-  ~/.icons \
-  ;
-
-# curl
-# TODO: Do Ubuntu and Debian have curl?
-if ! command -v curl >/dev/null; then
-  if [ "$LINUX_NODENAME" != 'fedora' ]; then
-    sudo apt install -y curl
-  fi
-else
-  echo 'Skip install curl'
-fi
-
-#
-# Bitwarden
-#
-if [ ! -e ~/.local/bin/Bitwarden.AppImage ]; then
-  echo "🚀 Install Bitwarden ($0:$LINENO)"
-  BITWARDEN_VERSION=$(curl -s https://api.github.com/repos/bitwarden/clients/releases/latest | jq -r .tag_name | cut -dv -f2)
-  sudo curl -L https://github.com/bitwarden/clients/releases/download/desktop-v"${BITWARDEN_VERSION}"/Bitwarden-"${BITWARDEN_VERSION}"-x86_64.AppImage \
-    -o ~/.local/bin/Bitwarden.AppImage
-  sudo chmod +x ~/.local/bin/Bitwarden.AppImage
-
-  curl -L https://github.com/bitwarden/brand/raw/master/icons/512x512.png -o ~/.icons/bitwarden.png
-  touch ~/.local/share/applications/Bitwarden.desktop
-  desktop-file-edit \
-    --set-name=Bitwarden \
-    --set-key=Type --set-value=Application \
-    --set-key=Terminal --set-value=false \
-    --set-key=Exec --set-value="$HOME"/.local/bin/Bitwarden.AppImage \
-    --set-key=Icon --set-value=bitwarden \
-    ~/.local/share/applications/Bitwarden.desktop
-
-  sudo desktop-file-install ~/.local/share/applications/Bitwarden.desktop
-fi
-
-#
-# 1Password
-#
-if ! command -v 1password >/dev/null; then
-  echo "🚀 Install 1Password ($0:$LINENO)"
-  case $LINUX_NODENAME in
-    "fedora")
-      sudo rpm --import https://downloads.1password.com/linux/keys/1password.asc
-      sudo sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
-      sudo dnf install -y 1password 1password-cli
-      ;;
-    "debian") ;;
-      # TODO
-  esac
-fi
-
-# Google Chrome
-if ! command -v google-chrome >/dev/null; then
-  case $LINUX_NODENAME in
-    "fedora")
-      sudo dnf config-manager --set-enabled google-chrome
-      dnf-install-package google-chrome-stable
-      ;;
-    "debian")
-      curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
-      sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
-      rm ~/Downloads/google-chrome.deb
-      ;;
-  esac
-fi
-
-#
-# Edge
-#
-# if ! command -v microsoft-edge >/dev/null; then
-#   case $LINUX_NODENAME in
-#     "fedora")
-#       sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-#       sudo dnf config-manager --add-repo https://packages.microsoft.com/yumrepos/edge
-#       sudo dnf install microsoft-edge-stable
-#       ;;
-#     "debian")
-#       curl -L https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o ~/Downloads/google-chrome.deb
-#       sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
-#       rm ~/Downloads/google-chrome.deb
-#       ;;
-#   esac
-# fi
-
-#
-# Vivaldi
-#
-# sudo dnf config-manager --add-repo https://repo.vivaldi.com/archive/vivaldi-fedora.repo
-# sudo dnf install vivaldi-stable
-
-#
-# Wavebox
-#
-if ! dnf list --installed | grep Wavebox >/dev/null; then
-  echo "🚀 Install Wavebox ($0:$LINENO)"
-  sudo rpm --import https://download.wavebox.app/static/wavebox_repo.key
-  sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo
-  sudo dnf install -y Wavebox
-fi
-# TODO: default browser
+./1st-step
 
 #
 # Installs softwares
 #
 case $LINUX_NODENAME in
   "fedora")
-    dnf-install-package xclip
-    dnf-install-package htop
-    dnf-install-package vim
-    dnf-install-package git-review
-    dnf-install-package ShellCheck
-    dnf-install-package ImageMagick
-    # openssh → kdeconnect
-    dnf-install-package openssh
-    dnf-install-package openfortivpn
-    dnf-install-package ibus-hangul
-    dnf-install-package gnome-extensions-app
     ;;
   "debian" | "ubuntu")
     sudo apt update
     sudo apt install -y \
-      curl \
-      xclip \
-      htop \
       mssh \
-      vim \
-      git-review \
       mysql-client-core-8.0 \
-      shellcheck \
       tree \
-      imagemagick \
       flatpak \
       baobab \
       ruby-full \
       sqlite3 \
       jq \
-      ibus-hangul \
-      openfortivpn
 
     # Ubuntu
     #  "$(check-language-support)" \
@@ -198,15 +76,13 @@ fi
 #
 # Gnome
 #
-dnf-install-package gnome-tweaks
 case $LINUX_NODENAME in
-  "fedora") ;;
-
+  "fedora")
+    ;;
   "debian")
     echo "🚀 Install Gnome stuff ($0:$LINENO)"
     sudo apt -t unstable install -y \
       gnome-clocks \
-      gnome-tweaks \
       gnome-colors \
       gnome-session \
       gnome-shell \
@@ -218,17 +94,6 @@ case $LINUX_NODENAME in
       tracker-miner-fs \
       ;
     ;;
-esac
-
-#
-# ripgrep
-#
-case $LINUX_NODENAME in
-  "fedora")
-    dnf-install-package ripgrep
-    ;;
-  "debian") ;;
-
 esac
 
 #
@@ -543,8 +408,8 @@ fi
 #
 # Starship
 #
-sudo dnf copr enable -y atim/starship
-dnf-install-package starship
+# sudo dnf copr enable -y atim/starship
+# dnf-install-package starship
 
 #
 # Codium
@@ -590,46 +455,6 @@ if [ ! -e ~/.local/bin/BloomRPC.AppImage ]; then
   sudo desktop-file-install ~/.local/share/applications/BloomRPC.desktop
 else
   echo 'Skip install BloomRPC'
-fi
-
-#
-# Wine
-#
-case $LINUX_NODENAME in
-  "fedora")
-    # https://wiki.winehq.org/Fedora
-    if [ ! -d /etc/yum.repos.d/winehq.repo ]; then
-      VERSION_ID=$(rpm -E %fedora)
-      sudo dnf config-manager --add-repo "https://dl.winehq.org/wine-builds/fedora/${VERSION_ID}/winehq.repo"
-    fi
-    ;;
-  "ubuntu")
-    # https://wiki.winehq.org/Ubuntu
-    sudo dpkg --add-architecture i386
-    wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
-    CODE_NAME=$(cat /etc/os-release | grep UBUNTU_CODENAME | cut -d= -f2)
-    sudo add-apt-repository "deb https://dl.winehq.org/wine-builds/ubuntu/ ${CODE_NAME} main"
-    ;;
-  "debian")
-    sudo wget -nc -O /usr/share/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key
-    CODE_NAME=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d= -f2)
-    sudo wget -nc -P /etc/apt/sources.list.d/ "https://dl.winehq.org/wine-builds/debian/dists/${CODE_NAME}/winehq-${CODE_NAME}.sources"
-    ;;
-esac
-
-if ! command -v wine >/dev/null; then
-  echo "🚀 Install WineHQ ($0:$LINENO)"
-  case $LINUX_NODENAME in
-    "fedora")
-      sudo dnf install -y winehq-staging
-      ;;
-    "debian" | 'ubuntu')
-      sudo apt update
-      sudo apt install -y --install-recommends winehq-staging
-      ;;
-  esac
-else
-  echo 'Skip install Wine'
 fi
 
 #
