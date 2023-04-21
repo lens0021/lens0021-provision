@@ -5,10 +5,17 @@ import os
 
 cache = {}
 
+def check_requirements(deps, installed):
+  for dep in deps:
+    if dep not in installed:
+      # print(f'dependency {dep} is not installed')
+      return False
+  return True
+
 def install_packages():
   not_installed = {}
   for file in os.listdir('install_package/packages'):
-    if not search(re.compile(r'^[A-z][A-z-]+\.py$', flags=re.MULTILINE), file):
+    if not search(re.compile(r'^[A-z][A-z-]*\.py$', flags=re.MULTILINE), file):
       continue
 
     name = file[0:-3]
@@ -24,10 +31,11 @@ def install_packages():
   installed = []
   while len(installed) < len(not_installed):
     for name in not_installed:
-      deps = not_installed[name].DEPENDENCIES
-      if all(p in installed for p in deps):
-        not_installed[name].install()
-        installed.append(name)
+      if name not in installed:
+        deps = not_installed[name].DEPENDENCIES
+        if check_requirements(deps, installed):
+          not_installed[name].install()
+          installed.append(name)
 
 def install_commands():
   for file in os.listdir('install_package/commands'):
