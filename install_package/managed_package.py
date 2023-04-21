@@ -12,17 +12,6 @@ class ManagedPackage(Package):
   DISTRO_UBUNTU = 'ubuntu'
   DISTRO_DEBIAN = 'debian'
 
-  def which_distro(self):
-    if 'os-release' not in self.cache:
-      infos = shell_command.exec('cat /etc/os-release', False)
-      match = re.search(re.compile(r'^ID=(.+)$', flags=re.MULTILINE), infos)
-
-      if not match:
-        raise Exception(f"no match\n ${infos}")
-      self.cache['os-release'] =  match.group(1)
-
-    return self.cache['os-release']
-
   def get_name(self) -> str:
     if self.DNF_NAME:
       return self.DNF_NAME
@@ -34,11 +23,7 @@ class ManagedPackage(Package):
   def is_installed(self):
     match self.which_distro():
       case self.DISTRO_FEDORA:
-        if 'rpm -qa' not in self.cache:
-          self.cache['rpm -qa'] = shell_command.exec('rpm -qa', False)
-        match = re.search(re.compile(f'^{self.get_name()}', flags=re.MULTILINE), self.cache['rpm -qa'])
-        if match:
-          return True
+        return self.is_rpm_installed()
       case self.DISTRO_DEBIAN_BASE:
         pass
 
