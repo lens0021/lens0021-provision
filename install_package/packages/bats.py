@@ -9,4 +9,4 @@ class bats(Package):
     shell_command.exec('sudo /usr/local/git/bats-core/install.sh /usr/local')
 
   def is_installed(self) -> bool:
-    return os.path.isfile('/usr/local/bats')
+    return os.path.exists('/usr/local/bin/bats')
