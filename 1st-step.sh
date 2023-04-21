@@ -337,25 +337,6 @@ if ! grep 'GPG_TTY' "$USER_HOME/.bashrc" >/dev/null; then
 fi
 
 #
-# Github CLI
-#
-if ! command -v gh >/dev/null; then
-  echo "🚀 Install Github CLI ($0:$LINENO)"
-  GITHUB_CLI_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | cut -dv -f2)
-  case $LINUX_NODENAME in
-    "fedora")
-      sudo dnf install -y "https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.rpm"
-      ;;
-    "debian")
-      curl -L "https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.deb" \
-        -o ~/Downloads/gh_linux_amd64.deb
-      sudo dpkg -i ~/Downloads/gh_linux_amd64.deb
-      rm ~/Downloads/gh_linux_amd64.deb
-      ;;
-  esac
-fi
-
-#
 # GitLab CLI
 #
 if ! command -v glab >/dev/null; then
