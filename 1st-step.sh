@@ -655,13 +655,6 @@ update-desktop-database ~/.local/share/applications
 # rm ~/Downloads/android-studio-ide.tar.xz
 
 #
-# Wallpapers
-#
-if [ ! -d ~/Wallpapers ]; then
-  mkdir ~/Wallpapers
-fi
-
-#
 # Dropbox
 #
 if ! command -v dropbox >/dev/null; then
@@ -677,24 +670,6 @@ if ! command -v dropbox >/dev/null; then
   esac
 else
   echo 'Skip install Dropbox'
-fi
-
-#
-# Gnucash
-#
-if ! command -v gnucash >/dev/null; then
-  echo "🚀 Install Gnucash ($0:$LINENO)"
-  case $LINUX_NODENAME in
-    "fedora")
-      dnf-install-package gnucash
-      # TODO
-      ;;
-    "debian" | 'ubuntu')
-      sudo apt install -y gnucash
-      ;;
-  esac
-else
-  echo 'Skip install Gnucash'
 fi
 
 #

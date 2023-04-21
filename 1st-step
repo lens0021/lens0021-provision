@@ -9,6 +9,7 @@ echo "📂 Make directories"
 mkdir -p \
   ~/.local/bin \
   ~/.icons \
+  ~/Wallpapers \
 ;
 if [ ! -d /usr/local/git ]; then
   cd /usr/local
