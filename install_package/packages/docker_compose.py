@@ -2,12 +2,13 @@ from managed_package import ManagedPackage
 import shell_command
 
 class docker_compose(ManagedPackage):
-  DEPENDENCIES = ['docker']
+  DEPENDENCIES = ['Docker']
+  # https://phabricator.wikimedia.org/T283484
+  DISABLED = True
 
   def get_package_names(self):
     return [
       'docker-compose-plugin',
-      # https://phabricator.wikimedia.org/T283484
       'docker-compose'
     ]
 
