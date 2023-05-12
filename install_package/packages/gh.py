@@ -5,7 +5,7 @@ import github
 class gh(Package):
 
   def real_install(self):
-    ver = github.latest_version(['cli', 'cli'])
+    ver = github.latest_version('cli', 'cli')
     match self.which_distro():
       case self.DISTRO_FEDORA:
         url = f"https://github.com/cli/cli/releases/download/v{ver}/gh_{ver}_linux_amd64.rpm"

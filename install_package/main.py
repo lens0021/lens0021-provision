@@ -15,7 +15,7 @@ def check_requirements(deps, installed):
 def install_packages():
   not_installed = {}
   for file in os.listdir('install_package/packages'):
-    if not search(re.compile(r'^[A-z][A-z-]*\.py$', flags=re.MULTILINE), file):
+    if not search(re.compile(r'^[A-z][A-z0-9-]*\.py$', flags=re.MULTILINE), file):
       continue
 
     name = file[0:-3]
