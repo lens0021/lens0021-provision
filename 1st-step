@@ -2,6 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# This is not the current entrypoint. Use 1st-step.sh
+
 sudo -v
 
 echo "📂 Make directories"
