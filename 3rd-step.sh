@@ -13,9 +13,12 @@ rm -f \
   ~/Desktop/카카오톡.desktop
 
 # gsettings
-# TODO
+SCHEMADIR=~/.local/share/gnome-shell/extensions/extensions-sync@elhan.io/schemas
+gsettings --schemadir $SCHEMADIR set org.gnome.shell.extensions.extensions-sync provider Gitlab
+gsettings --schemadir $SCHEMADIR set org.gnome.shell.extensions.extensions-sync gitlab-snippet-id 2401246
+gsettings --schemadir $SCHEMADIR set org.gnome.shell.extensions.extensions-sync gitlab-user-token "'$(bw get password f4de295d-c2bc-4d78-841d-af1500c7f2de)'"
 gsettings set org.gnome.shell.extensions.extensions-sync gitlab-gist-id '2401246'
-gsettings set org.gnome.shell.extensions.extensions-sync gitlab-user-token "'$(cat ~/secrets/TODO.txt)'"
+gsettings set org.gnome.shell.extensions.extensions-sync gitlab-user-token "'$(bw get password f4de295d-c2bc-4d78-841d-af1500c7f2de)'"
 
 mkdir -p ~/Dropbox/code-workspaces
 

@@ -237,51 +237,51 @@ fi
 if ! command -v php >/dev/null; then
   case $LINUX_NODENAME in
     "fedora")
-      dnf-install-package autoconf
-      dnf-install-package bison
-      dnf-install-package gcc
-      dnf-install-package gcc-c++
-      dnf-install-package gd-devel
-      dnf-install-package libcurl-devel
-      dnf-install-package libxml2-devel
-      dnf-install-package re2c
-      dnf-install-package sqlite-devel
-      dnf-install-package oniguruma-devel
-      dnf-install-package postgresql-devel
-      dnf-install-package readline-devel
-      dnf-install-package libzip-devel
+   #   dnf-install-package autoconf
+   #   dnf-install-package bison
+  #    dnf-install-package gcc
+ #     dnf-install-package gcc-c++
+#      dnf-install-package gd-devel
+   #   dnf-install-package libcurl-devel
+  #    dnf-install-package libxml2-devel
+ #     dnf-install-package re2c
+#x      dnf-install-package sqlite-devel
+   #   dnf-install-package oniguruma-devel
+  #    dnf-install-package postgresql-devel
+ #     dnf-install-package readline-devel
+#      dnf-install-package libzip-devel
       ;;
     "ubuntu" | "debian")
-      sudo apt-get install -y \
-        autoconf \
-        bison \
-        build-essential \
-        curl \
-        gettext \
-        git \
-        libcurl4-openssl-dev \
-        libedit-dev \
-        libgd-dev \
-        libicu-dev \
-        libjpeg-dev \
-        libmysqlclient-dev \
-        libonig-dev \
-        libpng-dev \
-        libpq-dev \
-        libreadline-dev \
-        libsqlite3-dev \
-        libssl-dev \
-        libxml2-dev \
-        libzip-dev \
-        openssl \
-        pkg-config \
-        re2c \
-        zlib1g-dev \
-        ;
+  #    sudo apt-get install -y \
+ #       autoconf \
+#        bison \
+      #  build-essential \
+     #   curl \
+    #    gettext \
+   #     git \
+  #      libcurl4-openssl-dev \
+ #       libedit-dev \
+#        libgd-dev \
+    #    libicu-dev \
+   #     libjpeg-dev \
+  #      libmysqlclient-dev \
+ #       libonig-dev \
+#        libpng-dev \
+    #    libpq-dev \
+   #     libreadline-dev \
+  #      libsqlite3-dev \
+ #       libssl-dev \
+#        libxml2-dev \
+     #   libzip-dev \
+    #    openssl \
+   #     pkg-config \
+  #      re2c \
+ #       zlib1g-dev \
+   #     ;
       ;;
   esac
-  asdf install php latest
-  asdf global php latest
+#  asdf install php latest
+#  asdf global php latest
 fi
 
 # shfmt

@@ -11,6 +11,6 @@ class howdy(ManagedPackage):
   def pre_install(self):
     match self.which_distro():
       case self.DISTRO_FEDORA:
-        shell_command('sudo dnf copr enable -y principis/howdy')
+        shell_command.exec('sudo dnf copr enable -y principis/howdy')
       case self.DISTRO_DEBIAN_BASE:
         raise NotImplementedError

@@ -4,6 +4,7 @@ import json
 import os.path
 
 class bw(Package):
+  # DISABLED = True
   DEPENDENCIES = [
     'gh',
     'jq',
