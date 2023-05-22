@@ -146,7 +146,10 @@ if ! fc-list | grep nanum >/dev/null; then
   echo "🚀 Install fonts ($0:$LINENO)"
   case $LINUX_NODENAME in
     "fedora")
-      sudo dnf -y install naver-nanum-gothic-fonts
+      sudo dnf -y install \
+        naver-nanum-gothic-fonts \
+        naver-nanum-gothic-coding-fonts \
+      ;
       ;;
     "debian")
       sudo apt-get install -y \
