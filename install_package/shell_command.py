@@ -2,13 +2,12 @@ import subprocess
 from typing import List
 
 def exec(command: str|List[str], doPrint: bool = False) -> str:
-  if isinstance(command, str):
-    command = command.split()
-  result = subprocess.run(command, stdout=subprocess.PIPE)
-  decoded = result.stdout.decode('utf-8')
+  if not isinstance(command, str):
+    command = ' '.join(str)
+  result = subprocess.getoutput(command)
   if doPrint:
-    print(decoded)
-  return decoded
+    print(result)
+  return result
 
 def home() -> str:
   return '/home/nemo'
