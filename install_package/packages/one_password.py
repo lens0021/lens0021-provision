@@ -4,6 +4,8 @@ import shell_command
 class one_password(ManagedPackage):
   NAME = '1password'
   def real_install(self):
+    '''https://developer.1password.com/docs/cli/get-started/#install'''
+
     print(self.get_name())
     for cmd in [
       'sudo rpm --import https://downloads.1password.com/linux/keys/1password.asc',
