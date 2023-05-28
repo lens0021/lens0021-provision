@@ -20,8 +20,6 @@ gsettings --schemadir $SCHEMADIR set org.gnome.shell.extensions.extensions-sync 
 gsettings set org.gnome.shell.extensions.extensions-sync gitlab-gist-id '2401246'
 gsettings set org.gnome.shell.extensions.extensions-sync gitlab-user-token "'$(bw get password f4de295d-c2bc-4d78-841d-af1500c7f2de)'"
 
-mkdir -p ~/Dropbox/code-workspaces
-
 #
 # Wine
 #

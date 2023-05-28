@@ -664,24 +664,6 @@ update-desktop-database ~/.local/share/applications
 # rm ~/Downloads/android-studio-ide.tar.xz
 
 #
-# Dropbox
-#
-if ! command -v dropbox >/dev/null; then
-  echo "🚀 Install Dropbox ($0:$LINENO)"
-  case $LINUX_NODENAME in
-    "fedora")
-      sudo dnf install -y \
-        libgnome \
-        ;
-      curl -L 'https://www.dropbox.com/download?dl=packages/fedora/nautilus-dropbox-2022.12.05-1.fedora.x86_64.rpm' -O ~/Downloads/dropbox.rpm
-      sudo rpm -i ~/Downloads/dropbox.rpm
-      ;;
-  esac
-else
-  echo 'Skip install Dropbox'
-fi
-
-#
 # Slack
 #
 # SLACK_URL=$(curl -sL https://slack.com/downloads/instructions/fedora | grep -oE 'https://downloads.slack-edge.com/releases/linux/.+/prod/x64/slack-.+\.x86_64\.rpm')
