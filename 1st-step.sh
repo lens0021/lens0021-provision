@@ -332,7 +332,7 @@ git config --global pull.rebase true
 git config --global rebase.autostash true
 git config --global rerere.enabled true
 
-git config --global alias.graph 'log --graph --all --decorate --oneline'
+git config --global alias.graph 'log --graph --all --decorate --oneline --color'
 
 if ! grep 'GPG_TTY' "$USER_HOME/.bashrc" >/dev/null; then
   # shellcheck disable=2016
