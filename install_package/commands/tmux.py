@@ -1,6 +1,7 @@
 from command import Command
 
 class tmux(Command):
+  DISABLED = True
   NAME = 'tmux-attach'
 
   SCRIPT = '''
