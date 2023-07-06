@@ -26,7 +26,7 @@ class AppImagePackage(Package):
     shell_command.exec(f"curl -L {url} - o '{shell_command.home()}/{self.get_name()}.AppImage")
     shell_command.exec(f"curl -L {self.ICON_URL} - o {self.path_to_icon}")
     shell_command.exec(f'touch {self.path_to_desktop()}')
-    shell_command.exec('desktop-file-edit' + ' '.join([
+    shell_command.exec('desktop-file-edit ' + ' '.join([
       f'--set-name={self.get_name()}',
       '--set-key=Type --set-value=Application',
       '--set-key=Terminal --set-value=false',

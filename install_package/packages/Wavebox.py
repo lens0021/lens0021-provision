@@ -11,7 +11,7 @@ class Wavebox(ManagedPackage):
           'sudo rpm --import https://download.wavebox.app/static/wavebox_repo.key',
           'sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo',
         ]:
-          shell_command(cmd)
+          shell_command.exec(cmd)
 
       case self.DISTRO_DEBIAN_BASE:
         pass

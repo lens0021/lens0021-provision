@@ -31,4 +31,5 @@ class Docker(ManagedPackage):
       'sudo systemctl enable docker.service',
       'sudo systemctl enable containerd.service',
     ]:
+      print('Excuting: ' + cmd)
       shell_command.exec(cmd)

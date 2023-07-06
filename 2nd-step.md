@@ -105,10 +105,6 @@ LANG=ko_KR.UTF-8 wine ~/Downloads/KakaoTalk_Setup.exe
 - KakaoTalk
 - Steam
 
-## GNOME Extensions Sync
-
-Visit https://extensions.gnome.org/extension/1486/extensions-sync/ and install.
-
 # Wikimedia Gerrit
 
 _TODO_

@@ -7,6 +7,6 @@ class GoogleChrome(ManagedPackage):
   def pre_install(self):
     match self.which_distro():
       case self.DISTRO_FEDORA:
-        shell_command('sudo dnf config-manager --set-enabled google-chrome')
+        shell_command.exec('sudo dnf config-manager --set-enabled google-chrome')
       case self.DISTRO_DEBIAN_BASE:
         pass

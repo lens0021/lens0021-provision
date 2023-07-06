@@ -146,7 +146,10 @@ if ! fc-list | grep nanum >/dev/null; then
   echo "🚀 Install fonts ($0:$LINENO)"
   case $LINUX_NODENAME in
     "fedora")
-      sudo dnf -y install naver-nanum-gothic-fonts
+      sudo dnf -y install \
+        naver-nanum-gothic-fonts \
+        naver-nanum-gothic-coding-fonts \
+      ;
       ;;
     "debian")
       sudo apt-get install -y \
@@ -237,51 +240,51 @@ fi
 if ! command -v php >/dev/null; then
   case $LINUX_NODENAME in
     "fedora")
-      dnf-install-package autoconf
-      dnf-install-package bison
-      dnf-install-package gcc
-      dnf-install-package gcc-c++
-      dnf-install-package gd-devel
-      dnf-install-package libcurl-devel
-      dnf-install-package libxml2-devel
-      dnf-install-package re2c
-      dnf-install-package sqlite-devel
-      dnf-install-package oniguruma-devel
-      dnf-install-package postgresql-devel
-      dnf-install-package readline-devel
-      dnf-install-package libzip-devel
+   #   dnf-install-package autoconf
+   #   dnf-install-package bison
+  #    dnf-install-package gcc
+ #     dnf-install-package gcc-c++
+#      dnf-install-package gd-devel
+   #   dnf-install-package libcurl-devel
+  #    dnf-install-package libxml2-devel
+ #     dnf-install-package re2c
+#x      dnf-install-package sqlite-devel
+   #   dnf-install-package oniguruma-devel
+  #    dnf-install-package postgresql-devel
+ #     dnf-install-package readline-devel
+#      dnf-install-package libzip-devel
       ;;
     "ubuntu" | "debian")
-      sudo apt-get install -y \
-        autoconf \
-        bison \
-        build-essential \
-        curl \
-        gettext \
-        git \
-        libcurl4-openssl-dev \
-        libedit-dev \
-        libgd-dev \
-        libicu-dev \
-        libjpeg-dev \
-        libmysqlclient-dev \
-        libonig-dev \
-        libpng-dev \
-        libpq-dev \
-        libreadline-dev \
-        libsqlite3-dev \
-        libssl-dev \
-        libxml2-dev \
-        libzip-dev \
-        openssl \
-        pkg-config \
-        re2c \
-        zlib1g-dev \
-        ;
+  #    sudo apt-get install -y \
+ #       autoconf \
+#        bison \
+      #  build-essential \
+     #   curl \
+    #    gettext \
+   #     git \
+  #      libcurl4-openssl-dev \
+ #       libedit-dev \
+#        libgd-dev \
+    #    libicu-dev \
+   #     libjpeg-dev \
+  #      libmysqlclient-dev \
+ #       libonig-dev \
+#        libpng-dev \
+    #    libpq-dev \
+   #     libreadline-dev \
+  #      libsqlite3-dev \
+ #       libssl-dev \
+#        libxml2-dev \
+     #   libzip-dev \
+    #    openssl \
+   #     pkg-config \
+  #      re2c \
+ #       zlib1g-dev \
+   #     ;
       ;;
   esac
-  asdf install php latest
-  asdf global php latest
+#  asdf install php latest
+#  asdf global php latest
 fi
 
 # shfmt
@@ -328,6 +331,8 @@ git config --global merge.conflictstyle diff3 true
 git config --global pull.rebase true
 git config --global rebase.autostash true
 git config --global rerere.enabled true
+
+git config --global alias.graph 'log --graph --all --decorate --oneline --color'
 
 if ! grep 'GPG_TTY' "$USER_HOME/.bashrc" >/dev/null; then
   # shellcheck disable=2016
@@ -659,24 +664,6 @@ update-desktop-database ~/.local/share/applications
 # curl https://redirector.gvt1.com/edgedl/android/studio/ide-zips/4.0.0.16/android-studio-ide-193.6514223-linux.tar.gz -Lo ~/Downloads/android-studio-ide.tar.xz
 # sudo tar -xzf ~/Downloads/android-studio-ide.tar.xz -C /usr/local
 # rm ~/Downloads/android-studio-ide.tar.xz
-
-#
-# Dropbox
-#
-if ! command -v dropbox >/dev/null; then
-  echo "🚀 Install Dropbox ($0:$LINENO)"
-  case $LINUX_NODENAME in
-    "fedora")
-      sudo dnf install -y \
-        libgnome \
-        ;
-      curl -L 'https://www.dropbox.com/download?dl=packages/fedora/nautilus-dropbox-2022.12.05-1.fedora.x86_64.rpm' -O ~/Downloads/dropbox.rpm
-      sudo rpm -i ~/Downloads/dropbox.rpm
-      ;;
-  esac
-else
-  echo 'Skip install Dropbox'
-fi
 
 #
 # Slack
