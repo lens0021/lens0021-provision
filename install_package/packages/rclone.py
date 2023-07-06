@@ -1,4 +1,4 @@
 from managed_package import ManagedPackage
 
-class rcloud(ManagedPackage):
+class rclone(ManagedPackage):
   pass
