@@ -24,3 +24,4 @@ pkg install -y \
 ;
 
 cp -f termux_bashrc ~/.bashrc
+curl -L https://github.com/LGUG2Z/helix-vim/raw/master/config.toml -O $HOME/.config/helix
