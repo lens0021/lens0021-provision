@@ -3,24 +3,25 @@
 echo 'Hello Termux!'
 pkg upgrade -y
 pkg install -y \
-  vim \
-  tmux \
+  curl \
+  file \
   fzf \
   gh \
+  git \
   glab-cli \
+  golang \
+  helix \
   htop \
+  less \
+  nodejs \
+  perl \
   php \
   python \
-  less \
   ripgrep \
-  git \
-  curl \
+  rust-analyzer \
   termux-api \
-  helix \
-  nodejs \
-  golang \
-  perl \
-  file \
+  tmux \
+  vim \
 ;
 
 cp -f termux_bashrc ~/.bashrc
