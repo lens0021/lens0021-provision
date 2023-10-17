@@ -13,6 +13,7 @@ pkg install -y \
   helix \
   htop \
   less \
+  lsblk \
   nodejs \
   perl \
   php \
@@ -29,3 +30,6 @@ curl -L https://github.com/LGUG2Z/helix-vim/raw/master/config.toml -O $HOME/.con
 tee << EOF >$HOME/.tmux.conf
 set-window-option -g mode-keys vi
 EOF
+
+hx -g fetch
+hx -g build
