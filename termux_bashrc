@@ -1,6 +1,9 @@
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 export USER=$(whoami)
+
 export PATH=$PATH:$HOME/go/bin
+export PATH=$PATH:$HOME/.composer/vendor/bin
+
 export GOPATH=$HOME/go
 
 alias pbcopy=termux-clipboard-set
