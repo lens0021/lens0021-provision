@@ -1,5 +1,6 @@
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-export USER=$(whoami)
+USER=$(whoami)
+export USER
 
 export PATH=$PATH:$HOME/go/bin
 export PATH=$PATH:$HOME/.composer/vendor/bin
