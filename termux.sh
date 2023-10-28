@@ -25,11 +25,8 @@ pkg install -y \
   vim \
 ;
 
-cp -f termux_bashrc ~/.bashrc
-curl -L https://github.com/LGUG2Z/helix-vim/raw/master/config.toml -O $HOME/.config/helix
-tee << EOF >$HOME/.tmux.conf
-set-window-option -g mode-keys vi
-EOF
+cp -f config/termux_bashrc ~/.bashrc
+cp -f config/.tmux.conf "$HOME"/
 
 hx -g fetch
 hx -g build
