@@ -32,4 +32,11 @@ if [ ! -d /usr/local/git ]; then
     ;
 fi
 
+if ! cmp --silent config/.bashrc "$HOME/.bashrc"; then
+  printf 'Updating bashrc...'
+  mv "$HOME/.bashrc" "$HOME/.bashrc.BAK.$(date +%F)"
+  cp config/.bashrc "$HOME/.bashrc"
+  echo ' Done'
+fi
+
 python install_package/main.py
