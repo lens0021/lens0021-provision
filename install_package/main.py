@@ -8,7 +8,6 @@ cache = {}
 def check_requirements(deps, installed):
   for dep in deps:
     if dep not in installed:
-      # print(f'dependency {dep} is not installed')
       return False
   return True
 
