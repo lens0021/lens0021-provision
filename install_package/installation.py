@@ -18,6 +18,7 @@ class Installation(ABC):
       print(f'🚀 install {self.get_name()}')
       self.pre_install()
       self.real_install()
+      self.post_install()
 
   @abstractmethod
   def is_installed(self) -> bool:
@@ -28,6 +29,9 @@ class Installation(ABC):
 
   @abstractmethod
   def real_install(self):
+    pass
+
+  def post_install(self):
     pass
 
   def get_name(self) -> str:
