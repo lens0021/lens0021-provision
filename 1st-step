@@ -34,8 +34,8 @@ fi
 
 if ! cmp --silent config/.bashrc "$HOME/.bashrc"; then
   printf 'Updating bashrc...'
-  mv "$HOME/.bashrc" "$HOME/.bashrc.BAK.$(date +%F)"
-  cp config/.bashrc "$HOME/.bashrc"
+  mv "$HOME/.bashrc" "$HOME/.bashrc.BAK.$(date +%F)" || true
+  cp config/.bashrc "$HOME/"
   echo ' Done'
 fi
 
