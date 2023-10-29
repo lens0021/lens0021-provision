@@ -54,7 +54,7 @@ if ! cmp --silent config/.tmux.conf "$HOME/.tmux.conf"; then
   echo ' Done'
 fi
 
-if ! cmp --silent config/rclone@.service "$HOME/.tmux.conf"; then
+if ! cmp --silent config/rclone@.service "$HOME/.config/systemd/user/rclone@.service"; then
   printf 'Updating rclone@.service...'
   mkdir -p "$HOME/.config/systemd/user/"
   cp -f config/rclone@.service "$HOME/.config/systemd/user/"
