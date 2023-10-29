@@ -1,0 +1,25 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+CWD=$(cd "$(dirname "$0")" && pwd -P)
+
+main() {
+  NAME=$1
+
+  if "$CWD/is-installed" $NAME; then
+    echo "$NAME is already installed... skip"
+    return 0
+  fi
+
+  install-package-dnf "$NAME"
+}
+
+install-package-dnf() {
+  NAME=$1
+
+  echo "🚀 install $NAME"
+  sudo dnf -y install "$NAME"
+}
+
+main "$@"

@@ -63,3 +63,4 @@ if ! cmp --silent config/rclone@.service "$HOME/.config/systemd/user/rclone@.ser
 fi
 
 python install_package/main.py
+bash installer-sh/main.sh

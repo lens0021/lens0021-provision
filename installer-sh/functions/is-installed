@@ -1,0 +1,29 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+CWD=$(cd "$(dirname "$0")" && pwd -P)
+
+main() {
+  NAME=$1
+
+  case $("$CWD"/which-distro) in
+    fedora)
+      is-installed-rpm "$NAME"
+      return "$?"
+    ;;
+    *)
+      >&2 echo "Unknown $CWD"
+      return 255
+    ;;
+  esac
+  return 255
+}
+
+is-installed-rpm() {
+  NAME=$1
+
+  rpm -qa | grep -q "^$NAME-"
+}
+
+main "$@"
