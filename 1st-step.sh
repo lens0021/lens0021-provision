@@ -214,18 +214,6 @@ if ! grep 'GPG_TTY' "$USER_HOME/.bashrc" >/dev/null; then
 fi
 
 #
-# GitLab CLI
-#
-if ! command -v glab >/dev/null; then
-  echo "🚀 Install GitLab CLI ($0:$LINENO)"
-  GLAB_VERSION=$(curl -s https://gitlab.com/api/v4/projects/34675721/repository/tags | jq -r .[0].name)
-  git clone https://gitlab.com/gitlab-org/cli.git ~/git/glab --branch "$GLAB_VERSION"
-  cd ~/git/glab
-  make
-  sudo cp bin/glab /usr/local/bin/glab
-fi
-
-#
 # Git Credential Manager Core
 #
 case $LINUX_NODENAME in
