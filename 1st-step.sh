@@ -424,29 +424,6 @@ curl https://goteleport.com/static/install.sh | bash -s 13.0.0
 #   esac
 # fi
 
-# BloomRPC
-if [ ! -e ~/.local/bin/BloomRPC.AppImage ]; then
-  echo "🚀 Install BloomRPC ($0:$LINENO)"
-  BLOOMRPC_VERSION=$(curl -s https://api.github.com/repos/bloomrpc/bloomrpc/releases/latest | jq -r .tag_name | cut -dv -f2)
-  sudo curl -L "https://github.com/bloomrpc/bloomrpc/releases/download/${BLOOMRPC_VERSION}/BloomRPC-${BLOOMRPC_VERSION}.AppImage" \
-    -o ~/.local/bin/BloomRPC.AppImage
-  sudo chmod +x ~/.local/bin/BloomRPC.AppImage
-
-  curl -L https://github.com/bloomrpc/bloomrpc/raw/master/resources/logo.png -o ~/.icons/bloomrpc.png
-  touch ~/.local/share/applications/BloomRPC.desktop
-  desktop-file-edit \
-    --set-name=BloomRPC \
-    --set-key=Type --set-value=Application \
-    --set-key=Terminal --set-value=false \
-    --set-key=Exec --set-value=$HOME/.local/bin/BloomRPC.AppImage \
-    --set-key=Icon --set-value=bloomrpc \
-    ~/.local/share/applications/BloomRPC.desktop
-
-  sudo desktop-file-install ~/.local/share/applications/BloomRPC.desktop
-else
-  echo 'Skip install BloomRPC'
-fi
-
 #
 # KakaoTalk
 #
