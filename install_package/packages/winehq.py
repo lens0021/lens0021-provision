@@ -8,7 +8,7 @@ class winehq(ManagedPackage):
   def pre_install(self):
     match self.which_distro():
       case self.DISTRO_FEDORA:
-        if not os.path.isFile('/etc/yum.repos.d/winehq.repo'):
+        if not os.path.isfile('/etc/yum.repos.d/winehq.repo'):
           VERSION_ID=shell_command.exec('rpm -E %fedora')
           shell_command.exec(f'sudo dnf config-manager --add-repo "https://dl.winehq.org/wine-builds/fedora/{VERSION_ID}/winehq.repo"')
       case self.DISTRO_DEBIAN:
