@@ -22,7 +22,7 @@ class Package(Installation):
   def is_rpm_installed(self) -> bool:
     if 'rpm -qa' not in self.cache:
       self.cache['rpm -qa'] = shell_command.exec('rpm -qa', False)
-    match = re.search(re.compile(f'^{self.get_name()}', flags=re.MULTILINE), self.cache['rpm -qa'])
+    match = re.search(re.compile(f'^{self.get_name()}-', flags=re.MULTILINE), self.cache['rpm -qa'])
     if match:
       return True
     return False
