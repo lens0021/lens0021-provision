@@ -62,5 +62,12 @@ if ! cmp --silent config/rclone@.service "$HOME/.config/systemd/user/rclone@.ser
   systemctl --user daemon-reload
 fi
 
+if [ $(sudo dmidecode -t system | grep "Product Name" | cut -d: -f2) = " GE62 2QL" ]; then
+  if [ ! -e /var/lib/gdm3/.config/monitors.xml ]; then
+    mkdir -p /var/lib/gdm3/.config/
+    cp -f config/monitors-msi.xml /var/lib/gdm3/.config/monitors.xml
+  fi
+fi
+
 python install_package/main.py
 bash installer-sh/main.sh
