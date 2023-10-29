@@ -85,19 +85,6 @@ case $LINUX_NODENAME in
 esac
 
 #
-# Askpass
-#
-case $LINUX_NODENAME in
-  "fedora")
-    dnf-install-package openssh-askpass
-    ;;
-  "debian")
-    echo "🚀 Install askpass ($0:$LINENO)"
-    sudo apt -t unstable install -y ssh-askpass-gnome
-    ;;
-esac
-
-#
 # Python
 #
 # case $LINUX_NODENAME in
