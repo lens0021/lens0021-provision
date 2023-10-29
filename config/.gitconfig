@@ -1,0 +1,32 @@
+[user]
+	name = lens0021
+	email = lorentz0021@gmail.com
+[gitreview]
+	username = lens0021
+[core]
+	editor = hx
+[color]
+	status = always
+[init]
+	defaultBranch = main
+[merge]
+	conflictstyle = diff3
+[pull]
+	rebase = true
+[rebase]
+	autostash = true
+[rerere]
+	enabled = true
+[alias]
+	graph = log --graph --all --decorate --oneline --color
+[credential]
+	credentialStore = secretservice
+[credential "https://github.com"]
+	helper = 
+	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+[credential "https://gitlab.com"]
+	helper = 
+	helper = !/data/data/com.termux/files/usr/bin/glab auth git-credential
