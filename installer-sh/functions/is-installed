@@ -10,20 +10,23 @@ main() {
   case $("$CWD"/which-distro) in
     fedora)
       is-installed-rpm "$NAME"
-      return "$?"
-    ;;
-    *)
-      >&2 echo "Unknown $CWD"
-      return 255
+      return 0
     ;;
   esac
+
+  >&2 echo "Unknown $("$CWD"/which-distro)"
   return 255
 }
 
 is-installed-rpm() {
   NAME=$1
 
-  rpm -qa | grep -q "^$NAME-"
+  RPM=$(rpm -qa)
+  if echo "$RPM" | grep -q "^$NAME-"; then
+    return 0
+  else
+    return 255
+  fi
 }
 
 main "$@"
