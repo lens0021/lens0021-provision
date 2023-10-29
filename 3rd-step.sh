@@ -2,6 +2,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Rclone
+systemctl --user enable rclone@dropbox
+
 # KakaoTalk
 sed -i 's/Exec=env WINEPREFIX/Exec=env LANG="ko_KR.UTF-8" WINEPREFIX/' \
   ~/.local/share/applications/wine/Programs/카카오톡/카카오톡.desktop

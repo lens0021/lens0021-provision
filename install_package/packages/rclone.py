@@ -1,4 +1,7 @@
 from managed_package import ManagedPackage
+import shell_command
 
 class rclone(ManagedPackage):
-  pass
+  post_install:
+    shell_command.exec('mkdir -p "$HOME/dropbox"')
+

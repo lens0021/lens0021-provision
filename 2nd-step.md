@@ -54,6 +54,12 @@ sudo snap login lorentz0021@gmail.com
 
 Please re-login.
 
+## rclone
+
+```bash
+rclone config
+```
+
 ## Steam
 
 Steam &rarr; Settings &rarr; Downloads &rarr; STEAM LIBRARY FOLDERS &rarr; ??? &rarr; Make Default
