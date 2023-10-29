@@ -38,8 +38,19 @@ fi
 
 if ! cmp --silent config/.bashrc "$HOME/.bashrc"; then
   printf 'Updating bashrc...'
-  mv "$HOME/.bashrc" "$HOME/.bashrc.BAK.$(date +%F)" || true
+  if [ -e "$HOME"/.bashrc ]; then
+    mv "$HOME/.bashrc" "$HOME/.bashrc.BAK.$(date +%F)"
+  fi
   cp config/.bashrc "$HOME/"
+  echo ' Done'
+fi
+
+if ! cmp --silent config/.tmux.conf "$HOME/.tmux.conf"; then
+  printf 'Updating tmux.conf...'
+  if [ -e "$HOME/.tmux.conf" ]; then
+    mv "$HOME/.tmux.conf" "$HOME/.tmux.conf.BAK.$(date +%F)"
+  fi
+  cp config/.tmux.conf "$HOME/"
   echo ' Done'
 fi
 
