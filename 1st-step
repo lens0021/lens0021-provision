@@ -32,6 +32,10 @@ if [ ! -d /usr/local/git ]; then
     ;
 fi
 
+if [ ! -L "$HOME"/git ]; then
+  ln -s /usr/local/git "$HOME"/git
+fi
+
 if ! cmp --silent config/.bashrc "$HOME/.bashrc"; then
   printf 'Updating bashrc...'
   mv "$HOME/.bashrc" "$HOME/.bashrc.BAK.$(date +%F)" || true
