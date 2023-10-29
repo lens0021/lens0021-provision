@@ -49,17 +49,6 @@ case $LINUX_NODENAME in
 esac
 
 #
-# fzf
-#
-if ! command -v fzf >/dev/null; then
-  echo "🚀 Install fzf ($0:$LINENO)"
-  if [ ! -d ~/.fzf ]; then
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  fi
-  ~/.fzf/install --all
-fi
-
-#
 # Change the background color of grub
 #
 if [ "$LINUX_NODENAME" = "debian" ]; then
