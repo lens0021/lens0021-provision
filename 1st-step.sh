@@ -116,31 +116,6 @@ esac
 # echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc
 
 #
-# Fonts
-#
-if ! fc-list | grep nanum >/dev/null; then
-  echo "🚀 Install fonts ($0:$LINENO)"
-  case $LINUX_NODENAME in
-    "fedora")
-      sudo dnf -y install \
-        naver-nanum-gothic-fonts \
-        naver-nanum-gothic-coding-fonts \
-      ;
-      ;;
-    "debian")
-      sudo apt-get install -y \
-        fonts-nanum* \
-        fonts-unfonts-core \
-        fonts-noto-color-emoji \
-        fonts-recommended \
-        ;
-      ;;
-  esac
-else
-  echo 'Skip install fonts'
-fi
-
-#
 # Keybase
 #
 if ! command -v keybase >/dev/null; then
