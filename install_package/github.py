@@ -1,5 +1,5 @@
-import requests
+import json
 
 def latest_version(owner: str, repo: str) -> str:
-  res = requests.get(f'https://api.github.com/repos/{owner}/{repo}/releases/latest')
-  return res.json()['tag_name']
+  res = shell_command.exec(f'curl -L https://api.github.com/repos/{owner}/{repo}/releases/latest')
+  return json.loads(jsonStr)['tag_name']
