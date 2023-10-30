@@ -19,9 +19,9 @@ ssh-add ~/.ssh/id_ed25519_2019
 ## git clone
 
 ```sh
-git clone "git@github.com:femiwiki/femiwiki.git" ~/git/femiwiki/femiwiki
-git clone "git@github.com:femiwiki/docker-mediawiki.git" ~/git/femiwiki/mediawiki
-git clone "git@github.com:femiwiki/FemiwikiSkin.git" ~/git/femiwiki/skin
+git clone "git@github.com:femiwiki/femiwiki.git" ~/git/fw/femiwiki
+git clone "git@github.com:femiwiki/docker-mediawiki.git" ~/git/fw/mediawiki
+git clone "git@github.com:femiwiki/FemiwikiSkin.git" ~/git/fw/skin
 git clone "ssh://lens0021@gerrit.wikimedia.org:29418/mediawiki/skins/Vector" ~/git/wikimedia/vector
 ```
 
