@@ -21,7 +21,13 @@ main() {
 is-installed-rpm() {
   NAME=$1
 
-  RPM=$(rpm -qa)
+  if [ -f "$CWD"/../../cache/rpm-qa ]; then
+    RPM=$(cat "$CWD"/../../cache/rpm-qa)
+  else
+    RPM=$(rpm -qa)
+    echo "$RPM" > "$CWD"/../../cache/rpm-qa
+  fi
+
   if echo "$RPM" | grep -q "^$NAME-"; then
     return 0
   else
