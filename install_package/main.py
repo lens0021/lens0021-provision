@@ -27,7 +27,10 @@ def install_packages():
     except TypeError as e:
       print(str(e), module)
 
-  installed = []
+  installed = [
+    # TODO: find a workaround
+    'gh',
+  ]
   while len(installed) < len(not_installed):
     for name in not_installed:
       if name not in installed:
