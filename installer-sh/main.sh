@@ -19,6 +19,7 @@ main() {
 }
 
 install-packages() {
+  rm -f "$CWD"/../cache/rpm-qa
   for pkg in "$CWD"/packages/*; do
     bash "$pkg"
   done
