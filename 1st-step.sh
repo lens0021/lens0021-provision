@@ -225,12 +225,6 @@ if ! command -v code >/dev/null; then
 fi
 
 #
-# Teleport
-#
-# https://goteleport.com/download/
-curl https://goteleport.com/static/install.sh | bash -s 13.0.0
-
-#
 # Starship
 #
 # sudo dnf copr enable -y atim/starship
