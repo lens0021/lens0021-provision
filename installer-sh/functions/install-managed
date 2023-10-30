@@ -8,7 +8,7 @@ main() {
   NAME=$1
 
   if "$CWD/is-installed" $NAME; then
-    echo "$NAME is already installed... skip"
+    echo "$NAME is already installed ... skip"
     return 0
   fi
 
