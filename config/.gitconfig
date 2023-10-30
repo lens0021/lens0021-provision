@@ -22,11 +22,21 @@
 [credential]
 	credentialStore = secretservice
 [credential "https://github.com"]
-	helper = 
-	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+	helper =
+	helper = !/usr/bin/gh auth git-credential
 [credential "https://gist.github.com"]
-	helper = 
-	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+	helper =
+	helper = !/usr/bin/gh auth git-credential
 [credential "https://gitlab.com"]
-	helper = 
-	helper = !/data/data/com.termux/files/usr/bin/glab auth git-credential
+	helper =
+	helper = !/usr/bin/glab auth git-credential
+# termux
+# [credential "https://github.com"]
+# 	helper =
+# 	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+# [credential "https://gist.github.com"]
+# 	helper =
+# 	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+# [credential "https://gitlab.com"]
+# 	helper =
+# 	helper = !/data/data/com.termux/files/usr/bin/glab auth git-credential
