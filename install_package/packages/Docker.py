@@ -28,6 +28,7 @@ class Docker(ManagedPackage):
       'sudo usermod -aG docker "$USER"',
       'newgrp docker',
       'sudo systemctl enable docker',
+      'sudo systemctl start docker',
       'sudo systemctl enable docker.service',
       'sudo systemctl enable containerd.service',
     ]:
