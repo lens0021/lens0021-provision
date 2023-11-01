@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+if ! command -v aws >/dev/null; then
+  echo "🚀 Install AWS CLI ($0:$LINENO)"
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/awscliv2.zip
+  unzip ~/Downloads/awscliv2.zip -d ~/Downloads
+  sudo ~/Downloads/aws/install
+  rm -rf ~/Downloads/awscliv2.zip ~/Downloads/aws/
+else
+  echo 'Skip install aws'
+fi

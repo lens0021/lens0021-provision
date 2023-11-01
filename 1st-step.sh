@@ -266,20 +266,6 @@ else
 fi
 
 #
-# AWS CLI
-# Reference: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
-#
-if ! command -v aws >/dev/null; then
-  echo "🚀 Install AWS CLI ($0:$LINENO)"
-  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o ~/Downloads/awscliv2.zip
-  unzip ~/Downloads/awscliv2.zip -d ~/Downloads
-  sudo ~/Downloads/aws/install
-  rm -rf ~/Downloads/awscliv2.zip ~/Downloads/aws/
-else
-  echo 'Skip install aws'
-fi
-
-#
 # EC2 Instance Connect CLI
 # Reference: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html#ec2-instance-connect-install
 #
