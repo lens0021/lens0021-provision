@@ -1,2 +1,4 @@
+IdentityFile ~/.ssh/id_ed25519_2019
+
 Host gerrit.wikimedia.org
   RSAMinSize 1023
