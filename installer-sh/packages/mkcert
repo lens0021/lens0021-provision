@@ -4,6 +4,7 @@ IFS=$'\n\t'
 
 CWD=$(cd "$(dirname "$0")" && pwd -P)
 
+"$CWD"/../functions/install-managed nss-tools
 if ! command -v mkcert >/dev/null; then
   echo "🚀 Install mkcert ($0:$LINENO)"
   MKCERT_VERSION=$(curl -s https://api.github.com/repos/FiloSottile/mkcert/releases/latest | jq -r .tag_name)
