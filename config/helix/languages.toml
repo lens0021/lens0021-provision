@@ -1,0 +1,13 @@
+[language-server.phpactor]
+command = "phpactor"
+args = ["language-server", "-vvv"]
+
+[[language]]
+name = "php"
+scope = "source.php"
+injection-regex = "php"
+file-types = ["php", "inc", "php4", "php5", "phtml", "ctp"]
+shebangs = ["php"]
+roots = ["psalm.xml.dist"]
+language-servers = [ "phpactor" ]
+indent = { tab-width = 4, unit = "    " }
