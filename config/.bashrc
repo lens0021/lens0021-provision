@@ -23,6 +23,9 @@ export PAGER
 GPG_TTY=$(tty)
 export GPG_TTY
 
+KUBE_EDITOR=hx
+export KUBE_EDITOR
+
 # User specific functions
 if [ -d ~/.bashrc.d ]; then
 	for rc in ~/.bashrc.d/*; do
