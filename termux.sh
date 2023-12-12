@@ -14,6 +14,7 @@ pkg install -y \
   golang \
   helix \
   htop \
+  kubectl \
   less \
   lsblk \
   nodejs \
@@ -22,6 +23,7 @@ pkg install -y \
   python \
   ripgrep \
   rust-analyzer \
+  teleport-tsh \
   termux-api \
   tmux \
   vim \
