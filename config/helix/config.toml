@@ -1,2 +1,4 @@
+theme = "serika-light"
+
 [editor.whitespace]
 render = "all"
