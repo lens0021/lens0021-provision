@@ -10,6 +10,8 @@ export GOPATH=$HOME/go
 alias pbcopy=termux-clipboard-set
 alias pbpaste=termux-clipboard-get
 
+[ -f /data/data/com.termux/files/home/git/port/user-leslie-snippets/rc/rc.sh ] && source /data/data/com.termux/files/home/git/port/user-leslie-snippets/rc/rc.sh
+
 if [ -z $TMUX ]; then
 	tmux attach || tmux
 fi
