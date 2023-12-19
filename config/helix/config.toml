@@ -1,4 +1,5 @@
 theme = "serika-light"
 
-[editor.whitespace]
-render = "all"
+[editor.whitespace.render]
+space = "all"
+tab = "all"
