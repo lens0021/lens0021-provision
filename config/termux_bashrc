@@ -9,6 +9,7 @@ export GOPATH=$HOME/go
 
 alias pbcopy=termux-clipboard-set
 alias pbpaste=termux-clipboard-get
+alias kc=kubectl
 
 [ -f /data/data/com.termux/files/home/git/port/user-leslie-snippets/rc/rc.sh ] && source /data/data/com.termux/files/home/git/port/user-leslie-snippets/rc/rc.sh
 
