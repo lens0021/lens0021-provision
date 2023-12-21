@@ -1,11 +1,18 @@
 # .fishrc
 
+if status is-interactive
+  # Commands to run in interactive sessions can go here
+  abbr -a -- pbcopy 'xclip -selection clipboard'
+  abbr -a -- pbpaste 'xclip -selection clipboard -o'
+  abbr -a -- kc kubectl
+end
+
 # User specific environment
 if ! string match -q -- "$PATH" "$HOME/.local/bin:"
-	set PATH "$HOME/.local/bin:$PATH"
+  set PATH "$HOME/.local/bin:$PATH"
 end
 if ! string match -q -- "$PATH" "$HOME/bin:"
-	set PATH "$HOME/bin:$PATH"
+  set PATH "$HOME/bin:$PATH"
 end
 if ! string match -q -- "$PATH" =~ "$HOME/.krew/bin:"
   set PATH "$HOME/.krew/bin:$PATH"
@@ -21,5 +28,6 @@ export GPG_TTY
 set KUBE_EDITOR hx
 export KUBE_EDITOR
 
-[ -f ~/.fzf.fish ] && . ~/.fzf.fish
-[ -f /usr/local/git/port/user-leslie-snippets/rc/rc.fish ] && source /usr/local/git/port/user-leslie-snippets/rc/rc.fish
+if test ! -f $HOME/.config/fish/conf.d/port.fish
+  ln -s /usr/local/git/port/user-leslie-snippets/rc/rc.fish $HOME/.config/fish/conf.d/port.fish
+end
