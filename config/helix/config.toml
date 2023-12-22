@@ -1,4 +1,4 @@
-theme = "serika-light"
+theme = "github-light"
 
 [editor.whitespace.render]
 space = "all"
