@@ -1,3 +1,7 @@
 [*.py]
 indent_style = space
 indent_size = 2
+
+[*.{ba,fi,}sh]
+indent_style = space
+indent_size = 2
