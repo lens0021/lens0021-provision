@@ -13,8 +13,4 @@ alias kc=kubectl
 
 [ -f /data/data/com.termux/files/home/git/port/user-leslie-snippets/rc/rc.sh ] && source /data/data/com.termux/files/home/git/port/user-leslie-snippets/rc/rc.sh
 
-if [ -z $TMUX ]; then
-  tmux attach || tmux
-fi
-
 export KUBE_EDITOR=hx
