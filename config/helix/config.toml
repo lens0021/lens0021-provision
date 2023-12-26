@@ -3,3 +3,6 @@ theme = "github-light"
 [editor.whitespace.render]
 space = "all"
 tab = "all"
+
+[editor.file-picker]
+hidden = false
