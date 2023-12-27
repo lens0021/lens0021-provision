@@ -12,4 +12,5 @@ set -l pr_dir $HOME/git/lens/provision
 
 create-symlink $pr_dir/config/tmux.conf $HOME/.config/tmux/tmux.conf
 create-symlink $pr_dir/config/helix/config.toml $HOME/.config/helix/config.toml
+create-symlink $HOME/.asdf/completions/asdf.fish $HOME/.config/fish/completions/asdf.fish
 

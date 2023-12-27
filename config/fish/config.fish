@@ -33,3 +33,6 @@ for conf in $src/*
     ln -s $src/$name $dist/lens-$name
   end
 end
+
+# External sources
+source ~/.asdf/asdf.fish
