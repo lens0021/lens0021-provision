@@ -1,0 +1,18 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+CWD=$(cd "$(dirname "$0")" && pwd -P)
+
+"$CWD"/../functions/install-managed nss-tools
+if ! command -v yq >/dev/null; then
+  echo "🚀 Install yq ($0:$LINENO)"
+  YQ_VERSION=$(curl -s https://api.github.com/repos/mikefarah/yq/releases/latest | jq -r .tag_name)
+  curl -L "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" \
+    -o yq-linux-amd64
+  sudo install yq-linux-amd64 /usr/local/bin/yq
+  rm yq-linux-amd64
+
+else
+  echo 'Skip install yq'
+fi
