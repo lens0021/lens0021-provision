@@ -1,4 +1,7 @@
 function create-symlink
+  if ! test -e $argv[1]
+    return
+  end
   set -l src (realpath $argv[1])
   set -l dist $argv[2]
 
