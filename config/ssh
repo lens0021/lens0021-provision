@@ -8,6 +8,6 @@ Host github.com
   Hostname github.com
 
 Host oci-blue
-  Hostname 64.110.65.205
+  Hostname 132.226.19.37
   User ubuntu
   IdentityFile ~/.ssh/id_ed25519_2019
