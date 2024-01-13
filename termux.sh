@@ -10,6 +10,7 @@ pkg install -y \
   fzf \
   gh \
   git \
+  gitui \
   glab-cli \
   golang \
   helix \
