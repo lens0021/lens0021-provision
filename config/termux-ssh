@@ -1,0 +1,14 @@
+IdentityFile ~/.ssh/id_ed25519
+
+Host gerrit.wikimedia.org
+  Hostname gerrit.wikimedia.org
+  # Unrecognized
+  # RSAMinSize 1023
+
+Host github.com
+  Hostname github.com
+
+Host oci-blue
+  Hostname 193.123.249.125
+  User ubuntu
+  IdentityFile ~/.ssh/id_ed25519
