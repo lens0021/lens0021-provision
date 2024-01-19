@@ -1,4 +1,4 @@
-IdentityFile ~/.ssh/id_ed25519_2019
+IdentityFile ~/.ssh/id_ed25519
 
 Host gerrit.wikimedia.org
   Hostname gerrit.wikimedia.org
@@ -8,6 +8,6 @@ Host github.com
   Hostname github.com
 
 Host oci-blue
-  Hostname 132.226.19.37
+  Hostname 193.123.249.125
   User ubuntu
-  IdentityFile ~/.ssh/id_ed25519_2019
+  IdentityFile ~/.ssh/id_ed25519
