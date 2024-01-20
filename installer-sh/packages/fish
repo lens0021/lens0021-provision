@@ -4,4 +4,11 @@ IFS=$'\n\t'
 
 CWD=$(cd "$(dirname "$0")" && pwd -P)
 
-"$CWD"/../functions/install-managed fish
+# "$CWD"/../functions/install-managed fish
+
+if ! command -v fisher >/dev/null; then
+  fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'
+fi
+
+# Example:
+# fish -c 'fisher install PatrickF1/fzf.fish'
