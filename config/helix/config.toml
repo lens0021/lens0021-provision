@@ -1,11 +1,28 @@
 theme = "github-light"
 
+[editor]
+middle-click-paste = false
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name", "read-only-indicator", "file-modification-indicator", "version-control"]
+right = ["diagnostics", "selections", "register", "position", "position-percentage"]
+
+[editor.lsp]
+display-messages = true
+display-inlay-hints = true
+
+[editor.cursor-shape]
+insert = "bar"
+
+[editor.file-picker]
+hidden = false
+
 [editor.whitespace.render]
 space = "all"
 tab = "all"
 
-[editor.file-picker]
-hidden = false
+[editor.indent-guides]
+render = true
 
 [keys.normal]
 A-z = ":toggle soft-wrap.enable"
