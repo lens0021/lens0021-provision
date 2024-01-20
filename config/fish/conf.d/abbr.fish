@@ -7,4 +7,5 @@ if status is-interactive
   abbr -a -- tf terraform
 
   abbr -a -- gitgraph 'git log --graph --all --decorate --oneline --color'
+  abbr -a -- gitgraphfzf "git log --graph --all --decorate --oneline --color | fzf --multi --tiebreak=index --layout reverse --ansi --no-sort --preview 'echo {} | rg --only-matching --max-count 1 '[0-9a-f]\\\\{8\\\\}' | xargs -I % sh -c \'git show --color=always \\%\'' | rg '[0-9a-f]{8}' --only-matching --max-count 1"
 end
