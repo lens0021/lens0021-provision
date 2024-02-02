@@ -6,6 +6,7 @@ if status is-interactive
   abbr -a -- kc kubectl
   abbr -a -- tf terraform
 
+  abbr -a -- gitdelta 'git -c \'core.pager=delta --light -s\''
   abbr -a -- gitgraph 'git log --graph --all --decorate --oneline --color'
   abbr -a -- gitgraphfzf "git log --graph --all --decorate --oneline --color | fzf --multi --tiebreak=index --layout reverse --ansi --no-sort --preview 'echo {} | rg --only-matching --max-count 1 '[0-9a-f]\\\\{7\\\\}' | xargs -I % sh -c \'git show --color=always \\%\'' | rg '[0-9a-f]{7}' --only-matching --max-count 1"
 end
