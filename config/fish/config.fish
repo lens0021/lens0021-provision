@@ -20,21 +20,25 @@ set -l dist $HOME/.config/fish/conf.d
 
 # Remove lens- prefixed files do not exist on the source directory
 for conf in $dist/lens-*
-  set -l name (string replace -a 'lens-' '' (basename $conf))
-  if test ! -f $src/$conf
-    rm $dist/lens-$name
-  end
+    set -l name (string replace -a 'lens-' '' (basename $conf))
+    if test ! -f $src/$conf
+        rm $dist/lens-$name
+    end
 end
 
 # Create symlinks if not exists
 for conf in $src/*
-  set -l name $(basename $conf)
-  if test ! -f $dist/lens-$name
-    ln -s $src/$name $dist/lens-$name
-  end
+    set -l name $(basename $conf)
+    if test ! -f $dist/lens-$name
+        ln -s $src/$name $dist/lens-$name
+    end
 end
 
 # External sources
 if test -e ~/.asdf/asdf.fish
-  source ~/.asdf/asdf.fish
+    source ~/.asdf/asdf.fish
+end
+
+if functions -q declair
+    declair update_rc
 end
