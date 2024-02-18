@@ -15,6 +15,7 @@ pkg install -y \
   golang \
   helix \
   htop \
+  zellij \
   kubectl \
   less \
   lsblk \
