@@ -1,6 +1,19 @@
+[language-server.scls]
+command = "simple-completion-language-server"
+
+[language-server.scls.config]
+max_completion_items = 20
+feature_words = true
+feature_unicode_input = true
+
+[[language]]
+name = "hcl"
+language-servers = [ "scls", "terraform-ls" ]
+
+
 [language-server.phpactor]
 command = "phpactor"
-args = ["language-server", "-vvv"]
+args = ["language-server"]
 
 [[language]]
 name = "php"
