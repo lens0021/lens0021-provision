@@ -2,6 +2,7 @@ theme = "github-light"
 
 [editor]
 middle-click-paste = false
+completion-trigger-len = 0
 
 [editor.statusline]
 left = ["mode", "spinner", "file-name", "read-only-indicator", "file-modification-indicator", "version-control"]
