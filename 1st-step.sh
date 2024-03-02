@@ -167,17 +167,18 @@ yarn-add stylelint
 #
 git config --global user.name "lens0021"
 git config --global user.email "lorentz0021@gmail.com"
-git config --global core.editor "code --wait"
 git config --global --add gitreview.username "lens0021"
 
 git config --global color.status always
 git config --global commit.gpgsign true
+git config --global core.editor hx
 git config --global credential.credentialStore secretservice
 git config --global init.defaultBranch main
 git config --global merge.conflictstyle diff3 true
 git config --global pull.rebase true
 git config --global rebase.autostash true
 git config --global rerere.enabled true
+git config --global submodule.recurse true
 
 git config --global alias.graph 'log --graph --all --decorate --oneline --color'
 
