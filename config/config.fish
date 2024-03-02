@@ -39,6 +39,6 @@ if test -e ~/.asdf/asdf.fish
     source ~/.asdf/asdf.fish
 end
 
-# if functions -q declair
-#     declair update_rc
-# end
+if status is-interactive && functions -q declair
+    declair update_rc
+end
