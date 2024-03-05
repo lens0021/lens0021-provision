@@ -1,13 +1,9 @@
 # .fishrc
 
-set PAGER 'less -r'
-export PAGER
-
-set GPG_TTY $(tty)
-export GPG_TTY
-
-set KUBE_EDITOR hx
-export KUBE_EDITOR
+set -x PAGER 'less -r'
+set -x GPG_TTY $(tty)
+set -x KUBE_EDITOR hx
+set -x EDITOR hx
 
 # if test ! -f $HOME/.config/fish/conf.d/port.fish
 #   ln -s /usr/local/git/port/user-leslie-snippets/rc/rc.fish $HOME/.config/fish/conf.d/port.fish
