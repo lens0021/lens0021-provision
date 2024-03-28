@@ -14,9 +14,9 @@ set -x EDITOR hx
 set -l src $HOME/git/lens/provision/config/fish/conf.d
 set -l dist $HOME/.config/fish/conf.d
 
-# Use Ctrl+F instead of Ctrl+Alt+F for directory
+# Change key bindings for fzf.fish
 # https://github.com/PatrickF1/fzf.fish/blob/main/functions/fzf_configure_bindings.fish
-fzf_configure_bindings --directory=\cf
+fzf_configure_bindings --variables= --directory=\cv --history=\e\cr
 
 # Remove lens- prefixed files do not exist on the source directory
 for conf in $dist/lens-*
