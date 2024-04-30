@@ -3,10 +3,12 @@ set -duxo pipefail
 IFS=$'\n\t'
 
 if ! command -v fish; then
-  pkg upgrade -y
-  pkg install -y \
-    fish \
-  ;
+  if [[ -n $TERMUX_VERSION ]]; then
+    pkg upgrade -y
+    pkg install -y fish
+  else
+    dnf install -y fish
+  fi
 fi
 
 curl https://gitlab.com/lens0021/provision/-/raw/main/termux.fish | fish -d 3
