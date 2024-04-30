@@ -1,5 +1,5 @@
 #!/bin/bash
-set -duxo pipefail
+set -euxo pipefail
 IFS=$'\n\t'
 
 if ! command -v fish; then
