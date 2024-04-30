@@ -1,12 +1,12 @@
 #!/bin/bash
-set -euo pipefail
+set -duxo pipefail
 IFS=$'\n\t'
 
+if ! command -v fish; then
+  pkg upgrade -y
+  pkg install -y \
+    fish \
+  ;
+fi
 
-echo 'Hello Termux!'
-pkg upgrade -y
-pkg install -y \
-  fish \
-;
-
-curl https://gitlab.com/lens0021/provision/-/raw/main/termux.fish | fish
+curl https://gitlab.com/lens0021/provision/-/raw/main/termux.fish | fish -d 3
