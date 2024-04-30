@@ -28,6 +28,8 @@ else
   end
 
   cd
-  git clone https://gitlab.com/lens0021/provision
-  fish -d 3 provision/1st-step.fish
+  if ! -d provision
+    git clone https://gitlab.com/lens0021/provision.git
+  end
+  fish -d provision/1st-step.fish
 end

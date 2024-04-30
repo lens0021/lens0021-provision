@@ -11,4 +11,4 @@ if ! command -v fish; then
   fi
 fi
 
-curl https://gitlab.com/lens0021/provision/-/raw/main/termux.fish | fish -d 3
+curl https://gitlab.com/lens0021/provision/-/raw/main/termux.fish | fish -d
