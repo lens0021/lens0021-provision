@@ -2,7 +2,7 @@
 set -euxo pipefail
 IFS=$'\n\t'
 
-if ! command -v fish; then
+if ! command -v fish >/dev/null; then
   if [[ -n $TERMUX_VERSION ]]; then
     pkg upgrade -y
     pkg install -y fish
