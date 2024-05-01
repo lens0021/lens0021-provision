@@ -38,5 +38,5 @@ else
     mkdir -p /home/nemo
     git clone https://gitlab.com/lens0021/provision.git /home/nemo/
   end
-  fish -d provision/1st-step.fish
+  fish -d debug provision/1st-step.fish
 end
