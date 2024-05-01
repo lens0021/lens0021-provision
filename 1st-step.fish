@@ -26,6 +26,10 @@ end
 if [ ! command -v fisher >/dev/null ]
   fish -c 'curl -L https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'
 end
+if [ ! -e /home/nemo/.config/fish/fish_plugins ]
+  mkdir -p /home/nemo/.config/fish
+  curl -L https://gitlab.com/lens0021/provision/-/raw/main/fish_plugins -o /home/nemo/.config/fish/fish_plugins
+end
 
 if [ ! -d /usr/local/git ]
   mkdir -p /usr/local/git
