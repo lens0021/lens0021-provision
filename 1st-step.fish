@@ -1,10 +1,12 @@
-if ! string match --regex --quiet nemo "$(cat /etc/passwd)"
+if [ ! string match --regex --quiet nemo "$(cat /etc/passwd)" ]
   adduser nemo
   passwd -d nemo
 end
 
-if ! -e /etc/sudeors.d
-  echo 'nemo ALL=(ALL:ALL) ALL' > /etc/sudeors.d/nemo
+if [ ! -e /etc/sudoersh.d/nemo ]
+  mkdir -p /etc/sudoersh.d
+  echo 'nemo ALL=(ALL:ALL) ALL' > /etc/sudoersh.d/nemo
+  chmod u+s /usr/bin/sudo
 end
 
 if set -q TERMUX_VERSION
@@ -21,7 +23,7 @@ if set -q TERMUX_VERSION
   bash -c 'for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file; done'
 end
 
-if ! command -v fisher >/dev/null
+if [ ! command -v fisher >/dev/null ]
   fish -c 'curl -L https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'
 end
 

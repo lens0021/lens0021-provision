@@ -26,6 +26,9 @@ if set -q TERMUX_VERSION
     proot-distro install fedora
   end
   proot-distro login fedora -- /bin/bash -c 'curl https://gitlab.com/lens0021/provision/-/raw/main/termux.bash | bash'
+  if [ ! e ~/.bashrc ]
+    echo 'proot-distro login --user nemo fedora' > ~/.bashrc
+  end
 
   if [ ! -d ~/storage ]
     termux-setup-storage
@@ -41,5 +44,5 @@ else
     mkdir -p /home/nemo
     git clone https://gitlab.com/lens0021/provision.git /home/nemo/provision
   end
-  fish -d debug provision/1st-step.fish
+  fish -d debug /home/nemo/provision/1st-step.fish
 end
