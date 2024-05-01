@@ -1,4 +1,6 @@
-if [ ! string match --regex --quiet nemo "$(cat /etc/passwd)" ]
+set -q PROVISION_BRANCH || set PROVISION_BRANCH main
+
+if ! string match --regex --quiet nemo "$(cat /etc/passwd)"
   adduser nemo
   passwd -d nemo
 end
@@ -9,27 +11,26 @@ if [ ! -e /etc/sudoersh.d/nemo ]
   chmod u+s /usr/bin/sudo
 end
 
-if set -q TERMUX_VERSION
+dnf install -y \
+  yq \
+;
+
+if set -q ANDROID_ROOT
   # Termux X11 Desktop
   dnf install -y \
     dbus-x11 \
-    gnome-shell \
-    gnome-software \
-    gnome-tweaks \
-    nautilus \
     python-dbus \
   ;
 
   bash -c 'for file in $(find /usr -type f -iname "*login1*"); do rm -rf $file; done'
 end
 
-if [ ! command -v fisher >/dev/null ]
-  fish -c 'curl -L https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'
+if ! command -v fisher >/dev/null
+  sudo -u nemo fish -c 'curl -L https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'
 end
-if [ ! -e /home/nemo/.config/fish/fish_plugins ]
-  mkdir -p /home/nemo/.config/fish
-  curl -L https://gitlab.com/lens0021/provision/-/raw/main/fish_plugins -o /home/nemo/.config/fish/fish_plugins
-end
+curl -L "https://gitlab.com/lens0021/provision/-/raw/$PROVISION_BRANCH/fish_plugins" -o /home/nemo/.config/fish/fish_plugins
+chsh -s (which fish) nemo
+sudo -u nemo fish -c 'fisher update'
 
 if [ ! -d /usr/local/git ]
   mkdir -p /usr/local/git
@@ -44,5 +45,6 @@ if [ ! -d /usr/local/git ]
 end
 
 if [ ! -L /home/nemo/git ]
+  mkdir -p /home/nemo/
   ln -s /usr/local/git /home/nemo/git
 end

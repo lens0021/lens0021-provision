@@ -4,6 +4,8 @@ IFS=$'\n\t'
 
 if ! command -v fish >/dev/null; then
   if [[ -n $TERMUX_VERSION ]]; then
+    DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_FRONTEND
     pkg upgrade -y
     pkg install -y fish
   else
@@ -11,4 +13,4 @@ if ! command -v fish >/dev/null; then
   fi
 fi
 
-curl -L https://gitlab.com/lens0021/provision/-/raw/main/termux.fish | fish -d debug
+curl -L "https://gitlab.com/lens0021/provision/-/raw/${PROVISION_BRANCH:-main}/termux.fish" | fish -d debug
