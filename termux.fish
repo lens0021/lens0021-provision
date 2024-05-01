@@ -26,7 +26,7 @@ if set -q TERMUX_VERSION
     proot-distro install fedora
   end
   proot-distro login fedora -- /bin/bash -c 'curl https://gitlab.com/lens0021/provision/-/raw/main/termux.bash | bash'
-  if [ ! e ~/.bashrc ]
+  if [ ! -e ~/.bashrc ]
     echo 'proot-distro login --user nemo fedora' > ~/.bashrc
   end
 
