@@ -13,6 +13,7 @@ if set -q TERMUX_VERSION
     proot \
     proot-distro \
     termux-api \
+    which \
   ;
 
   # X11 Desktop
@@ -21,7 +22,9 @@ if set -q TERMUX_VERSION
     termux-x11-nightly \
   ;
 
-  proot-distro install fedora
+  if [ ! - d /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/fedora ]
+    proot-distro install fedora
+  end
   proot-distro login fedora -- /bin/bash -c 'curl https://gitlab.com/lens0021/provision/-/raw/main/termux.bash | bash'
 
   if [ ! -d ~/storage ]
