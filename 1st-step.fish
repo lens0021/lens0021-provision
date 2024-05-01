@@ -22,7 +22,7 @@ if set -q TERMUX_VERSION
 end
 
 if ! command -v fisher >/dev/null
-  fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'
+  fish -c 'curl -L https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'
 end
 
 if [ ! -d /usr/local/git ]
