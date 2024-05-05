@@ -43,6 +43,6 @@ if [ ! -d /usr/local/git ]
   ;
 end
 
-if [ ! -L "$HOME"/git ]
-  ln -s /usr/local/git "$HOME"/git
+if [ ! -L /home/nemo/git ]
+  ln -s /usr/local/git /home/nemo/git
 end

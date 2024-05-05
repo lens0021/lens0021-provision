@@ -45,4 +45,5 @@ else
     git clone https://gitlab.com/lens0021/provision.git /home/nemo/provision
   end
   fish -d debug /home/nemo/provision/1st-step.fish
+  mv /home/nemo/provision /home/nemo/git/provision
 end
