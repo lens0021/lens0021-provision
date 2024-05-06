@@ -1,38 +1,10 @@
-# .fishrc
-
-set -x PAGER 'less -r'
-set -x GPG_TTY $(tty)
-set -x KUBE_EDITOR hx
-set -x EDITOR hx
-
 # if test ! -f $HOME/.config/fish/conf.d/port.fish
 #   ln -s /usr/local/git/port/user-leslie-snippets/rc/rc.fish $HOME/.config/fish/conf.d/port.fish
 # end
 
-# Update fish configurations
-
-set -l src $HOME/git/lens/provision/config/fish/conf.d
-set -l dist $HOME/.config/fish/conf.d
-
 # Change key bindings for fzf.fish
 # https://github.com/PatrickF1/fzf.fish/blob/main/functions/fzf_configure_bindings.fish
 fzf_configure_bindings --variables= --directory=\cv --history=\e\cr
-
-# Remove lens- prefixed files do not exist on the source directory
-for conf in $dist/lens-*
-    set -l name (string replace -a 'lens-' '' (basename $conf))
-    if test ! -f $src/$conf
-        rm $dist/lens-$name
-    end
-end
-
-# Create symlinks if not exists
-for conf in $src/*
-    set -l name $(basename $conf)
-    if test ! -f $dist/lens-$name
-        ln -s $src/$name $dist/lens-$name
-    end
-end
 
 # External sources
 if test -e ~/.asdf/asdf.fish
