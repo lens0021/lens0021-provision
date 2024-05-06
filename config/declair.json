@@ -61,5 +61,13 @@
       "credential.https://gitlab.com.helper": "!/usr/bin/glab auth git-credential",
       "submodule.recurse": "true"
     }
+  },
+  "sym": {
+    "/usr/local/git/lens/provision/config/composer.json": "/home/nemo/.composer/composer.json",
+    "/usr/local/git/lens/provision/config/declair.json": "/home/nemo/.config/fish/declair.json",
+    "/usr/local/git/lens/provision/config/helix/config.toml": "/home/nemo/.config/helix/config.toml",
+    "/usr/local/git/lens/provision/config/termux.properties": "/home/nemo/.termux/termux.properties",
+    "/usr/local/git/lens/provision/config/tmux.conf": "/home/nemo/.config/tmux/tmux.conf",
+    "/usr/local/git/lens/provision/fish_plugins": "/home/nemo/.config/fish/fish_plugins"
   }
 }
