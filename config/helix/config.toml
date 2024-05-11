@@ -3,6 +3,7 @@ theme = "github-light"
 [editor]
 middle-click-paste = false
 true-color = true
+bufferline = multiple
 
 [editor.statusline]
 left = ["mode", "spinner", "file-name", "read-only-indicator", "file-modification-indicator", "version-control"]
