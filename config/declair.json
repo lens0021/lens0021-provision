@@ -71,6 +71,7 @@
     "/usr/local/git/lens/provision/config/helix/languages.toml": "/home/nemo/.config/helix/languages.toml",
     "/usr/local/git/lens/provision/config/termux.properties": "/home/nemo/.termux/termux.properties",
     "/usr/local/git/lens/provision/config/tmux.conf": "/home/nemo/.config/tmux/tmux.conf",
-    "/usr/local/git/lens/provision/fish_plugins": "/home/nemo/.config/fish/fish_plugins"
+    "/usr/local/git/lens/provision/fish_plugins": "/home/nemo/.config/fish/fish_plugins",
+    "/usr/local/git/port/user-leslie-snippets/rc/rc.fish": "/home/nemo/.config/fish/conf.d/port.fish"
   }
 }
