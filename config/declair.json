@@ -66,6 +66,7 @@
     }
   },
   "sym": {
+    "/usr/local/git/lens/provision/config/aws": "/home/nemo/.aws/config",
     "/usr/local/git/lens/provision/config/composer.json": "/home/nemo/.composer/composer.json",
     "/usr/local/git/lens/provision/config/declair.json": "/home/nemo/.config/fish/declair.json",
     "/usr/local/git/lens/provision/config/gitui.ron": "/home/nemo/.config/gitui/key_bindings.ron",
