@@ -42,7 +42,8 @@
     "composer": "2.7.4",
     "rclone": "1.64.2",
     "gcc-c++": "14.0.1",
-    "awscli2": "2.15.2"
+    "awscli2": "2.15.2",
+    "golang": "1.21.9"
   },
   "git": {
     "config": {
