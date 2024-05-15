@@ -1,6 +1,8 @@
 set -q PROVISION_BRANCH || set PROVISION_BRANCH main
 
 if set -q TERMUX_VERSION
+  curl -L https://gitlab.com/lens0021/provision/-/raw/$PROVISION_BRANCH/config/termux.properties \
+    -o ~/.termux/termux.properties
   pkg install -y \
     tur-repo \
     x11-repo \
