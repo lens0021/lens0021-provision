@@ -1,0 +1,16 @@
+[profile port-infra]
+region = ap-northeast-2
+credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --password=$PORT_KEYCLOCK_PW --credential-process -a port-infra --mfa-token=$(oathtool --base32 $PORT_KEYCLOAK_OTP --totp)"
+
+[profile port-dev]
+region = ap-northeast-2
+credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --password=$PORT_KEYCLOCK_PW --credential-process -a port-dev --mfa-token=$(oathtool --base32 $PORT_KEYCLOAK_OTP --totp)"
+
+[profile port-stg]
+region = ap-northeast-2
+credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --password=$PORT_KEYCLOCK_PW --credential-process -a port-stg --mfa-token=$(oathtool --base32 $PORT_KEYCLOAK_OTP --totp)"
+
+[profile port-prod]
+region = ap-northeast-2
+credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --password=$PORT_KEYCLOCK_PW --credential-process -a port-prod --mfa-token=$(oathtool --base32 $PORT_KEYCLOAK_OTP --totp)"
+
