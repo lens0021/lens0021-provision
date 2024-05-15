@@ -72,7 +72,7 @@
     "/usr/local/git/lens/provision/config/gitui.ron": "/home/nemo/.config/gitui/key_bindings.ron",
     "/usr/local/git/lens/provision/config/helix/config.toml": "/home/nemo/.config/helix/config.toml",
     "/usr/local/git/lens/provision/config/helix/languages.toml": "/home/nemo/.config/helix/languages.toml",
-    "/usr/local/git/lens/provision/config/k9s.yaml": "/home/nemo/.k9s/config.yaml",
+    "/usr/local/git/lens/provision/config/k9s.yaml": "/home/nemo/.config/k9s/config.yaml",
     "/usr/local/git/lens/provision/config/termux.properties": "/home/nemo/.termux/termux.properties",
     "/usr/local/git/lens/provision/config/tmux.conf": "/home/nemo/.config/tmux/tmux.conf",
     "/usr/local/git/lens/provision/fish_plugins": "/home/nemo/.config/fish/fish_plugins",
