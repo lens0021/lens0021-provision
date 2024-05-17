@@ -3,7 +3,7 @@ k9s:
   screenDumpDir: /home/nemo/.local/state/k9s/screen-dumps
   refreshRate: 2
   maxConnRetry: 5
-  readOnly: false
+  readOnly: true
   noExitOnCtrlC: false
   ui:
     enableMouse: true
