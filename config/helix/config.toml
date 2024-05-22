@@ -19,7 +19,7 @@ display-inlay-hints = true
 insert = "bar"
 
 [editor.file-picker]
-hidden = false
+hidden = true # default
 
 [editor.whitespace.render]
 space = "all"
