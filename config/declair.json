@@ -64,7 +64,8 @@
       "credential.https://github.com.helper": "!/usr/bin/gh auth git-credential",
       "credential.https://gist.github.com.helper": "!/usr/bin/gh auth git-credential",
       "credential.https://gitlab.com.helper": "!/usr/bin/glab auth git-credential",
-      "submodule.recurse": "true"
+      "submodule.recurse": "true",
+      "commit.verbose": "true"
     }
   },
   "sym": {
