@@ -6,6 +6,7 @@ true-color = true
 bufferline = "multiple"
 cursorline = true
 rulers = [80, 100]
+completion-timeout = 5
 
 [editor.statusline]
 left = ["mode", "spinner", "file-name", "read-only-indicator", "file-modification-indicator", "version-control"]

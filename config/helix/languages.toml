@@ -3,12 +3,21 @@ command = "simple-completion-language-server"
 
 [language-server.scls.config]
 max_completion_items = 20
-feature_words = true
+feature_paths = true
 feature_unicode_input = true
+feature_words = true
 
 [[language]]
 name = "hcl"
-language-servers = [ "scls", "terraform-ls" ]
+language-servers = [ "terraform-ls", "scls" ]
+
+[[language]]
+name = "git-commit"
+language-servers = [ "scls" ]
+
+[[language]]
+name = "yaml"
+language-servers = [ "yaml-language-server", "scls" ]
 
 
 [language-server.phpactor]
@@ -17,4 +26,5 @@ args = ["language-server"]
 
 [[language]]
 name = "php"
-language-servers = [ "phpactor" ]
+language-servers = [ "phpactor", "scls" ]
+roots = [ "travis.yml" ]
