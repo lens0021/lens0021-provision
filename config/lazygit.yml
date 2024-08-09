@@ -1,3 +1,4 @@
 git:
   log:
+    order: date-order
     showWholeGraph: true
