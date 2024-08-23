@@ -1,4 +1,4 @@
-theme = "default"
+theme = "github-light"
 
 [editor]
 middle-click-paste = false
