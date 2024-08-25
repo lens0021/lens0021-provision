@@ -50,7 +50,6 @@
   },
   "copr": [
     "atim/lazygit",
-    "petersen/broot",
     "varlad/helix",
     "varlad/zellij"
   ],
