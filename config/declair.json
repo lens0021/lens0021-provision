@@ -48,6 +48,12 @@
     "helm": "3.11.1",
     "parallel": "20240622"
   },
+  "copr": [
+    "atim/lazygit",
+    "petersen/broot",
+    "varlad/helix",
+    "varlad/zellij"
+  ],
   "git": {
     "config": {
       "user.name": "lens0021",
