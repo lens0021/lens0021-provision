@@ -268,9 +268,10 @@ plugins {
 // Once these themes are defined, one of them should to be selected in the "theme" section of this file
 //
 themes {
-    pencil-light {
+    pencil-light-edited {
         fg "#005F87"
-        bg "#f1f1f1"
+        // bg "#f1f1f1"
+        bg "#a1a1a1"
         black "#f1f1f1"
         red "#B6D6FD"
         green "#10A778"
@@ -286,7 +287,7 @@ themes {
 // Choose the theme that is specified in the themes section.
 // Default: default
 //
-theme "pencil-light"
+theme "pencil-light-edited"
 
 // The name of the default layout to load on startup
 // Default: "default"
