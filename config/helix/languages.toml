@@ -21,7 +21,7 @@ language-servers = [ "yaml-language-server", "scls" ]
 
 
 [language-server.phpactor]
-command = "phpactor"
+command = "phpactor.phar"
 args = ["language-server"]
 
 [[language]]
