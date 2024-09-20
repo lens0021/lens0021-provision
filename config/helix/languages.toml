@@ -7,24 +7,34 @@ feature_paths = true
 feature_unicode_input = true
 feature_words = true
 
-[[language]]
-name = "hcl"
-language-servers = [ "terraform-ls", "scls" ]
-
-[[language]]
-name = "git-commit"
-language-servers = [ "scls" ]
-
-[[language]]
-name = "yaml"
-language-servers = [ "yaml-language-server", "scls" ]
-
+[language-server.typos]
+command = "typos-lsp"
+environment = {"RUST_LOG" = "error"}
+config.config = "~/git/lens/provision/config/typos.toml"
+config.diagnosticSeverity = "Warning"
 
 [language-server.phpactor]
 command = "phpactor.phar"
 args = ["language-server"]
 
+
+[[language]]
+name = "hcl"
+language-servers = [ "terraform-ls", "scls", "typos" ]
+
+[[language]]
+name = "git-commit"
+language-servers = [ "scls", "typos" ]
+
+[[language]]
+name = "yaml"
+language-servers = [ "yaml-language-server", "scls", "typos" ]
+
 [[language]]
 name = "php"
-language-servers = [ "phpactor", "scls" ]
+language-servers = [ "phpactor", "scls", "typos" ]
 roots = [ "travis.yml" ]
+
+[[language]]
+name = "toml"
+language-servers = [ "taplo", "scls", "typos" ]
