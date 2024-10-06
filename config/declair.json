@@ -48,9 +48,7 @@
     "parallel": "20240622"
   },
   "copr": [
-    "atim/lazygit",
     "varlad/helix",
-    "varlad/zellij"
   ],
   "git": {
     "config": {
