@@ -48,7 +48,7 @@
     "parallel": "20240622"
   },
   "copr": [
-    "varlad/helix",
+    "varlad/helix"
   ],
   "git": {
     "config": {
