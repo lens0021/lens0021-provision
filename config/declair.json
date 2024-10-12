@@ -73,16 +73,16 @@
     }
   },
   "sym": {
-    "/usr/local/git/lens/provision/config/aws": "/home/nemo/.aws/config",
-    "/usr/local/git/lens/provision/config/composer.json": "/home/nemo/.composer/composer.json",
-    "/usr/local/git/lens/provision/config/declair.json": "/home/nemo/.config/fish/declair.json",
-    "/usr/local/git/lens/provision/config/gitui.ron": "/home/nemo/.config/gitui/key_bindings.ron",
-    "/usr/local/git/lens/provision/config/helix/config.toml": "/home/nemo/.config/helix/config.toml",
-    "/usr/local/git/lens/provision/config/helix/languages.toml": "/home/nemo/.config/helix/languages.toml",
-    "/usr/local/git/lens/provision/config/k9s.yaml": "/home/nemo/.config/k9s/config.yaml",
-    "/usr/local/git/lens/provision/config/termux.properties": "/home/nemo/.termux/termux.properties",
-    "/usr/local/git/lens/provision/config/tmux.conf": "/home/nemo/.config/tmux/tmux.conf",
-    "/usr/local/git/lens/provision/fish_plugins": "/home/nemo/.config/fish/fish_plugins",
-    "/usr/local/git/port/user-leslie-snippets/rc/rc.fish": "/home/nemo/.config/fish/conf.d/port.fish"
+    "~/git/lens/provision/config/aws": "~/.aws/config",
+    "~/git/lens/provision/config/composer.json": "~/.composer/composer.json",
+    "~/git/lens/provision/config/declair.json": "~/.config/fish/declair.json",
+    "~/git/lens/provision/config/gitui.ron": "~/.config/gitui/key_bindings.ron",
+    "~/git/lens/provision/config/helix/config.toml": "~/.config/helix/config.toml",
+    "~/git/lens/provision/config/helix/languages.toml": "~/.config/helix/languages.toml",
+    "~/git/lens/provision/config/k9s.yaml": "~/.config/k9s/config.yaml",
+    "~/git/lens/provision/config/termux.properties": "~/.termux/termux.properties",
+    "~/git/lens/provision/config/tmux.conf": "~/.config/tmux/tmux.conf",
+    "~/git/lens/provision/fish_plugins": "~/.config/fish/fish_plugins",
+    "~/git/port/user-leslie-snippets/rc/rc.fish": "~/.config/fish/conf.d/port.fish"
   }
 }
