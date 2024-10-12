@@ -7,16 +7,22 @@ if set -q TERMUX_VERSION
         tur-repo \
         x11-repo
 
-    pkg install -y \
+    pkg install \
         file \
         fzf \
         git \
+        golang \
         helix \
+        jq \
+        lazygit \
         man \
         proot \
         proot-distro \
+        riggrep \
         termux-api \
-        which
+        which \
+        yq \
+        -y
 
     # X11 Desktop
     pkg install -y \
