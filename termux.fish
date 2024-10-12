@@ -9,6 +9,7 @@ if set -q TERMUX_VERSION
 
     pkg install \
         file \
+        fd \
         fzf \
         git \
         golang \
