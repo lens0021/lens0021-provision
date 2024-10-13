@@ -47,6 +47,25 @@
     "helm": "3.11.1",
     "parallel": "20240622"
   },
+  "termux": {
+    "cargo",
+    "file",
+    "fd",
+    "fzf",
+    "git",
+    "golang",
+    "helix",
+    "jq",
+    "lazygit",
+    "man",
+    "proot",
+    proot-"distro",
+    "riggrep",
+    termux-"api",
+    "which",
+    "yarn",
+    "yq"
+  }
   "copr": [
     "varlad/helix"
   ],
