@@ -48,24 +48,24 @@
     "parallel": "20240622"
   },
   "termux": {
-    "cargo",
-    "file",
-    "fd",
-    "fzf",
-    "git",
-    "golang",
-    "helix",
-    "jq",
-    "lazygit",
-    "man",
-    "proot",
-    proot-"distro",
-    "riggrep",
-    termux-"api",
-    "which",
-    "yarn",
-    "yq"
-  }
+    "cargo": null,
+    "file": null,
+    "fd": null,
+    "fzf": null,
+    "git": null,
+    "golang": null,
+    "helix": null,
+    "jq": null,
+    "lazygit": null,
+    "man": null,
+    "proot": null,
+    "proot-distro": null,
+    "riggrep": null,
+    "termux-api": null,
+    "which": null,
+    "yarn": null,
+    "yq": null
+  },
   "copr": [
     "varlad/helix"
   ],
