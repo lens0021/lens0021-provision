@@ -40,6 +40,11 @@ name = "toml"
 language-servers = [ "taplo", "scls", "typos" ]
 
 [[language]]
+name = "javascript"
+auto-format = true
+formatter = { command = 'prettier', args = ["--parser", "typescript"] }
+
+[[language]]
 name = "amber"
 scope = "source.ab"
 file-types = ["ab"]
