@@ -59,6 +59,8 @@ keybinds {
         bind "b" { BreakPane; SwitchToMode "Normal"; }
         bind "]" { BreakPaneRight; SwitchToMode "Normal"; }
         bind "[" { BreakPaneLeft; SwitchToMode "Normal"; }
+        bind "Alt i" { MoveTab "Left"; }
+        bind "Alt o" { MoveTab "Right"; }
         bind "1" { GoToTab 1; SwitchToMode "Normal"; }
         bind "2" { GoToTab 2; SwitchToMode "Normal"; }
         bind "3" { GoToTab 3; SwitchToMode "Normal"; }
@@ -167,8 +169,10 @@ keybinds {
         // bind "Alt f" { ToggleFloatingPanes; }
         unbind "Alt f"
         // bind "Alt n" { NewPane; }
-        bind "Alt i" { MoveTab "Left"; }
-        bind "Alt o" { MoveTab "Right"; }
+        // bind "Alt i" { MoveTab "Left"; }
+        unbind "Alt i"
+        // bind "Alt o" { MoveTab "Right"; }
+        unbind "Alt o"
         bind "Alt h" { MoveFocusOrTab "Left"; }
         unbind "Alt Left"
         bind "Alt l" { MoveFocusOrTab "Right"; }
