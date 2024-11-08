@@ -51,3 +51,7 @@ file-types = ["ab"]
 comment-token = ["//"]
 indent = { tab-width = 4, unit = "    " }
 language-servers = [ "scls", "typos" ]
+
+[[grammar]]
+name = "amber"
+source = { git = "https://github.com/elliotfontaine/tree-sitter-amber", rev = "30dd40d9bf23912e4aefa93eeb4c7090bda3d0f6" }
