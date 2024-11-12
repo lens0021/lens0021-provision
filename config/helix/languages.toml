@@ -29,6 +29,7 @@ language-servers = [ "scls", "typos" ]
 [[language]]
 name = "yaml"
 language-servers = [ "yaml-language-server", "scls", "typos" ]
+formatter = { command = 'yamlfmt', args = ["-in", "-formatter", "retain_line_breaks=true,trim_trailing_whitespace=true,eof_newline=true"] }
 
 [[language]]
 name = "php"
