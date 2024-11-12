@@ -55,4 +55,4 @@ language-servers = [ "scls", "typos" ]
 
 [[grammar]]
 name = "amber"
-source = { git = "https://github.com/elliotfontaine/tree-sitter-amber", rev = "30dd40d9bf23912e4aefa93eeb4c7090bda3d0f6" }
+source = { git = "https://github.com/amber-lang/tree-sitter-amber", rev = "c6df3ec2ec243ed76550c525e7ac3d9a10c6c814" }
