@@ -38,6 +38,7 @@ unset rc
 
 [ -f ~/.fzf.bash ] && . ~/.fzf.bash
 [ -f /usr/local/git/port/user-leslie-snippets/rc/rc.sh ] && source /usr/local/git/port/user-leslie-snippets/rc/rc.sh
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
 # User specific aliases
 alias pbcopy='xclip -selection clipboard'
