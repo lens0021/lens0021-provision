@@ -2,17 +2,17 @@
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
-	. /etc/bashrc
+	source /etc/bashrc
 fi
 
 # User specific environment
-if ! [[ "$PATH" =~ "$HOME/.local/bin:" ]]; then
+if ! [[ "$PATH" =~ $HOME/.local/bin: ]]; then
 	PATH="$HOME/.local/bin:$PATH"
 fi
-if ! [[ "$PATH" =~ "$HOME/bin:" ]]; then
+if ! [[ "$PATH" =~ $HOME/bin: ]]; then
 	PATH="$HOME/bin:$PATH"
 fi
-if ! [[ "$PATH" =~ "$HOME/.krew/bin:" ]]; then
+if ! [[ "$PATH" =~ $HOME/.krew/bin: ]]; then
   PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 fi
 export PATH
@@ -30,13 +30,13 @@ export KUBE_EDITOR
 if [ -d ~/.bashrc.d ]; then
 	for rc in ~/.bashrc.d/*; do
 		if [ -f "$rc" ]; then
-			. "$rc"
+			source "$rc"
 		fi
 	done
 fi
 unset rc
 
-[ -f ~/.fzf.bash ] && . ~/.fzf.bash
+[ -f "$HOME/.fzf.bash" ] && source "$HOME/.fzf.bash"
 [ -f /usr/local/git/port/user-leslie-snippets/rc/rc.sh ] && source /usr/local/git/port/user-leslie-snippets/rc/rc.sh
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
@@ -46,8 +46,8 @@ alias pbpaste='xclip -selection clipboard -o'
 alias kc='kubectl'
 
 # Completions
-[ -f $HOME/.asdf/asdf.sh ] && source $HOME/.asdf/asdf.sh
-[ -f $HOME/.asdf/completions/asdf.bash ] && source $HOME/.asdf/completions/asdf.bash
+[ -f "$HOME/.asdf/asdf.sh" ] && source "$HOME/.asdf/asdf.sh"
+[ -f "$HOME/.asdf/completions/asdf.bash" ] && source "$HOME/.asdf/completions/asdf.bash"
 if command -v terraform >/dev/null ; then
 	complete -C /usr/bin/terraform terraform
 fi
