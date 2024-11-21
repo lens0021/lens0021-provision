@@ -23,6 +23,10 @@ name = "hcl"
 language-servers = [ "terraform-ls", "scls", "typos" ]
 
 [[language]]
+name = "scheme"
+language-servers = [ "scls", "typos" ]
+
+[[language]]
 name = "git-commit"
 language-servers = [ "scls", "typos" ]
 
