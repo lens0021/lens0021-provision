@@ -19,37 +19,6 @@ args = ["language-server"]
 
 
 [[language]]
-name = "hcl"
-language-servers = [ "terraform-ls", "scls", "typos" ]
-
-[[language]]
-name = "scheme"
-language-servers = [ "scls", "typos" ]
-
-[[language]]
-name = "git-commit"
-language-servers = [ "scls", "typos" ]
-
-[[language]]
-name = "yaml"
-language-servers = [ "yaml-language-server", "scls", "typos" ]
-formatter = { command = 'yamlfmt', args = ["-in", "-formatter", "retain_line_breaks=true,trim_trailing_whitespace=true,eof_newline=true"] }
-
-[[language]]
-name = "php"
-language-servers = [ "phpactor", "scls", "typos" ]
-roots = [ "travis.yml" ]
-
-[[language]]
-name = "toml"
-language-servers = [ "taplo", "scls", "typos" ]
-
-[[language]]
-name = "javascript"
-auto-format = true
-formatter = { command = 'prettier', args = ["--parser", "typescript"] }
-
-[[language]]
 name = "amber"
 scope = "source.ab"
 file-types = ["ab"]
@@ -60,3 +29,38 @@ language-servers = [ "scls", "typos" ]
 [[grammar]]
 name = "amber"
 source = { git = "https://github.com/amber-lang/tree-sitter-amber", rev = "c6df3ec2ec243ed76550c525e7ac3d9a10c6c814" }
+
+[[language]]
+name = "git-commit"
+language-servers = [ "scls", "typos" ]
+
+[[language]]
+name = "hcl"
+language-servers = [ "terraform-ls", "scls", "typos" ]
+
+[[language]]
+name = "javascript"
+auto-format = true
+formatter = { command = 'prettier', args = ["--parser", "typescript"] }
+
+[[language]]
+name = "php"
+language-servers = [ "phpactor", "scls", "typos" ]
+roots = [ "travis.yml" ]
+
+[[language]]
+name = "rust"
+auto-format = false
+
+[[language]]
+name = "scheme"
+language-servers = [ "scls", "typos" ]
+
+[[language]]
+name = "toml"
+language-servers = [ "taplo", "scls", "typos" ]
+
+[[language]]
+name = "yaml"
+language-servers = [ "yaml-language-server", "scls", "typos" ]
+formatter = { command = 'yamlfmt', args = ["-in", "-formatter", "retain_line_breaks=true,trim_trailing_whitespace=true,eof_newline=true"] }
