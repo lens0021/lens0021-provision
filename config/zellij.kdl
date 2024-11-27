@@ -186,6 +186,11 @@ keybinds {
         bind "Alt [" { PreviousSwapLayout; }
         bind "Alt ]" { NextSwapLayout; }
         bind "F11" { ToggleFocusFullscreen; }
+        bind "Alt L" {
+            Run "zellij" "run" "--floating" "--close-on-exit" "-x" "10%" "-y" "10%" "--width" "80%" "--height" "80%" "--" "lazygit" {
+                close_on_exit true
+            }
+        }
     }
     shared_except "normal" "locked" {
         bind "Enter" "Esc" { SwitchToMode "Normal"; }
