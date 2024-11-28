@@ -36,7 +36,7 @@ language-servers = [ "scls", "typos" ]
 
 [[language]]
 name = "go"
-language-servers = [ "gopls", "golangci-lint-langserver", "scls", "typos" ]
+language-servers = [ "gopls", "golangci-lint-lsp", "scls", "typos" ]
 
 [[language]]
 name = "hcl"
