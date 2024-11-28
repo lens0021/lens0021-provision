@@ -35,6 +35,10 @@ name = "git-commit"
 language-servers = [ "scls", "typos" ]
 
 [[language]]
+name = "go"
+language-servers = [ "gopls", "golangci-lint-langserver", "scls", "typos" ]
+
+[[language]]
 name = "hcl"
 language-servers = [ "terraform-ls", "scls", "typos" ]
 
@@ -51,6 +55,7 @@ roots = [ "travis.yml" ]
 [[language]]
 name = "rust"
 auto-format = false
+language-servers = [ "rust-analyzer", "scls", "typos" ]
 
 [[language]]
 name = "scheme"
