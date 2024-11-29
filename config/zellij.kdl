@@ -187,7 +187,7 @@ keybinds {
         bind "Alt ]" { NextSwapLayout; }
         bind "F11" { ToggleFocusFullscreen; }
         bind "Alt L" {
-            Run "zellij" "run" "--floating" "--close-on-exit" "-x" "10%" "-y" "10%" "--width" "80%" "--height" "80%" "--" "lazygit" {
+            Run "zellij" "run" "--floating" "--close-on-exit" "-x" "5%" "-y" "5%" "--width" "90%" "--height" "90%" "--" "lazygit" {
                 close_on_exit true
             }
         }
