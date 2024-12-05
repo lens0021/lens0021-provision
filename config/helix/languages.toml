@@ -17,6 +17,9 @@ config.diagnosticSeverity = "Warning"
 command = "phpactor.phar"
 args = ["language-server"]
 
+[language-server.llm-ls]
+command = "llm-ls"
+timeout = 5
 
 [[language]]
 name = "amber"
