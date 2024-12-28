@@ -31,7 +31,8 @@ language-servers = [ "scls", "typos" ]
 
 [[grammar]]
 name = "amber"
-source = { git = "https://github.com/lens0021/tree-sitter-amber", rev = "69a30ff6d1b3a8fcb5365175ba7110ab715a101d" }
+source = { git = "https://github.com/lens0021/tree-sitter-amber", rev = "43ae3c8a6ba197681c6164dc9c5bf6e07e9a8560" }
+# source = { path = "/usr/local/git/tree-sitter-amber"}
 
 [[language]]
 name = "git-commit"
