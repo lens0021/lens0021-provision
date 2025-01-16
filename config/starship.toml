@@ -2,7 +2,7 @@ add_newline = false
 format = '$all$kubernetes$line_break$os$character'
 
 [aws]
-symbol = "  "
+symbol = " "
 
 [buf]
 symbol = " "
