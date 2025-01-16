@@ -35,6 +35,18 @@ source = { git = "https://github.com/lens0021/tree-sitter-amber", rev = "43ae3c8
 # source = { path = "/usr/local/git/tree-sitter-amber"}
 
 [[language]]
+name = "vrl"
+scope = "source.vrl"
+file-types = ["vrl"]
+comment-token = ["#"]
+indent = { tab-width = 2, unit = "    " }
+language-servers = [ "scls", "typos" ]
+
+[[grammar]]
+name = "vrl"
+source = { git = "https://github.com/belltoy/tree-sitter-vrl", rev = "274b3ce63f72aa8ffea18e7fc280d3062d28f0ba" }
+
+[[language]]
 name = "git-commit"
 language-servers = [ "scls", "typos" ]
 
