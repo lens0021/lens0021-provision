@@ -3,6 +3,7 @@ format = '$all$kubernetes$line_break$os$character'
 
 [aws]
 symbol = " "
+format = 'on [$symbol($profile )(\[$duration\] )]($style)'
 
 [buf]
 symbol = " "
