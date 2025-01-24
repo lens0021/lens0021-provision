@@ -12,7 +12,8 @@ symbol = " "
 symbol = " "
 
 [character]
-success_symbol = '[❯](bold bright-green)'
+success_symbol = '[\$](bold bright-green)'
+error_symbol = '[\$](bold red)'
 
 [cmake]
 symbol = " "
@@ -110,7 +111,7 @@ symbol = " "
 symbol = " "
 
 [os]
-disabled = false
+# disabled = false
 style = "black"
 
 [os.symbols]
