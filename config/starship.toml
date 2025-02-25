@@ -191,6 +191,9 @@ symbol = " "
 [swift]
 symbol = " "
 
+[time]
+disabled = false
+
 [terraform]
 disabled = true
 symbol = "󱁢 "
