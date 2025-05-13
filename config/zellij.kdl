@@ -59,8 +59,8 @@ keybinds {
         unbind "x"
         bind "s" { ToggleActiveSyncTab; SwitchToMode "Normal"; }
         bind "b" { BreakPane; SwitchToMode "Normal"; }
-        bind "]" { BreakPaneRight; SwitchToMode "Normal"; }
-        bind "[" { BreakPaneLeft; SwitchToMode "Normal"; }
+        bind "]" { BreakPaneRight; }
+        bind "[" { BreakPaneLeft; }
         bind "Alt i" { MoveTab "Left"; }
         bind "Alt o" { MoveTab "Right"; }
         bind "1" { GoToTab 1; SwitchToMode "Normal"; }
