@@ -67,6 +67,10 @@ auto-format = true
 formatter = { command = 'prettier', args = ["--parser", "typescript"] }
 
 [[language]]
+name = "markdown"
+formatter = { command = 'prettier', args = ["--parser", "markdown"] }
+
+[[language]]
 name = "php"
 language-servers = [ "phpactor", "scls", "typos" ]
 roots = [ "travis.yml" ]
