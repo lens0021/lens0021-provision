@@ -1,0 +1,75 @@
+import {
+    dir_create,
+    dir_exists,
+    file_chmod,
+    file_exists,
+    symlink_create,
+} from "std/fs"
+import { file_download } from "std/http"
+import { is_command } from "std/env"
+
+const user_home = trust $ sudo -u#1000 bash -c 'echo \$HOME' $
+
+fun prepare_provision() {
+    if not dir_exists("{user_home}/git/lens/provision") {
+      $ git clone https://github.com/lens0021/provision {user_home}/git/lens/provision $?
+    }
+    if $ git --git-dir "{user_home}/git/lens/provision/.git" rev-parse --is-shallow-repository $? == "true" {
+        $ git --git-dir "{user_home}/git/lens/provision/.git" fetch --unshallow $?
+    }
+}
+
+fun setup_rbw() {
+    if not is_command("rbw") {
+        $ sudo dnf install -y rbw $?
+    }
+    $ rbw config set email lorentz0021@gmail.com $?
+    $ rbw login $?
+}
+
+fun symlink_files() {
+    if not file_exists("{user_home}/.config/bin/config.json") {
+        symlink_create("{user_home}/git/lens/provision/config/bin.config", "{user_home}/.config/bin/config.json")
+    }
+}
+
+fun install_bin() {
+    if not is_command("bin") {
+        if not file_exists("bin") {
+            file_download("https://github.com/marcosnils/bin/releases/download/v0.21.2/bin_0.21.2_linux_amd64", "bin")
+        }
+        file_chmod("bin", "+x")
+        $ ./bin ensure bin $?
+        $ rm ./bin $?
+    }
+}
+
+fun install_hx() {
+    $ bin ensure hx $?
+    echo "todo"
+}
+
+main(args) {
+    prepare_provision()?
+    for dir in ["{user_home}/.config/bin"] {
+        dir_create(dir)
+    }
+    symlink_files()
+    install_bin()?
+    setup_rbw()?
+
+    $ bin ensure gh $?
+    let gh_token = ""
+    loop {
+        gh_token = $ gh auth token $ failed {
+            echo "Sign in to bitwarden to see the Github Password"
+            $ rbw get 356c6b3b-2dbe-4804-9918-af0700970344 $?
+            $ gh auth login $?
+        }
+        break
+    }
+    $ bin ensure yazi $?
+    $ bin ensure zellij $?
+    $ bin ensure lazygit $?
+    install_hx()?
+}
