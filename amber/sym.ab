@@ -1,0 +1,88 @@
+import {
+    array_contains,
+} from "std/array"
+import {
+    dir_create,
+    dir_exists,
+    file_chmod,
+    file_exists,
+    symlink_create,
+} from "std/fs"
+import {
+    split,
+    replace,
+    rpad,
+} from "std/text"
+
+const user_home = trust $ sudo -u#1000 bash -c 'echo \$HOME' $
+
+fun resolve(path: Text): Text {
+        return replace(path, "~", user_home)
+}
+
+fun dirname(path: Text): Text {
+    return trust $ dirname {path} $
+}
+
+#[allow_absurd_cast]
+fun sym_list() {
+    const srcs = split($ jq -r '.sym | keys | .[]' ~/.config/declair/config.json $?, "\n")
+    const longest_src_col = $ jq -r '.sym | keys | .[]' ~/.config/declair/config.json | wc -L $? as Num
+    const longest_dist_col = $ jq -r '.sym | values | .[]' ~/.config/declair/config.json | wc -L $? as Num
+    for src in srcs {
+        const resolved_src = replace(src, "~", user_home)
+        let dist = $ jq -r ".sym[\\\"{src}\\\"]" ~/.config/declair/config.json $?
+        const resolved_dist = replace(dist, "~", user_home)
+        let state = "Unknown"
+        if file_exists(resolved_dist) {
+            state = "Existing"
+            if $ realpath {resolved_dist} $? == resolved_src {
+                state = "OK"
+            }
+        }
+        // TODO: Colorize
+        echo rpad(src, " ", longest_src_col + 2) + rpad(dist, " ", longest_dist_col+2) + state
+
+    }
+}
+
+pub fun sym_ensure(targets: [Text] = [Text]): Null? {
+    const srcs = split($ jq -r '.sym | keys | .[]' ~/.config/declair/config.json $?, "\n")
+    if len(targets) == 0 or (len(targets) == 1 and targets[0] == "") {
+        targets = srcs
+    }
+    for target in targets {
+        if target == "" {
+            continue
+        }
+        if not array_contains(srcs, target) {
+            target = resolve(target)
+            echo "No {target} declared in config.json"
+            continue
+        }
+        if not file_exists(resolve(target)) {
+            echo "no {target}, skipping"
+            continue
+        } else {
+            const dist = resolve($ jq -r ".sym[\\\"{target}\\\"]" ~/.config/declair/config.json $?)
+            if not file_exists(dist) {
+                dir_create(dirname(dist))
+                symlink_create(resolve(target), dist)
+            }
+        }
+    }
+}
+
+main(args) {
+    if args[1] == "list" {
+        sym_list()?
+    }
+
+    if args[1] == "ensure" {
+        if len(args) >= 2 {
+            sym_ensure([args[2]])?
+        } else {
+            sym_ensure()?
+        }
+    }
+}
