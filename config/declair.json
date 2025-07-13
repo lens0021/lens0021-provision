@@ -101,6 +101,8 @@
     "~/git/lens/provision/config/termux.properties": "~/.termux/termux.properties",
     "~/git/lens/provision/config/tmux.conf": "~/.config/tmux/tmux.conf",
     "~/git/lens/provision/fish_plugins": "~/.config/fish/fish_plugins",
+    "~/git/amber/lang/target/release/amber": "~/.local/bin/amber-dev",
+    "~/git/amber/lsp/target/release/amber-lsp": "~/.local/bin/amber-lsp",
     "~/git/port/user-leslie-snippets/rc/rc.fish": "~/.config/fish/conf.d/port.fish"
   }
 }
