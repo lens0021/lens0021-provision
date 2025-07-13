@@ -1,4 +1,4 @@
-import * from "amber/sym.ab"
+import { sym_ensure } from "amber/sym.ab"
 import {
     dir_create,
     dir_exists,
@@ -57,6 +57,10 @@ fun install_fish() {
     if $ sudo -u#1000 bash -c 'echo \$SHELL' $? != "/usr/bin/fish" {
         $ chsh -s "\$(which fish)" nemo $?
     }
+    $ fish -c "functions -q fisher" $ failed {
+        const fisher_url = "https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
+        $ curl -sL {fisher_url} | source && fisher install jorgebucaran/fisher $?
+    }
 }
 
 fun setup_sudoer() {
@@ -65,10 +69,6 @@ fun setup_sudoer() {
     }
     // TODO: file_append("/etc/sudoersh.d/nemo", "nemo ALL=(ALL:ALL) ALL\n")
     file_chmod("/usr/bin/sudo", "u+s")
-    $ fish -c 'functions -q fisher' $ failed {
-        const fisher_url = https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish
-        $ curl -sL {fisher_url} | source && fisher install jorgebucaran/fisher $?
-    }
 }
 
 main(args) {
