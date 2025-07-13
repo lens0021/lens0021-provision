@@ -98,6 +98,8 @@ main(args) {
         $ sudo dnf install -y helix $?
     }
     install_fish()?
+
+    $ sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo $?
 }
 
 // # sudo -v
