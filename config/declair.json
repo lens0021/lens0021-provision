@@ -26,7 +26,7 @@
     "gh": "2.45.0",
     "gitui": "0.24.3",
     "gnome-browser-connector": "42.1-9.fc42",
-    "gnome-console": "46.0",
+    "gnome-console": "48.0.1-1.fc42",
     "kubernetes-client": "1.29.4",
     "make": "4.4.1-10.fc42",
     "oathtool": "2.6.12-2.fc42",
