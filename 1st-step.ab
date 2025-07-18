@@ -71,6 +71,14 @@ fun setup_sudoer() {
     file_chmod("/usr/bin/sudo", "u+s")
 }
 
+fun install_wavebox() {
+    $ sudo rpm --import https://download.wavebox.app/static/wavebox_repo.key $?
+    if not dir_exists("/etc/yum.repos.d/wavebox.repo") {
+        $ sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo $?
+    }
+    $ sudo dnf install -y Wavebox $?
+}
+
 main(args) {
     prepare_provision()?
     for dir in ["{user_home}/.config/bin"] {
@@ -100,6 +108,7 @@ main(args) {
     install_fish()?
 
     $ sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo $?
+    install_wavebox()?
 }
 
 // # sudo -v
