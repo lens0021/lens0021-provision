@@ -20,7 +20,7 @@
     "mariadb": "10.11.11-6.fc42",
     "bat": "0.25.0-2.fc42",
     "docker-compose": "1.29.2",
-    "fd-find": "9.0.0",
+    "fd-find": "10.2.0-3.fc42",
     "naver-nanum-gothic-fonts": "3.020",
     "naver-nanum-gothic-coding-fonts": "2.000",
     "gh": "2.45.0",
