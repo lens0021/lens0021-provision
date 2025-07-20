@@ -2,10 +2,14 @@ import { sym_ensure } from "amber/sym.ab"
 import {
     dir_create,
     dir_exists,
+    file_append,
     file_chmod,
     file_exists,
+    file_write,
+    file_read,
     symlink_create,
 } from "std/fs"
+import { text_contains } from "std/text"
 import { file_download } from "std/http"
 import { is_command } from "std/env"
 
@@ -63,12 +67,24 @@ fun install_fish() {
     }
 }
 
-fun setup_sudoer() {
-    if not file_exists("/etc/sudoersh.d/nemo") {
-        dir_create("/etc/sudoersh.d")
+fun setup_sudoer(): Null? {
+    // https://github.com/amber-lang/amber/issues/220
+    if not file_exists("/etc/sudoers.d/nemo") {
+        // dir_create("/etc/sudoersh.d")
+        $ sudo mkdir -p /etc/sudoers.d/ $?
     }
-    // TODO: file_append("/etc/sudoersh.d/nemo", "nemo ALL=(ALL:ALL) ALL\n")
-    file_chmod("/usr/bin/sudo", "u+s")
+    if file_exists("/etc/sudoers.d/nemo") {
+        const content = file_read("/etc/sudoers.d/nemo")?
+        if not text_contains(content, "nemo ALL=(ALL:ALL) NOPASSWD: ALL") {
+            file_append("/etc/sudoers.d/nemo", "nemo ALL=(ALL:ALL) NOPASSWD: ALL\n")?
+        }
+    } else {
+        trust $ sudo touch /etc/sudoers.d/nemo $
+        file_write("/tmp/sudoer-nemo", "nemo ALL=(ALL:ALL) NOPASSWD: ALL\n")?
+        $ sudo chown -R root:root /tmp/sudoer-nemo $?
+        $ sudo mv /tmp/sudoer-nemo /etc/sudoers.d/nemo $?
+    }
+    $ sudo chmod u+s /usr/bin/sudo $?
 }
 
 fun install_wavebox() {
@@ -80,6 +96,7 @@ fun install_wavebox() {
 }
 
 main(args) {
+    setup_sudoer()?
     prepare_provision()?
     for dir in ["{user_home}/.config/bin"] {
         dir_create(dir)
