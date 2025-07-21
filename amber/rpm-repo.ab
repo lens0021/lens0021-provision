@@ -1,0 +1,60 @@
+import { file_exists } from "std/fs"
+import {
+    split,
+    rpad,
+} from "std/text"
+
+const user_home = trust $ sudo -u#1000 bash -c 'echo \$HOME' $
+
+fun get_installed_version(pkg) {
+    const info = $ rpm --json -qi {pkg} $?
+    const version = $ echo "\${nameof info}" | jq -r .Version $?
+    const release = $ echo "\${nameof info}" | jq -r .Release $?
+    return "{version}-{release}"
+}
+
+#[allow_absurd_cast]
+fun dnf_repo_list() {
+    const declair = "{user_home}/.config/declair/config.json"
+    const repos = split($ jq -r '.rpm_repo | keys | .[]' {declair} $?, "\n")
+    const longest_repo_col = $ jq -r '.rpm_repo | keys | .[]' {declair} | wc -L $? as Num
+    for repo in repos { 
+        let state = "Unknown"
+        if file_exists("/etc/yum.repos.d/{repo}.repo") {
+           state = "OK" 
+        }
+        echo rpad(repo, " ", longest_repo_col + 2) + state
+    }
+}
+
+fun dnf_repo_ensure(repo: Text): Null?  {
+    const declair = "{user_home}/.config/declair/config.json"
+    const url = $ jq -r ".rpm_repo[\\\"{repo}\\\"]" {declair} $?
+    $ sudo dnf config-manager addrepo --from-repofile {url} $?
+}
+
+fun dnf_repo_install(pkg: Text): Null?  {
+    $ echo TODO $?
+}
+
+main(args) {
+    if args[1] == "list" {
+        dnf_repo_list()?
+    }
+
+    if args[1] == "ensure" {
+        if len(args) >= 2 {
+            dnf_repo_ensure(args[2])?
+        } else {
+            echo "No package given"
+        }
+    }
+
+    if args[1] == "install" {
+        if len(args) >= 2 {
+            dnf_repo_ensure(args[2])?
+        } else {
+            echo "No package given"
+        }
+    }
+}
