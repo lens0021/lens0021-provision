@@ -52,7 +52,8 @@
     "fzf": "0.62.0-1.fc42",
     "nodejs-npm": "10.9.2-1.22.17.0.1.fc42",
     "gnome-extensions-app": "48~alpha-2.fc42",
-    "expect": "5.45.4-28.fc42"
+    "expect": "5.45.4-28.fc42",
+    "dnf-plugins-core": "4.10.1-1.fc42"
   },
   "termux": {
     "cargo": null,
