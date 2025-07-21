@@ -77,6 +77,10 @@
   "copr": [
     "varlad/helix"
   ],
+  "rpm_repo": {
+    "docker-ce": "https://download.docker.com/linux/fedora/docker-ce.repo",
+    "wavebox": "https://download.wavebox.app/stable/linux/rpm/wavebox.repo"
+  },
   "git": {
     "config": {
       "user.name": "lens0021",
