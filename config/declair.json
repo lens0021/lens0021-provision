@@ -56,7 +56,8 @@
     "dnf-plugins-core": "4.10.1-1.fc42",
     "libgda": "6.0.0-11.fc42",
     "libgda-sqlite": "6.0.0-11.fc42",
-    "docker-compose-plugin": "2.38.2-1.fc42"
+    "docker-compose-plugin": "2.38.2-1.fc42",
+    "gopls": "0.17.1-1.fc42"
   },
   "termux": {
     "cargo": null,
