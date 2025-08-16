@@ -1,0 +1,53 @@
+import {
+    split,
+    replace,
+    rpad,
+} from "std/text"
+
+const user_home = trust $ sudo -u#1000 bash -c 'echo \$HOME' $
+const declair = "{user_home}/.config/declair/config.json"
+
+fun gitconfig_plan(): Null? {
+    const cnfs = split($ jq -r '.git.config | keys | .[]' {declair} $?, "\n")
+    let change_count = 0
+    for cnf in cnfs {
+        const old = $ git config get --global {cnf} $?
+        const new = $ jq -r ".git.config[\\\"{cnf}\\\"]" {declair} $?
+        if old != new {
+            change_count += 1
+            echo "{cnf}: {old} -> {new}"
+        }
+    }
+    if change_count == 0 {
+        echo "No changes"
+    }
+}
+
+fun gitconfig_apply(): Null? {
+    const cnfs = split($ jq -r '.git.config | keys | .[]' {declair} $?, "\n")
+    let change_count = 0
+    for cnf in cnfs {
+        const old = $ git config get --global {cnf} $?
+        const new = $ jq -r ".git.config[\\\"{cnf}\\\"]" {declair} $?
+        if old != new {
+            change_count += 1
+            echo "{cnf}: {old} -> {new}"
+            $ git config --global "{cnf}" "{new}" $?
+        }
+    }
+    if change_count == 0 {
+        echo "No changes"
+    }
+    // Get the content from declair.json
+    // for each entries
+}
+
+main(args) {
+    if args[1] == "plan" {
+        gitconfig_plan()?
+    }
+
+    if args[1] == "apply" {
+        gitconfig_apply()?
+    }
+}

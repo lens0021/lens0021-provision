@@ -1,16 +1,21 @@
+import { sym_ensure } from "amber/sym.ab"
 import {
     dir_create,
     dir_exists,
+    file_append,
     file_chmod,
     file_exists,
+    file_write,
+    file_read,
     symlink_create,
 } from "std/fs"
+import { text_contains } from "std/text"
 import { file_download } from "std/http"
-import { is_command } from "std/env"
+import { is_command, env_var_get } from "std/env"
 
 const user_home = trust $ sudo -u#1000 bash -c 'echo \$HOME' $
 
-fun prepare_provision() {
+fun prepare_provision_repo() {
     if not dir_exists("{user_home}/git/lens/provision") {
       $ git clone https://github.com/lens0021/provision {user_home}/git/lens/provision $?
     }
@@ -27,7 +32,14 @@ fun setup_rbw() {
     $ rbw login $?
 }
 
-fun symlink_files() {
+fun post_prepare_provision() {
+    if not file_exists("{user_home}/.config/declair/config.json") {
+        dir_create("{user_home}/.config/declair")
+        symlink_create("{user_home}/git/lens/provision/config/declair.json", "{user_home}/.config/declair/config.json")
+    }
+    if not dir_exists("{user_home}/.config/bin") {
+        dir_create("{user_home}/.config/bin")
+    }
     if not file_exists("{user_home}/.config/bin/config.json") {
         symlink_create("{user_home}/git/lens/provision/config/bin.config", "{user_home}/.config/bin/config.json")
     }
@@ -44,32 +56,89 @@ fun install_bin() {
     }
 }
 
-fun install_hx() {
-    $ bin ensure hx $?
-    echo "todo"
+fun install_fish() {
+    if not is_command("fish") {
+        $ sudo dnf install -y fish $?
+    }
+    if $ sudo -u#1000 bash -c 'echo \$SHELL' $? != "/usr/bin/fish" {
+        $ chsh -s "\$(which fish)" nemo $?
+    }
+    $ fish -c "functions -q fisher" $ failed {
+        const fisher_url = "https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
+        $ curl -sL {fisher_url} | source && fisher install jorgebucaran/fisher $?
+    }
 }
 
-main(args) {
-    prepare_provision()?
-    for dir in ["{user_home}/.config/bin"] {
-        dir_create(dir)
+fun setup_sudoer(): Null? {
+    // https://github.com/amber-lang/amber/issues/220
+    if not dir_exists("/etc/sudoers.d/") {
+        // dir_create("/etc/sudoersh.d")
+        $ sudo mkdir -p /etc/sudoers.d/ $?
     }
-    symlink_files()
-    install_bin()?
-    setup_rbw()?
+    if file_exists("/etc/sudoers.d/nemo") {
+        const content = file_read("/etc/sudoers.d/nemo")?
+        if not text_contains(content, "nemo ALL=(ALL:ALL) NOPASSWD: ALL") {
+            file_append("/etc/sudoers.d/nemo", "nemo ALL=(ALL:ALL) NOPASSWD: ALL\n")?
+        }
+    } else {
+        trust $ sudo touch /etc/sudoers.d/nemo $
+        file_write("/tmp/sudoer-nemo", "nemo ALL=(ALL:ALL) NOPASSWD: ALL\n")?
+        $ sudo chown -R root:root /tmp/sudoer-nemo $?
+        $ sudo mv /tmp/sudoer-nemo /etc/sudoers.d/nemo $?
+    }
+    $ sudo chmod u+s /usr/bin/sudo $?
+}
 
+fun install_wavebox() {
+    $ sudo rpm --import https://download.wavebox.app/static/wavebox_repo.key $?
+    if not dir_exists("/etc/yum.repos.d/wavebox.repo") {
+        $ sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo $?
+    }
+    $ sudo dnf install -y Wavebox $?
+}
+
+fun setup_bin() {
     $ bin ensure gh $?
-    let gh_token = ""
     loop {
-        gh_token = $ gh auth token $ failed {
+        let done = true
+        $ gh auth token $ failed {
+            done = false
             echo "Sign in to bitwarden to see the Github Password"
             $ rbw get 356c6b3b-2dbe-4804-9918-af0700970344 $?
             $ gh auth login $?
         }
-        break
+        if done {
+            break
+        }
     }
+    loop {
+        let done = true
+        env_var_get("GITHUB_AUTH_TOKEN") failed {
+            done = false
+            echo "Visit https://github.com/settings/personal-access-tokens and copy the token."
+        }
+        if done {
+            break
+        }
+    }
+}
+
+main(args) {
+    $ sudo -v $?
+    setup_sudoer()?
+    prepare_provision_repo()?
+    post_prepare_provision()
+    sym_ensure()?
+    install_bin()?
+    setup_rbw()?
+    setup_bin()?
     $ bin ensure yazi $?
     $ bin ensure zellij $?
     $ bin ensure lazygit $?
-    install_hx()?
+    if not is_command("hx") {
+        $ sudo dnf install -y helix $?
+    }
+    install_fish()?
+    $ sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo $?
+    install_wavebox()?
 }
