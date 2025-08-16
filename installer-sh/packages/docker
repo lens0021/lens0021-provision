@@ -1,7 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-IFS=$'\n\t'
-
-CWD=$(cd "$(dirname "$0")" && pwd -P)
-
-"$CWD"/../functions/install-managed docker-compose

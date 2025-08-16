@@ -1,8 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-IFS=$'\n\t'
-
-CWD=$(cd "$(dirname "$0")" && pwd -P)
-
-"$CWD"/../functions/install-managed openssh-askpass
-# TODO: ssh-askpass-gnome for debian/ubuntu
