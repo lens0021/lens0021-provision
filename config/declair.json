@@ -111,7 +111,7 @@
     "~/git/lens/provision/config/bin.config": "~/.config/bin/config.json",
     "~/git/lens/provision/config/aws": "~/.aws/config",
     "~/git/lens/provision/config/composer.json": "~/.composer/composer.json",
-    "~/git/lens/provision/config/declair.json": "~/.config/fish/declair.json",
+    "~/git/lens/provision/config/declair.json": "~/.config/declair/config.json",
     "~/git/lens/provision/config/gitui.ron": "~/.config/gitui/key_bindings.ron",
     "~/git/lens/provision/config/helix/config.toml": "~/.config/helix/config.toml",
     "~/git/lens/provision/config/helix/languages.toml": "~/.config/helix/languages.toml",
