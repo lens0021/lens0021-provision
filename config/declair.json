@@ -57,7 +57,9 @@
     "libgda": "6.0.0-11.fc42",
     "libgda-sqlite": "6.0.0-11.fc42",
     "docker-compose-plugin": "2.38.2-1.fc42",
-    "gopls": "0.17.1-1.fc42"
+    "gopls": "0.17.1-1.fc42",
+    "google-cloud-cli": "535.0.0-1",
+    "google-cloud-cli-gke-gcloud-auth-plugin": "535.0.0-1"
   },
   "termux": {
     "cargo": null,
