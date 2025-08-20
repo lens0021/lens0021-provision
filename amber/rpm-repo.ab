@@ -1,4 +1,4 @@
-import { file_exists } from "std/fs"
+import { file_exists, file_write } from "std/fs"
 import {
     split,
     rpad,
@@ -29,8 +29,23 @@ fun dnf_repo_list() {
 
 fun dnf_repo_ensure(repo: Text): Null?  {
     const declair = "{user_home}/.config/declair/config.json"
-    const url = $ jq -r ".rpm_repo[\\\"{repo}\\\"]" {declair} $?
-    $ sudo dnf config-manager addrepo --from-repofile {url} $?
+    const type = $ jq -r ".rpm_repo[\\\"{repo}\\\"] | type" {declair} $?
+    if {
+        type == "string" {
+            const url = $ jq -r ".rpm_repo[\\\"{repo}\\\"]" {declair} $?
+            $ sudo dnf config-manager addrepo --from-repofile {url} $?
+        }
+        type == "object" {
+            const repo_keys = split($ jq -r ".rpm_repo[\\\"{repo}\\\"] | keys.[]" {declair} $?, "\n")
+            let repo_content = "[{repo}]\n"
+            for repo_key in repo_keys {
+                const val = $ jq -r ".rpm_repo[\\\"{repo}\\\"][\\\"{repo_key}\\\"]" {declair} $?
+                repo_content += "{repo_key}={val}\n"
+            }
+            file_write("{repo}.repo", repo_content)?
+            trust $ sudo mv {repo}.repo "/etc/yum.repos.d/{repo}.repo" $?
+        }
+    }
 }
 
 fun dnf_repo_install(pkg: Text): Null?  {
