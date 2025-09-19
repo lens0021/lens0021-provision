@@ -89,6 +89,19 @@ name = "toml"
 language-servers = [ "taplo", "scls", "typos" ]
 
 [[language]]
+name = "vrl"
+scope = "source.vrl"
+file-types = ["vrl"]
+comment-token = ["#"]
+indent = { tab-width = 2, unit = "    " }
+language-servers = [ "scls", "typos" ]
+
+[[grammar]]
+name = "vrl"
+source = { git = "https://github.com/belltoy/tree-sitter-vrl", rev = "274b3ce63f72aa8ffea18e7fc280d3062d28f0ba" }
+
+
+[[language]]
 name = "yaml"
 language-servers = [ "yaml-language-server", "scls", "typos" ]
 formatter = { command = 'yamlfmt', args = ["-in", "-formatter", "retain_line_breaks=true,trim_trailing_whitespace=true,eof_newline=true"] }
