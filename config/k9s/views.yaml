@@ -1,0 +1,9 @@
+views:
+  v1/nodes:
+    columns:
+      - NAME
+      - STATUS
+      - ROLE
+      - TAINTS
+      - ID:.spec.providerID
+      - TYPE:.metadata.labels.node\.kubernetes\.io/instance\-type
