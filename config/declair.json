@@ -59,7 +59,7 @@
     "docker-compose-plugin": "2.38.2-1.fc42",
     "gopls": "0.17.1-1.fc42",
     "google-cloud-cli": "535.0.0-1",
-    "google-cloud-cli-gke-gcloud-auth-plugin": "535.0.0-1",
+    "google-cloud-cli-gke-gcloud-auth-plugin": "543.0.0-1",
     "mariadb-devel": "10.11.11-1.fc41",
     "python3-devel": "3.13.7-1.fc41"
   },
