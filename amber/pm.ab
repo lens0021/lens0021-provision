@@ -27,8 +27,8 @@ fun get_installed_version(pkg) {
 #[allow_absurd_cast]
 fun pm_list() {
     const pkgs = split($ jq -r '.rpm | keys | .[]' ~/.config/declair/config.json $?, "\n")
-    const longest_pkg_col = $ jq -r '.rpm | keys | .[]' ~/.config/declair/config.json | wc -L $? as Num
-    const longest_ver_col = $ jq -r '.rpm | values | .[]' ~/.config/declair/config.json | wc -L $? as Num
+    const longest_pkg_col = $ jq -r '.rpm | keys | .[]' ~/.config/declair/config.json | wc -L $? as Int
+    const longest_ver_col = $ jq -r '.rpm | values | .[]' ~/.config/declair/config.json | wc -L $? as Int
     let longest_installed_ver_col = 0
     for pkg in pkgs {
         let desired = $ jq -r ".rpm[\\\"{pkg}\\\"]" ~/.config/declair/config.json $?
