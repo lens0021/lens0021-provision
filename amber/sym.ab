@@ -27,11 +27,11 @@ fun dirname(path: Text): Text {
 #[allow_absurd_cast]
 fun sym_list() {
     const srcs = split($ jq -r '.sym | keys | .[]' ~/.config/declair/config.json $?, "\n")
-    const longest_src_col = $ jq -r '.sym | keys | .[]' ~/.config/declair/config.json | wc -L $? as Num
-    const longest_dist_col = $ jq -r '.sym | values | .[]' ~/.config/declair/config.json | wc -L $? as Num
+    const longest_src_col = $ jq -r '.sym | keys | .[]' ~/.config/declair/config.json | wc -L $? as Int
+    const longest_dist_col = $ jq -r '.sym | values | .[]' ~/.config/declair/config.json | wc -L $? as Int
     for src in srcs {
         const resolved_src = replace(src, "~", user_home)
-        let dist = $ jq -r ".sym[\\\"{src}\\\"]" ~/.config/declair/config.json $?
+        let dist = $ jq -r '.sym["{src}"]' ~/.config/declair/config.json $?
         const resolved_dist = replace(dist, "~", user_home)
         let state = "Unknown"
         if file_exists(resolved_dist) {
@@ -64,10 +64,10 @@ pub fun sym_ensure(targets: [Text] = [Text]): Null? {
             echo "no {target}, skipping"
             continue
         } else {
-            const dist = resolve($ jq -r ".sym[\\\"{target}\\\"]" ~/.config/declair/config.json $?)
+            const dist = resolve($ jq -r '.sym["{target}"]' ~/.config/declair/config.json $?)
             if not file_exists(dist) {
-                dir_create(dirname(dist))
-                symlink_create(resolve(target), dist)
+                dir_create(dirname(dist))?
+                symlink_create(resolve(target), dist)?
             }
         }
     }

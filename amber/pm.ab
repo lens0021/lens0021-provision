@@ -31,7 +31,7 @@ fun pm_list() {
     const longest_ver_col = $ jq -r '.rpm | values | .[]' ~/.config/declair/config.json | wc -L $? as Int
     let longest_installed_ver_col = 0
     for pkg in pkgs {
-        let desired = $ jq -r ".rpm[\\\"{pkg}\\\"]" ~/.config/declair/config.json $?
+        let desired = $ jq -r '.rpm["{pkg}"]' ~/.config/declair/config.json $?
         let state = "Unknown"
         let installed = "-"
         silent $ rpm -q {pkg} $ failed {
@@ -58,7 +58,7 @@ fun pm_ensure(pkg: Text): Null?  {
         return null
     }
     const installed = get_installed_version(pkg)?
-    const updated_json = $ jq ".rpm[\\\"{pkg}\\\"] = \\\"{installed}\\\"" ~/.config/declair/config.json $ failed {
+    const updated_json = $ jq '.rpm["{pkg}"] = "{installed}"' ~/.config/declair/config.json $ failed {
         echo "Failed to update declair config file."
         return null
     }
@@ -73,7 +73,7 @@ fun pm_install(pkg: Text): Null?  {
         return null
     }
     const installed = get_installed_version(pkg)?
-    const updated_json = $ jq ".rpm[\\\"{pkg}\\\"] = \\\"{installed}\\\"" ~/.config/declair/config.json $ failed {
+    const updated_json = $ jq '.rpm["{pkg}"] = "{installed}"' ~/.config/declair/config.json $ failed {
         echo "Failed to update declair config file."
         return null
     }

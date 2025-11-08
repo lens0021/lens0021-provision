@@ -34,23 +34,23 @@ fun setup_rbw() {
 
 fun post_prepare_provision() {
     if not file_exists("{user_home}/.config/declair/config.json") {
-        dir_create("{user_home}/.config/declair")
-        symlink_create("{user_home}/git/lens/provision/config/declair.json", "{user_home}/.config/declair/config.json")
+        dir_create("{user_home}/.config/declair")?
+        symlink_create("{user_home}/git/lens/provision/config/declair.json", "{user_home}/.config/declair/config.json")?
     }
     if not dir_exists("{user_home}/.config/bin") {
-        dir_create("{user_home}/.config/bin")
+        dir_create("{user_home}/.config/bin")?
     }
     if not file_exists("{user_home}/.config/bin/config.json") {
-        symlink_create("{user_home}/git/lens/provision/config/bin.config", "{user_home}/.config/bin/config.json")
+        symlink_create("{user_home}/git/lens/provision/config/bin.config", "{user_home}/.config/bin/config.json")?
     }
 }
 
 fun install_bin() {
     if not is_command("bin") {
         if not file_exists("bin") {
-            file_download("https://github.com/marcosnils/bin/releases/download/v0.21.2/bin_0.21.2_linux_amd64", "bin")
+            file_download("https://github.com/marcosnils/bin/releases/download/v0.21.2/bin_0.21.2_linux_amd64", "bin")?
         }
-        file_chmod("bin", "+x")
+        file_chmod("bin", "+x")?
         $ ./bin ensure bin $?
         $ rm ./bin $?
     }
@@ -65,7 +65,7 @@ fun install_fish() {
     }
     $ fish -c "functions -q fisher" $ failed {
         const fisher_url = "https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
-        $ curl -sL {fisher_url} | source && fisher install jorgebucaran/fisher $?
+        $ fish -c "curl -sL {fisher_url} | source && fisher install jorgebucaran/fisher" $?
     }
 }
 
@@ -127,7 +127,7 @@ main(args) {
     $ sudo -v $?
     setup_sudoer()?
     prepare_provision_repo()?
-    post_prepare_provision()
+    post_prepare_provision()?
     sym_ensure()?
     install_bin()?
     setup_rbw()?
