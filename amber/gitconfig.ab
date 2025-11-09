@@ -45,11 +45,15 @@ fun gitconfig_apply(): Null? {
 }
 
 main(args) {
-    if args[1] == "plan" {
-        gitconfig_plan()?
-    }
-
-    if args[1] == "apply" {
-        gitconfig_apply()?
+    if {
+        args[1] == "plan" {
+            gitconfig_plan()?
+        }
+        args[1] == "apply" {
+            gitconfig_apply()?
+        }
+        else {
+            echo "Unknown command: {args[1]}"
+        }
     }
 }
