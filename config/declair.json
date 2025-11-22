@@ -63,7 +63,8 @@
     "mariadb-devel": "10.11.11-1.fc41",
     "python3-devel": "3.13.7-1.fc41",
     "gnome-tweaks": "46.1-8.fc43",
-    "cascadia-code-nf-fonts": "2407.24-2.fc43"
+    "cascadia-code-nf-fonts": "2407.24-2.fc43",
+    "valkey-compat-redis": "8.1.4-2.fc43"
   },
   "termux": {
     "cargo": null,
