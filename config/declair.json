@@ -124,6 +124,7 @@
   "sym": {
     "~/git/lens/provision/config/bin.config": "~/.config/bin/config.json",
     "~/git/lens/provision/config/aws": "~/.aws/config",
+    "~/git/lens/provision/config/chrony.conf": "/etc/chrony.conf",
     "~/git/lens/provision/config/composer.json": "~/.composer/composer.json",
     "~/git/lens/provision/config/declair.json": "~/.config/declair/config.json",
     "~/git/lens/provision/config/gitui.ron": "~/.config/gitui/key_bindings.ron",
