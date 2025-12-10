@@ -31,7 +31,7 @@ fun pm_list() {
     const longest_ver_col = $ jq -r '.rpm | values | .[]' ~/.config/declair/config.json | wc -L $? as Int
     let longest_installed_ver_col = 0
     for pkg in pkgs {
-        let desired = $ jq -r '.rpm["{pkg}"]' ~/.config/declair/config.json $?
+        const desired = $ jq -r '.rpm["{pkg}"]' ~/.config/declair/config.json $?
         let state = "Unknown"
         let installed = "-"
         silent $ rpm -q {pkg} $ failed {
