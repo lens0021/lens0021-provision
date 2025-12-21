@@ -65,7 +65,8 @@
     "gnome-tweaks": "46.1-8.fc43",
     "cascadia-code-nf-fonts": "2407.24-2.fc43",
     "valkey-compat-redis": "8.1.4-2.fc43",
-    "copyq": "13.0.0-2.fc43"
+    "copyq": "13.0.0-2.fc43",
+    "nodejs": "22.20.0-1.fc43"
   },
   "termux": {
     "cargo": null,
