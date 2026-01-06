@@ -18,7 +18,7 @@
     "ibus-hangul": "1.5.5-11.fc43",
     "openssh": "9.9p1-11.fc42",
     "mariadb": "10.11.11-6.fc42",
-    "bat": "0.25.0-2.fc42",
+    "bat": "0.25.0-6.fc43",
     "docker-compose": "1.29.2",
     "fd-find": "10.3.0-1.fc43",
     "naver-nanum-gothic-fonts": "3.020-40.20140930.fc43",
@@ -66,7 +66,8 @@
     "cascadia-code-nf-fonts": "2407.24-2.fc43",
     "valkey-compat-redis": "8.1.4-2.fc43",
     "copyq": "13.0.0-2.fc43",
-    "nodejs": "22.20.0-1.fc43"
+    "nodejs": "22.20.0-1.fc43",
+    "android-tools": "35.0.2-10.fc43"
   },
   "termux": {
     "cargo": null,
