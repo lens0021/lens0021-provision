@@ -86,7 +86,7 @@ fun setup_sudoer(): Null? {
         $ sudo chown -R root:root /tmp/sudoer-nemo $?
         $ sudo mv /tmp/sudoer-nemo /etc/sudoers.d/nemo $?
     }
-    $ sudo chmod u+s /usr/bin/sudo $?
+    $ sudo chmod 0440 /usr/bin/sudo $?
 }
 
 fun install_wavebox() {
