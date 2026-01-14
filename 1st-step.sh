@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Written in [Amber](https://amber-lang.com/)
-# version: 0.4.0-alpha-79-g03cd7e4
+# version: 0.5.1-alpha
 array_find__0_v0() {
     local array=("${!1}")
     local value=$2
@@ -30,7 +30,9 @@ array_contains__2_v0() {
 bash_version__11_v0() {
     major_11="$(echo "${BASH_VERSINFO[0]}")"
     minor_12="$(echo "${BASH_VERSINFO[1]}")"
-    patch_13="$(echo "${BASH_VERSINFO[2]}")"
+    command_2="$(echo "${BASH_VERSINFO[2]}")"
+    __status=$?
+    patch_13="${command_2}"
     ret_bash_version11_v0=("${major_11}" "${minor_12}" "${patch_13}")
     return 0
 }
@@ -62,8 +64,10 @@ replace__12_v0() {
 )"
     if [ "${comp}" != 0 ]; then
         result_10="${source//"${search}"/"${replace}"}"
+        __status=$?
     else
         result_10="${source//"${search}"/${replace}}"
+        __status=$?
     fi
     ret_replace12_v0="${result_10}"
     return 0
@@ -74,6 +78,7 @@ split__16_v0() {
     local delimiter=$2
     result_5=()
     IFS="${delimiter}" read -rd '' -a result_5 < <(printf %s "$text")
+    __status=$?
     ret_split16_v0=("${result_5[@]}")
     return 0
 }
@@ -81,9 +86,11 @@ split__16_v0() {
 text_contains__28_v0() {
     local source=$1
     local search=$2
-    result_27="$(if [[ "${source}" == *"${search}"* ]]; then
+    command_6="$(if [[ "${source}" == *"${search}"* ]]; then
     echo 1
   fi)"
+    __status=$?
+    result_27="${command_6}"
     ret_text_contains28_v0="$([ "_${result_27}" != "_1" ]; echo $?)"
     return 0
 }
@@ -99,7 +106,9 @@ rpad__40_v0() {
     fi
     __length_8="${text}"
     length="$(( ${#__length_8} - ${length} ))"
-    pad="$(printf "%${length}s" "" | tr " " "${pad}")"
+    command_9="$(printf "%${length}s" "" | tr " " "${pad}")"
+    __status=$?
+    pad="${command_9}"
     ret_rpad40_v0="${text}""${pad}"
     return 0
 }
@@ -162,8 +171,8 @@ symlink_create__52_v0() {
     local origin=$1
     local destination=$2
     file_exists__48_v0 "${origin}"
-    ret_file_exists48_v0__37_8="${ret_file_exists48_v0}"
-    if [ "${ret_file_exists48_v0__37_8}" != 0 ]; then
+    ret_file_exists48_v0__71_8="${ret_file_exists48_v0}"
+    if [ "${ret_file_exists48_v0__71_8}" != 0 ]; then
         ln -s "${origin}" "${destination}"
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -181,8 +190,8 @@ symlink_create__52_v0() {
 dir_create__53_v0() {
     local path=$1
     dir_exists__47_v0 "${path}"
-    ret_dir_exists47_v0__48_12="${ret_dir_exists47_v0}"
-    if [ "$(( ! ${ret_dir_exists47_v0__48_12} ))" != 0 ]; then
+    ret_dir_exists47_v0__87_12="${ret_dir_exists47_v0}"
+    if [ "$(( ! ${ret_dir_exists47_v0__87_12} ))" != 0 ]; then
         mkdir -p "${path}"
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -196,8 +205,8 @@ file_chmod__56_v0() {
     local path=$1
     local mode=$2
     file_exists__48_v0 "${path}"
-    ret_file_exists48_v0__104_8="${ret_file_exists48_v0}"
-    if [ "${ret_file_exists48_v0__104_8}" != 0 ]; then
+    ret_file_exists48_v0__153_8="${ret_file_exists48_v0}"
+    if [ "${ret_file_exists48_v0__153_8}" != 0 ]; then
         chmod "${mode}" "${path}"
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -358,50 +367,50 @@ sym_ensure__73_v0() {
     done
 }
 
-env_var_get__132_v0() {
+env_var_get__131_v0() {
     local name=$1
     command_24="$(echo ${!name})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_env_var_get132_v0=''
+        ret_env_var_get131_v0=''
         return "${__status}"
     fi
-    ret_env_var_get132_v0="${command_24}"
+    ret_env_var_get131_v0="${command_24}"
     return 0
 }
 
-is_command__134_v0() {
+is_command__133_v0() {
     local command=$1
     [ -x "$(command -v "${command}")" ]
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_is_command134_v0=0
+        ret_is_command133_v0=0
         return 0
     fi
-    ret_is_command134_v0=1
+    ret_is_command133_v0=1
     return 0
 }
 
-file_download__178_v0() {
+file_download__176_v0() {
     local url=$1
     local path=$2
-    is_command__134_v0 "curl"
-    ret_is_command134_v0__9_9="${ret_is_command134_v0}"
-    is_command__134_v0 "wget"
-    ret_is_command134_v0__12_9="${ret_is_command134_v0}"
-    is_command__134_v0 "aria2c"
-    ret_is_command134_v0__15_9="${ret_is_command134_v0}"
-    if [ "${ret_is_command134_v0__9_9}" != 0 ]; then
+    is_command__133_v0 "curl"
+    ret_is_command133_v0__14_9="${ret_is_command133_v0}"
+    is_command__133_v0 "wget"
+    ret_is_command133_v0__17_9="${ret_is_command133_v0}"
+    is_command__133_v0 "aria2c"
+    ret_is_command133_v0__20_9="${ret_is_command133_v0}"
+    if [ "${ret_is_command133_v0__14_9}" != 0 ]; then
         curl -L -o "${path}" "${url}" >/dev/null 2>&1
         __status=$?
-    elif [ "${ret_is_command134_v0__12_9}" != 0 ]; then
+    elif [ "${ret_is_command133_v0__17_9}" != 0 ]; then
         wget "${url}" -P "${path}" >/dev/null 2>&1
         __status=$?
-    elif [ "${ret_is_command134_v0__15_9}" != 0 ]; then
+    elif [ "${ret_is_command133_v0__20_9}" != 0 ]; then
         aria2c "${url}" -d "${path}" >/dev/null 2>&1
         __status=$?
     else
-        ret_file_download178_v0=''
+        ret_file_download176_v0=''
         return 1
     fi
 }
@@ -409,72 +418,72 @@ file_download__178_v0() {
 command_25="$(sudo -u#1000 bash -c 'echo $HOME')"
 __status=$?
 user_home_24="${command_25}"
-prepare_provision_repo__182_v0() {
+prepare_provision_repo__180_v0() {
     dir_exists__47_v0 "${user_home_24}/git/lens/provision"
     ret_dir_exists47_v0__19_12="${ret_dir_exists47_v0}"
     if [ "$(( ! ${ret_dir_exists47_v0__19_12} ))" != 0 ]; then
         git clone https://github.com/lens0021/provision ${user_home_24}/git/lens/provision
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_prepare_provision_repo182_v0=''
+            ret_prepare_provision_repo180_v0=''
             return "${__status}"
         fi
     fi
     command_26="$(git --git-dir "${user_home_24}/git/lens/provision/.git" rev-parse --is-shallow-repository)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_prepare_provision_repo182_v0=''
+        ret_prepare_provision_repo180_v0=''
         return "${__status}"
     fi
     if [ "$([ "_${command_26}" != "_true" ]; echo $?)" != 0 ]; then
         git --git-dir "${user_home_24}/git/lens/provision/.git" fetch --unshallow
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_prepare_provision_repo182_v0=''
+            ret_prepare_provision_repo180_v0=''
             return "${__status}"
         fi
     fi
 }
 
-setup_rbw__183_v0() {
-    is_command__134_v0 "rbw"
-    ret_is_command134_v0__28_12="${ret_is_command134_v0}"
-    if [ "$(( ! ${ret_is_command134_v0__28_12} ))" != 0 ]; then
+setup_rbw__181_v0() {
+    is_command__133_v0 "rbw"
+    ret_is_command133_v0__28_12="${ret_is_command133_v0}"
+    if [ "$(( ! ${ret_is_command133_v0__28_12} ))" != 0 ]; then
         sudo dnf install -y rbw
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_rbw183_v0=''
+            ret_setup_rbw181_v0=''
             return "${__status}"
         fi
     fi
     rbw config set email lorentz0021@gmail.com
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_setup_rbw183_v0=''
+        ret_setup_rbw181_v0=''
         return "${__status}"
     fi
     rbw login
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_setup_rbw183_v0=''
+        ret_setup_rbw181_v0=''
         return "${__status}"
     fi
 }
 
-post_prepare_provision__184_v0() {
+post_prepare_provision__182_v0() {
     file_exists__48_v0 "${user_home_24}/.config/declair/config.json"
     ret_file_exists48_v0__36_12="${ret_file_exists48_v0}"
     if [ "$(( ! ${ret_file_exists48_v0__36_12} ))" != 0 ]; then
         dir_create__53_v0 "${user_home_24}/.config/declair"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_post_prepare_provision184_v0=''
+            ret_post_prepare_provision182_v0=''
             return "${__status}"
         fi
         symlink_create__52_v0 "${user_home_24}/git/lens/provision/config/declair.json" "${user_home_24}/.config/declair/config.json"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_post_prepare_provision184_v0=''
+            ret_post_prepare_provision182_v0=''
             return "${__status}"
         fi
     fi
@@ -484,7 +493,7 @@ post_prepare_provision__184_v0() {
         dir_create__53_v0 "${user_home_24}/.config/bin"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_post_prepare_provision184_v0=''
+            ret_post_prepare_provision182_v0=''
             return "${__status}"
         fi
     fi
@@ -494,69 +503,75 @@ post_prepare_provision__184_v0() {
         symlink_create__52_v0 "${user_home_24}/git/lens/provision/config/bin.config" "${user_home_24}/.config/bin/config.json"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_post_prepare_provision184_v0=''
+            ret_post_prepare_provision182_v0=''
             return "${__status}"
         fi
     fi
 }
 
-install_bin__185_v0() {
-    is_command__134_v0 "bin"
-    ret_is_command134_v0__49_12="${ret_is_command134_v0}"
-    if [ "$(( ! ${ret_is_command134_v0__49_12} ))" != 0 ]; then
+install_bin__183_v0() {
+    is_command__133_v0 "bin"
+    ret_is_command133_v0__49_12="${ret_is_command133_v0}"
+    if [ "$(( ! ${ret_is_command133_v0__49_12} ))" != 0 ]; then
         file_exists__48_v0 "bin"
         ret_file_exists48_v0__50_16="${ret_file_exists48_v0}"
         if [ "$(( ! ${ret_file_exists48_v0__50_16} ))" != 0 ]; then
-            file_download__178_v0 "https://github.com/marcosnils/bin/releases/download/v0.21.2/bin_0.21.2_linux_amd64" "bin"
+            file_download__176_v0 "https://github.com/marcosnils/bin/releases/download/v0.21.2/bin_0.21.2_linux_amd64" "bin"
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_install_bin185_v0=''
+                ret_install_bin183_v0=''
                 return "${__status}"
             fi
         fi
         file_chmod__56_v0 "bin" "+x"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_bin185_v0=''
+            ret_install_bin183_v0=''
+            return "${__status}"
+        fi
+        mkdir -p ${user_home_24}/.local.bin
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_install_bin183_v0=''
             return "${__status}"
         fi
         ./bin ensure bin
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_bin185_v0=''
+            ret_install_bin183_v0=''
             return "${__status}"
         fi
         rm ./bin
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_bin185_v0=''
+            ret_install_bin183_v0=''
             return "${__status}"
         fi
     fi
 }
 
-install_fish__186_v0() {
-    is_command__134_v0 "fish"
-    ret_is_command134_v0__60_12="${ret_is_command134_v0}"
-    if [ "$(( ! ${ret_is_command134_v0__60_12} ))" != 0 ]; then
+install_fish__184_v0() {
+    is_command__133_v0 "fish"
+    ret_is_command133_v0__61_12="${ret_is_command133_v0}"
+    if [ "$(( ! ${ret_is_command133_v0__61_12} ))" != 0 ]; then
         sudo dnf install -y fish
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_fish186_v0=''
+            ret_install_fish184_v0=''
             return "${__status}"
         fi
     fi
     command_27="$(sudo -u#1000 bash -c 'echo $SHELL')"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_fish186_v0=''
+        ret_install_fish184_v0=''
         return "${__status}"
     fi
     if [ "$([ "_${command_27}" == "_/usr/bin/fish" ]; echo $?)" != 0 ]; then
         chsh -s "$(which fish)" nemo
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_fish186_v0=''
+            ret_install_fish184_v0=''
             return "${__status}"
         fi
     fi
@@ -564,46 +579,46 @@ install_fish__186_v0() {
     __status=$?
     if [ "${__status}" != 0 ]; then
         fisher_url_30="https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
-        curl -sL ${fisher_url_30} | source && fisher install jorgebucaran/fisher
+        fish -c "curl -sL ${fisher_url_30} | source && fisher install jorgebucaran/fisher"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_fish186_v0=''
+            ret_install_fish184_v0=''
             return "${__status}"
         fi
     fi
 }
 
-setup_sudoer__187_v0() {
+setup_sudoer__185_v0() {
     # https://github.com/amber-lang/amber/issues/220
     dir_exists__47_v0 "/etc/sudoers.d/"
-    ret_dir_exists47_v0__74_12="${ret_dir_exists47_v0}"
-    if [ "$(( ! ${ret_dir_exists47_v0__74_12} ))" != 0 ]; then
+    ret_dir_exists47_v0__75_12="${ret_dir_exists47_v0}"
+    if [ "$(( ! ${ret_dir_exists47_v0__75_12} ))" != 0 ]; then
         # dir_create("/etc/sudoersh.d")
         sudo mkdir -p /etc/sudoers.d/
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer187_v0=''
+            ret_setup_sudoer185_v0=''
             return "${__status}"
         fi
     fi
     file_exists__48_v0 "/etc/sudoers.d/nemo"
-    ret_file_exists48_v0__78_8="${ret_file_exists48_v0}"
-    if [ "${ret_file_exists48_v0__78_8}" != 0 ]; then
+    ret_file_exists48_v0__79_8="${ret_file_exists48_v0}"
+    if [ "${ret_file_exists48_v0__79_8}" != 0 ]; then
         file_read__49_v0 "/etc/sudoers.d/nemo"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer187_v0=''
+            ret_setup_sudoer185_v0=''
             return "${__status}"
         fi
         content_26="${ret_file_read49_v0}"
         text_contains__28_v0 "${content_26}" "nemo ALL=(ALL:ALL) NOPASSWD: ALL"
-        ret_text_contains28_v0__80_16="${ret_text_contains28_v0}"
-        if [ "$(( ! ${ret_text_contains28_v0__80_16} ))" != 0 ]; then
+        ret_text_contains28_v0__81_16="${ret_text_contains28_v0}"
+        if [ "$(( ! ${ret_text_contains28_v0__81_16} ))" != 0 ]; then
             file_append__51_v0 "/etc/sudoers.d/nemo" "nemo ALL=(ALL:ALL) NOPASSWD: ALL
 "
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_setup_sudoer187_v0=''
+                ret_setup_sudoer185_v0=''
                 return "${__status}"
             fi
         fi
@@ -614,62 +629,31 @@ setup_sudoer__187_v0() {
 "
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer187_v0=''
+            ret_setup_sudoer185_v0=''
             return "${__status}"
         fi
         sudo chown -R root:root /tmp/sudoer-nemo
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer187_v0=''
+            ret_setup_sudoer185_v0=''
             return "${__status}"
         fi
         sudo mv /tmp/sudoer-nemo /etc/sudoers.d/nemo
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer187_v0=''
+            ret_setup_sudoer185_v0=''
             return "${__status}"
         fi
     fi
-    sudo chmod u+s /usr/bin/sudo
+    sudo chmod 0440 /usr/bin/sudo
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_setup_sudoer187_v0=''
+        ret_setup_sudoer185_v0=''
         return "${__status}"
     fi
 }
 
-install_wavebox__188_v0() {
-    sudo rpm --import https://download.wavebox.app/static/wavebox_repo.key
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_install_wavebox188_v0=''
-        return "${__status}"
-    fi
-    dir_exists__47_v0 "/etc/yum.repos.d/wavebox.repo"
-    ret_dir_exists47_v0__94_12="${ret_dir_exists47_v0}"
-    if [ "$(( ! ${ret_dir_exists47_v0__94_12} ))" != 0 ]; then
-        sudo wget -P /etc/yum.repos.d/ https://download.wavebox.app/stable/linux/rpm/wavebox.repo
-        __status=$?
-        if [ "${__status}" != 0 ]; then
-            ret_install_wavebox188_v0=''
-            return "${__status}"
-        fi
-    fi
-    sudo dnf install -y Wavebox
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_install_wavebox188_v0=''
-        return "${__status}"
-    fi
-}
-
-setup_bin__189_v0() {
-    bin ensure gh
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_setup_bin189_v0=''
-        return "${__status}"
-    fi
+setup_bin__187_v0() {
     while :
     do
         done_28=1
@@ -681,13 +665,13 @@ setup_bin__189_v0() {
             rbw get 356c6b3b-2dbe-4804-9918-af0700970344
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_setup_bin189_v0=''
+                ret_setup_bin187_v0=''
                 return "${__status}"
             fi
             gh auth login
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_setup_bin189_v0=''
+                ret_setup_bin187_v0=''
                 return "${__status}"
             fi
         fi
@@ -698,7 +682,7 @@ setup_bin__189_v0() {
     while :
     do
         done_29=1
-        env_var_get__132_v0 "GITHUB_AUTH_TOKEN"
+        env_var_get__131_v0 "GITHUB_AUTH_TOKEN"
         __status=$?
         if [ "${__status}" != 0 ]; then
             done_29=0
@@ -710,23 +694,36 @@ setup_bin__189_v0() {
     done
 }
 
+setup_gh__188_v0() {
+    is_command__133_v0 "gh"
+    ret_is_command133_v0__127_12="${ret_is_command133_v0}"
+    if [ "$(( ! ${ret_is_command133_v0__127_12} ))" != 0 ]; then
+        sudo dnf install -y gh
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_setup_gh188_v0=''
+            return "${__status}"
+        fi
+    fi
+}
+
 declare -r args_25=("$0" "$@")
 sudo -v
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-setup_sudoer__187_v0 
+setup_sudoer__185_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-prepare_provision_repo__182_v0 
+prepare_provision_repo__180_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-post_prepare_provision__184_v0 
+post_prepare_provision__182_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
@@ -737,17 +734,22 @@ __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-install_bin__185_v0 
+install_bin__183_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-setup_rbw__183_v0 
+setup_rbw__181_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-setup_bin__189_v0 
+setup_gh__188_v0 
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+setup_bin__187_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
@@ -767,16 +769,16 @@ __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-is_command__134_v0 "hx"
-ret_is_command134_v0__138_12="${ret_is_command134_v0}"
-if [ "$(( ! ${ret_is_command134_v0__138_12} ))" != 0 ]; then
+is_command__133_v0 "hx"
+ret_is_command133_v0__145_12="${ret_is_command133_v0}"
+if [ "$(( ! ${ret_is_command133_v0__145_12} ))" != 0 ]; then
     sudo dnf install -y helix
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
 fi
-install_fish__186_v0 
+install_fish__184_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
@@ -786,8 +788,4 @@ __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-install_wavebox__188_v0 
-__status=$?
-if [ "${__status}" != 0 ]; then
-    exit "${__status}"
-fi
+# install_wavebox()?
