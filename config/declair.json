@@ -14,7 +14,7 @@
     "openssh-server": "9.9p1-11.fc42",
     "ImageMagick": "7.1.1.47-1.fc42",
     "jq": "1.7.1-11.fc42",
-    "htop": "3.4.1-1.fc42",
+    "htop": "3.4.1-2.fc43",
     "ibus-hangul": "1.5.5-11.fc43",
     "openssh": "9.9p1-11.fc42",
     "mariadb": "10.11.11-6.fc42",
