@@ -98,7 +98,6 @@ fun install_wavebox() {
 }
 
 fun setup_bin() {
-    $ bin ensure gh $?
     loop {
         let done = true
         $ gh auth token $ failed {
@@ -123,6 +122,12 @@ fun setup_bin() {
     }
 }
 
+fun setup_gh() {
+    if not is_command("gh") {
+        $ sudo dnf install -y gh $?
+    }
+}
+
 main(args) {
     $ sudo -v $?
     setup_sudoer()?
@@ -131,6 +136,7 @@ main(args) {
     sym_ensure()?
     install_bin()?
     setup_rbw()?
+    setup_gh()?
     setup_bin()?
     $ bin ensure yazi $?
     $ bin ensure zellij $?
