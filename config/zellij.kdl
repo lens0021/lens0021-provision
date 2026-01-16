@@ -204,7 +204,6 @@ keybinds {
         bind "Alt ]" { NextSwapLayout; }
         bind "Alt p" { TogglePaneInGroup; }
         bind "Alt Shift p" { ToggleGroupMarking; }
-        bind "F11" { ToggleFocusFullscreen; }
         bind "Alt L" {
             Run "zellij" "run" "--floating" "--close-on-exit" "-x" "5%" "-y" "5%" "--width" "90%" "--height" "90%" "--" "lazygit" {
                 close_on_exit true
