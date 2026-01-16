@@ -69,7 +69,8 @@
     "android-tools": "35.0.2-10.fc43",
     "nodejs": "22.20.0-1.fc43",
     "msedit": "1.2.0^1.e16b4ab-4.fc43",
-    "https://github.com/sinelaw/fresh/releases/download/v0.1.71/fresh-editor-0.1.71-1.x86_64.rpm": "0.1.71-1"
+    "https://github.com/sinelaw/fresh/releases/download/v0.1.71/fresh-editor-0.1.71-1.x86_64.rpm": "0.1.71-1",
+    "firefox": "147.0-1.fc43"
   },
   "termux": {
     "cargo": null,
