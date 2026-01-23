@@ -7,3 +7,11 @@ views:
       - TAINTS
       - ID:.spec.providerID
       - TYPE:.metadata.labels.node\.kubernetes\.io/instance\-type
+  argoproj.io/v1alpha1/workflows:
+    columns:
+      - NAME
+      - STATUS
+      - AGE
+      - CRONWF:.metadata.labels.workflows\.argoproj\.io/cron-workflow
+      - WFTEMPLATE:.metadata.labels.workflows\.argoproj\.io/workflow-template
+      - CREATOR:.metadata.labels.workflows\.argoproj\.io/creator-preferred-username
