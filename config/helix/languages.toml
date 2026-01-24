@@ -24,6 +24,10 @@ timeout = 5
 [language-server.amber-lsp]
 command = "amber-lsp"
 
+[language-server.actions-language-server]
+command = "actions-languageserver"
+args = ["--stdio"]
+
 [[language]]
 name = "amber"
 scope = "source.ab"
@@ -52,6 +56,15 @@ source = { git = "https://github.com/belltoy/tree-sitter-vrl", rev = "274b3ce63f
 [[language]]
 name = "git-commit"
 language-servers = [ "scls", "typos" ]
+
+[[language]]
+name = "github-action"
+scope = "source.yaml.github-action"
+language-servers = [ "actions-language-server", "yaml-language-server" ]
+file-types = [{ glob = ".github/workflows/*.yaml" }, { glob = ".github/workflows/*.yml" }]
+comment-token = "#"
+indent = { tab-width = 2, unit = "  " }
+grammar = "yaml"
 
 [[language]]
 name = "go"
