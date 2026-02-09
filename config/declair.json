@@ -73,7 +73,11 @@
     "msedit": "1.2.0^1.e16b4ab-4.fc43",
     "https://github.com/sinelaw/fresh/releases/download/v0.1.71/fresh-editor-0.1.71-1.x86_64.rpm": "0.1.71-1",
     "firefox": "147.0-1.fc43",
-    "kdeconnectd": "25.12.1-1.fc43"
+    "kdeconnectd": "25.12.1-1.fc43",
+    "gromit-mpx": "1.8.0-1.fc43",
+    "python3-pip": "25.1.1-18.fc43",
+    "cmake": "3.31.10-3.fc43",
+    "gcc": "15.2.1-5.fc43"
   },
   "termux": {
     "cargo": null,
