@@ -221,5 +221,8 @@
     "/org/gnucash/GnuCash/general/date-format": "3",
     "/org/gnucash/GnuCash/general/file-compression": "false",
     "/org/gnucash/GnuCash/general/report/currency-other": "'KRW'"
-  }
+  },
+  "rust-component": [
+    "rust-analyzer"
+  ]
 }
