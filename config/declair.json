@@ -79,7 +79,8 @@
     "gcc": "15.2.1-5.fc43",
     "evtest": "1.35-10.fc43",
     "evemu": "2.7.0-36.fc43",
-    "libdav1d": "1.5.2-1.fc43"
+    "libdav1d": "1.5.2-1.fc43",
+    "code": "1.110.0-1772588031.el8"
   },
   "termux": {
     "cargo": null,
@@ -113,6 +114,15 @@
       "gpgcheck": "1",
       "repo_gpgcheck": "0",
       "gpgkey": "https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
+    },
+    "code": {
+      "name": "Visual Studio Code",
+      "baseurl": "https://packages.microsoft.com/yumrepos/vscode",
+      "enabled": "1",
+      "autorefresh": "1",
+      "type": "rpm-md",
+      "gpgcheck": "1",
+      "gpgkey": "https://packages.microsoft.com/keys/microsoft.asc"
     }
   },
   "git": {
