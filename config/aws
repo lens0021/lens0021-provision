@@ -14,3 +14,15 @@ credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --p
 region = ap-northeast-2
 credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --password=$PORT_KEYCLOAK_PW --credential-process -a port-aws-prod --mfa-token=$(oathtool --base32 $PORT_KEYCLOAK_OTP --totp)"
 
+[profile port-intl-dev]
+region = ap-southeast-1
+credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --password=$PORT_INTL_KEYCLOAK_PW --credential-process -a port-intl-dev --mfa-token=$(oathtool --base32 $PORT_INTL_KEYCLOAK_OTP --totp)"
+
+[profile port-intl-stg]
+region = ap-southeast-1
+credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --password=$PORT_INTL_KEYCLOAK_PW --credential-process -a port-intl-stg --mfa-token=$(oathtool --base32 $PORT_INTL_KEYCLOAK_OTP --totp)"
+
+[profile port-intl-prod]
+region = ap-southeast-1
+credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --password=$PORT_INTL_KEYCLOAK_PW --credential-process -a port-intl-prod --mfa-token=$(oathtool --base32 $PORT_INTL_KEYCLOAK_OTP --totp)"
+
