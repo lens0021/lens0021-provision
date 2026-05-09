@@ -3,3 +3,6 @@
 !/cache/.gitkeep
 
 __pycache__
+
+# Local scratch (registry snapshots, etc.)
+/.tmp/
