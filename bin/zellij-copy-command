@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Cross-OS clipboard writer for zellij's copy_command.
+# Reads stdin (UTF-8 selected text) and writes to the system clipboard
+# preserving the encoding — clip.exe on Korean Windows mangles UTF-8 to
+# CP949, so route through PowerShell's Set-Clipboard instead.
+
+set -eu
+
+case "$(uname -s)" in
+    Linux*)
+        if command -v wl-copy >/dev/null 2>&1; then
+            wl-copy
+        else
+            xclip -selection clipboard
+        fi
+        ;;
+    MINGW*|MSYS*|CYGWIN*)
+        # Force UTF-8 stdin so non-ASCII (e.g. Hangul) survives instead of
+        # being decoded as the system ANSI codepage (CP949 on Korean Windows).
+        powershell.exe -NoProfile -Command '[Console]::InputEncoding=[System.Text.Encoding]::UTF8; Set-Clipboard -Value ([Console]::In.ReadToEnd())'
+        ;;
+    Darwin*)
+        pbcopy
+        ;;
+esac
