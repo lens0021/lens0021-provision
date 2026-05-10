@@ -81,7 +81,7 @@
     "evemu": "2.7.0-36.fc43",
     "libdav1d": "1.5.2-1.fc43",
     "code": "1.110.0-1772588031.el8",
-    "claude-desktop": "1.1.5368-1.3.17.fc42"
+    "claude-desktop": "1.1.8629-1.3.25.fc42"
   },
   "termux": {
     "cargo": null,
@@ -173,6 +173,7 @@
     "~/git/lens/provision/config/starship.toml": "~/.config/starship.toml",
     "~/git/lens/provision/config/zellij.kdl": "~/.config/zellij/config.kdl",
     "~/git/lens/provision/rc/rc.bash": "~/.bashrc.d/lens.bash",
+    "~/git/port/leslie-kit/rc/rc.bash": "~/.bashrc.d/port.bash",
     "~/git/lens/provision/config/sheldon/plugins.toml": "~/.config/sheldon/plugins.toml",
     "~/git/lens/provision/fish_plugins": "~/.config/fish/fish_plugins",
     "~/git/amber/lang/target/release/amber": "~/.local/bin/amber-dev",

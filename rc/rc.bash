@@ -40,7 +40,6 @@ if [ -d ~/.bashrc.d ]; then
 	unset _self rc
 fi
 
-[ -f ~/git/port/leslie-kit/rc/rc.bash ] && source ~/git/port/leslie-kit/rc/rc.bash
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
 # User specific aliases
