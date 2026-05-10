@@ -38,7 +38,6 @@ shopt -s histappend
 shopt -s autocd
 shopt -s globstar
 shopt -s cdspell
-shopt -s dirspell
 
 GPG_TTY=$(tty)
 export GPG_TTY
