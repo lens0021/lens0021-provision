@@ -23,8 +23,10 @@ export PAGER
 GPG_TTY=$(tty)
 export GPG_TTY
 
+EDITOR=hx
+VISUAL=hx
 KUBE_EDITOR=hx
-export KUBE_EDITOR
+export EDITOR VISUAL KUBE_EDITOR
 
 # Load ~/.bashrc.d fragments, skipping this file to prevent recursion on OSes
 # (e.g. Fedora) that already loop over ~/.bashrc.d from their default ~/.bashrc.
@@ -42,9 +44,19 @@ fi
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
 # User specific aliases
-alias pbcopy='xclip -selection clipboard'
-alias pbpaste='xclip -selection clipboard -o'
+alias pbcopy='wl-copy'
+alias pbpaste='wl-paste'
 alias kc='kubectl'
+
+y() {
+    local tmp cwd
+    tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
 
 # Completions
 [ -f "$HOME/.asdf/asdf.sh" ] && source "$HOME/.asdf/asdf.sh"
@@ -118,7 +130,11 @@ if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
     abbrev-alias zz='z $(zoxide query -i)'
 fi
 
-# zoxide — provides the `z` command used by the zz abbr above.
+if command -v starship >/dev/null; then
+    eval "$(starship init bash)"
+fi
+
+# zoxide must be initialized last so nothing overwrites its cd hook.
 if command -v zoxide >/dev/null; then
     eval "$(zoxide init bash)"
 fi
