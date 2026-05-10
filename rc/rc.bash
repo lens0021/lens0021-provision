@@ -145,9 +145,65 @@ if command -v carapace >/dev/null; then
     source <(carapace _carapace bash)
 fi
 
-# fzf-tab-completion: route Tab through fzf (loaded by sheldon above).
+# fzf-tab-completion + carapace: route Tab through fzf, with descriptions
+# from carapace export JSON for any of its 700+ known CLIs. Falls back to
+# fzf_bash_completion (bash's native compspec) for everything else.
+_lens_carapace_tab() {
+    local before="${READLINE_LINE:0:READLINE_POINT}"
+    local after="${READLINE_LINE:READLINE_POINT}"
+    local words cmd cur trailing_space=0
+    read -ra words <<< "$before"
+    cmd="${words[0]}"
+
+    if [ -z "$cmd" ] || ! command -v carapace >/dev/null; then
+        fzf_bash_completion; return
+    fi
+    if [ -z "$_LENS_CARAPACE_CMDS_LOADED" ]; then
+        declare -gA _LENS_CARAPACE_CMDS=()
+        local _c
+        while IFS= read -r _c; do _LENS_CARAPACE_CMDS["$_c"]=1; done \
+            < <(carapace --list 2>/dev/null | jq -r 'keys[]' 2>/dev/null)
+        _LENS_CARAPACE_CMDS_LOADED=1
+    fi
+    if [ -z "${_LENS_CARAPACE_CMDS[$cmd]}" ]; then
+        fzf_bash_completion; return
+    fi
+
+    if [[ "${before: -1}" == " " ]]; then
+        trailing_space=1
+        words+=("")
+    else
+        cur="${words[-1]}"
+    fi
+
+    local items
+    items=$(carapace "$cmd" export "${words[@]}" 2>/dev/null \
+        | jq -r '.values[]? | [.value, (.description // "")] | @tsv')
+    [ -z "$items" ] && return
+
+    local sel
+    sel=$(printf '%s\n' "$items" \
+        | fzf --height=40% --layout=reverse --border --cycle --ansi \
+              --delimiter=$'\t' --with-nth=1,2 --nth=1 \
+              --query="$cur" --prompt="$cmd> ") || return
+    local val="${sel%%$'\t'*}"
+    [ -z "$val" ] && return
+
+    local new_before
+    if [ "$trailing_space" -eq 1 ]; then
+        new_before="$before$val"
+    else
+        new_before="${before:0:${#before}-${#cur}}$val"
+    fi
+    READLINE_LINE="$new_before$after"
+    READLINE_POINT=${#new_before}
+}
 if [[ $- == *i* ]] && type fzf_bash_completion >/dev/null 2>&1; then
-    bind -x '"\t": fzf_bash_completion'
+    if command -v carapace >/dev/null && command -v jq >/dev/null; then
+        bind -x '"\t": _lens_carapace_tab'
+    else
+        bind -x '"\t": fzf_bash_completion'
+    fi
 fi
 
 # fish-style abbreviations via bash-abbrev-alias (loaded by sheldon above).
