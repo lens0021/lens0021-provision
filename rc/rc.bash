@@ -81,7 +81,6 @@ if command -v terraform >/dev/null ; then
 	complete -C /usr/bin/terraform terraform
 fi
 
-complete -C /home/nemo/.terraform.versions/terraform_1.6.5 terraform
 
 complete -C /usr/bin/tofu tofu
 
