@@ -26,6 +26,8 @@ HISTSIZE=100000
 HISTFILESIZE=100000
 HISTCONTROL=ignorespace:erasedups
 shopt -s histappend
+shopt -s autocd
+shopt -s globstar
 
 GPG_TTY=$(tty)
 export GPG_TTY
