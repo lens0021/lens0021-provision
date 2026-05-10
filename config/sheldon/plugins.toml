@@ -9,6 +9,6 @@ shell = "bash"
 
 [plugins]
 
-[plugins.bash-abbrev-alias]
-github = "momo-lab/bash-abbrev-alias"
-use = ["{{ name }}.plugin.bash"]
+[plugins.abbrev-alias]
+github = "lens0021/amber-abbrev-alias"
+use = ["abbrev-alias.plugin.bash"]

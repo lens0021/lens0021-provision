@@ -26,15 +26,17 @@ export GPG_TTY
 KUBE_EDITOR=hx
 export KUBE_EDITOR
 
-# User specific functions
+# Load ~/.bashrc.d fragments, skipping this file to prevent recursion on OSes
+# (e.g. Fedora) that already loop over ~/.bashrc.d from their default ~/.bashrc.
 if [ -d ~/.bashrc.d ]; then
+	_self="$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
 	for rc in ~/.bashrc.d/*; do
-		if [ -f "$rc" ]; then
-			source "$rc"
-		fi
+		[ -f "$rc" ] || continue
+		[ "$(realpath "$rc" 2>/dev/null || echo "$rc")" = "$_self" ] && continue
+		source "$rc"
 	done
+	unset _self rc
 fi
-unset rc
 
 [ -f ~/git/port/leslie-kit/rc/rc.bash ] && source ~/git/port/leslie-kit/rc/rc.bash
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
@@ -63,12 +65,12 @@ __lens_fzf_history__() {
     local out
     out=$(
         builtin history | sed 's/^[ ]*[0-9]\+[ ]*//' | awk '!seen[$0]++' | tac \
-        | fzf --height 100% --reverse \
+        | fzf --height 90% --layout=reverse --border --cycle \
               --prompt="History> " \
               --scheme=history --no-sort --tiebreak=index \
               --bind=ctrl-r:toggle-sort \
               --preview='printf %s {}' \
-              --preview-window=down:3:wrap \
+              --preview-window=bottom:3:wrap \
               --query="$READLINE_LINE"
     ) || return
     READLINE_LINE="$out"
@@ -91,7 +93,7 @@ __lens_fzf_files__() {
         cmd='find . -type f -not -path "*/.git/*"'
     fi
     selected=$(eval "$cmd" | fzf \
-        --height 100% --reverse \
+        --height 90% --layout=reverse --border --cycle \
         --prompt="Files> " \
         --preview="$preview" \
         --preview-window=right:60%:wrap) || return
@@ -106,9 +108,17 @@ bind -r '"\C-v"' 2>/dev/null
 bind -x '"\C-v": __lens_fzf_files__'
 fi  # interactive
 
-# fish-style abbreviations. The abbrev-alias plugin must be sourced from
-# ~/.bashrc before this file is sourced; the `type` check below is the
-# safety net when it isn't (the abbrs are simply skipped).
+# Plugin manager — loads bash-abbrev-alias and any future plugins.
+if command -v sheldon >/dev/null; then
+    eval "$(sheldon source)"
+fi
+
+# fish-style abbreviations via bash-abbrev-alias (loaded by sheldon above).
 if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
     abbrev-alias zz='z $(zoxide query -i)'
+fi
+
+# zoxide — provides the `z` command used by the zz abbr above.
+if command -v zoxide >/dev/null; then
+    eval "$(zoxide init bash)"
 fi
