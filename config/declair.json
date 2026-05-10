@@ -180,9 +180,10 @@
     "~/git/amber/lsp/target/release/amber-lsp": "~/.local/bin/amber-lsp",
     "~/git/port/pelm/services.yaml": "~/.config/pelm/services.yaml",
     "~/git/port/terraform/aws/port-infra/keycloak-group/provider/linux_amd64/terraform-provider-keycloak": "~/.terraform.d/plugins/terraform.local/mrparkers/keycloak/3.0.0/linux_amd64/terraform-provider-keycloak",
-    "~/git/port/user-leslie-snippets/configs/kaf.yaml": "~/.kaf/config",
-    "~/git/port/user-leslie-snippets/configs/kube.yaml": "~/.kube/config",
-    "~/git/port/user-leslie-snippets/rc/rc.fish": "~/.config/fish/conf.d/port.fish",
+    "~/git/port/leslie-kit/configs/saml2aws": "~/.saml2aws",
+    "~/git/port/leslie-kit/configs/kaf.yaml": "~/.kaf/config",
+    "~/git/port/leslie-kit/configs/kube.yaml": "~/.kube/config",
+    "~/git/port/leslie-kit/rc/rc.fish": "~/.config/fish/conf.d/port.fish",
     "~/git/port/infra-ai/.claude/settings.json": "~/.claude/settings.json"
   },
   "uv": {
