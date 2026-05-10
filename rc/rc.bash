@@ -184,7 +184,9 @@ _lens_carapace_tab() {
     local sel
     sel=$(printf '%s\n' "$items" \
         | fzf --height=40% --layout=reverse --border --cycle --ansi \
-              --delimiter=$'\t' --with-nth=1,2 --nth=1 \
+              --delimiter=$'\t' --with-nth=1 --nth=1 \
+              --preview='printf %s {2}' \
+              --preview-window=bottom:3:wrap \
               --query="$cur" --prompt="$cmd> ") || return
     local val="${sel%%$'\t'*}"
     [ -z "$val" ] && return
