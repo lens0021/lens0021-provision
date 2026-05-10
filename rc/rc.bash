@@ -20,6 +20,13 @@ export PATH
 PAGER='less -r'
 export PAGER
 
+# Fish-style history: very large size + erasedups means re-used commands
+# lose their old entry and move to the end (LRU-like), nothing drops by age.
+HISTSIZE=100000
+HISTFILESIZE=100000
+HISTCONTROL=ignorespace:erasedups
+shopt -s histappend
+
 GPG_TTY=$(tty)
 export GPG_TTY
 
