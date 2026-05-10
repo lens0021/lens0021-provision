@@ -561,20 +561,6 @@ install_fish__184_v0() {
             return "${__status}"
         fi
     fi
-    command_27="$(sudo -u#1000 bash -c 'echo $SHELL')"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_install_fish184_v0=''
-        return "${__status}"
-    fi
-    if [ "$([ "_${command_27}" == "_/usr/bin/fish" ]; echo $?)" != 0 ]; then
-        chsh -s "$(which fish)" nemo
-        __status=$?
-        if [ "${__status}" != 0 ]; then
-            ret_install_fish184_v0=''
-            return "${__status}"
-        fi
-    fi
     fish -c "functions -q fisher"
     __status=$?
     if [ "${__status}" != 0 ]; then
