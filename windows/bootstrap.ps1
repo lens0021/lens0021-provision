@@ -31,6 +31,7 @@ $packages = @(
     'Starship.Starship'            # cross-shell prompt
     'AltSnap.AltSnap'              # Super+drag to move windows (GNOME-style)
     'AutoHotkey.AutoHotkey'        # keyboard scripting (Win-key shortcuts)
+    'rsteube.Carapace'             # multi-shell completion engine (bash menu)
     'GitHub.cli'
     'GLab.GLab'
     'Helix.Helix'
@@ -158,6 +159,19 @@ if (Test-Path "$abbrDir\abbrev-alias.plugin.bash") {
     $parent = Split-Path -Parent $abbrDir
     if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
     & git clone https://github.com/momo-lab/bash-abbrev-alias.git $abbrDir
+}
+
+# fzf-tab-completion — replaces bash's plain Tab menu with an fzf picker.
+# Pairs with carapace below: carapace generates rich candidate data,
+# fzf-tab-completion renders the menu UI.
+$fzfTabDir = Join-Path $env:USERPROFILE '.local\share\fzf-tab-completion'
+if (Test-Path "$fzfTabDir\bash\fzf-bash-completion.sh") {
+    Write-Host '[skip]    fzf-tab-completion'
+} else {
+    Write-Host '[install] fzf-tab-completion'
+    $parent = Split-Path -Parent $fzfTabDir
+    if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+    & git clone --depth 1 https://github.com/lincheney/fzf-tab-completion.git $fzfTabDir
 }
 
 # DebugView (Sysinternals) — winget manifest is broken (no installer URL),
@@ -732,6 +746,23 @@ export COLORTERM=truecolor
 # which spams "line editing not enabled" warnings in non-interactive shells.
 [[ $- == *i* && -f ~/.local/share/bash-abbrev-alias/abbrev-alias.plugin.bash ]] && \
     source ~/.local/share/bash-abbrev-alias/abbrev-alias.plugin.bash
+
+# carapace: rich completion data (icons + descriptions + flag hints across
+# hundreds of CLIs). The data is consumed by bash's complete -F machinery.
+[[ $- == *i* ]] && command -v carapace >/dev/null && source <(carapace _carapace bash)
+
+# fzf-tab-completion: replaces bash's "Display all 45 possibilities?"
+# prompt with an fzf picker. Pairs with carapace — carapace populates
+# the candidate list, fzf-tab-completion renders the menu.
+#
+# FZF_TMUX_HEIGHT skips the cursor-position DSR query (\e[6n) that
+# fzf-bash-completion.sh otherwise issues; the response isn't forwarded
+# through Git Bash's MSYS PTY and bash hangs waiting for it on Windows.
+if [[ $- == *i* ]] && [ -f ~/.local/share/fzf-tab-completion/bash/fzf-bash-completion.sh ]; then
+    export FZF_TMUX_HEIGHT="${FZF_TMUX_HEIGHT:-40%}"
+    source ~/.local/share/fzf-tab-completion/bash/fzf-bash-completion.sh
+    bind -x '"\t": fzf_bash_completion'
+fi
 
 # yazi: y wrapper that cds into yazi-exited dir.
 # winpty wraps native Windows TUIs in Git Bash so they get a proper PTY —
