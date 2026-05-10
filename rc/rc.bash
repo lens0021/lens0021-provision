@@ -140,6 +140,11 @@ if command -v sheldon >/dev/null; then
     eval "$(sheldon source)"
 fi
 
+# carapace: fish-style completions with descriptions for hundreds of CLIs.
+if command -v carapace >/dev/null; then
+    source <(carapace _carapace bash)
+fi
+
 # fzf-tab-completion: route Tab through fzf (loaded by sheldon above).
 if [[ $- == *i* ]] && type fzf_bash_completion >/dev/null 2>&1; then
     bind -x '"\t": fzf_bash_completion'
