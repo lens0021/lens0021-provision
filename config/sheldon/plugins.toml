@@ -1,0 +1,14 @@
+# sheldon plugin manifest. Used as the plugins.toml hardlink target on
+# Windows (and any other host that wires sheldon up). Apply:
+#
+#   eval "$(sheldon source)"   # sourced from ~/.bashrc
+#
+# https://sheldon.cli.rs/
+
+shell = "bash"
+
+[plugins]
+
+[plugins.bash-abbrev-alias]
+github = "momo-lab/bash-abbrev-alias"
+use = ["{{ name }}.plugin.bash"]
