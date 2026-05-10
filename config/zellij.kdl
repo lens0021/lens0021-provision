@@ -393,7 +393,7 @@ theme "pencil-light-edited"
 // Cross-OS wrapper at lens0021/lens0021-provision/bin/zellij-copy-command
 // dispatches to wl-copy / xclip / Set-Clipboard / pbcopy by uname -s.
 // Requires the bin dir on PATH (set in shell rc).
-copy_command "zellij-copy-command"
+copy_command "bash zellij-copy-command"
 // Per-OS originals (kept for reference):
 // copy_command "xclip -selection clipboard" // x11
 // copy_command "wl-copy"                    // wayland
