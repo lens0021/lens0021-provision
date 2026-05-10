@@ -18,7 +18,16 @@ fi
 export PATH
 
 PAGER='less -r'
-export PAGER
+LESS='--mouse --wheel-lines=3'
+export PAGER LESS
+
+HELM_DIFF_COLOR=true
+HELM_DIFF_OUTPUT=dyff
+HELM_DIFF_USE_UPGRADE_DRY_RUN=true
+export HELM_DIFF_COLOR HELM_DIFF_OUTPUT HELM_DIFF_USE_UPGRADE_DRY_RUN
+
+TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+export TF_PLUGIN_CACHE_DIR
 
 # Fish-style history: very large size + erasedups means re-used commands
 # lose their old entry and move to the end (LRU-like), nothing drops by age.
@@ -54,7 +63,6 @@ fi
 # User specific aliases
 alias pbcopy='wl-copy'
 alias pbpaste='wl-paste'
-alias kc='kubectl'
 
 y() {
     local tmp cwd
@@ -136,6 +144,11 @@ fi
 # fish-style abbreviations via bash-abbrev-alias (loaded by sheldon above).
 if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
     abbrev-alias zz='z $(zoxide query -i)'
+    abbrev-alias kc='kubectl'
+    abbrev-alias tf='terraform'
+    abbrev-alias gitdelta="git -c 'core.pager=delta -s'"
+    abbrev-alias fw-aws-sso='aws --profile fw configure sso'
+    abbrev-alias fw-ec2='aws --profile fw --region ap-northeast-1 ec2 describe-instances --query "Reservations[*].Instances[*].[to_string(Tags), State.Name, InstanceId, PrivateIpAddress, LaunchTime]" --output table'
 fi
 
 if command -v starship >/dev/null; then
