@@ -137,7 +137,9 @@ bind -x '"\C-v": __lens_fzf_files__'
 fi  # interactive
 
 # Plugin manager — loads bash-abbrev-alias and any future plugins.
-if command -v sheldon >/dev/null; then
+# Skip on Windows (Git Bash): windows/bootstrap.ps1 sources bash-abbrev-alias
+# directly, and sheldon 0.8.5 fails to lock its config dir under MSYS.
+if [[ "$OSTYPE" != msys* && "$OSTYPE" != cygwin* ]] && command -v sheldon >/dev/null; then
     eval "$(sheldon source)"
 fi
 
