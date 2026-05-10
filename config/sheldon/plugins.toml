@@ -12,3 +12,7 @@ shell = "bash"
 [plugins.abbrev-alias]
 github = "lens0021/amber-abbrev-alias"
 use = ["abbrev-alias.plugin.bash"]
+
+[plugins.fzf-tab-completion]
+github = "lincheney/fzf-tab-completion"
+use = ["bash/fzf-bash-completion.sh"]

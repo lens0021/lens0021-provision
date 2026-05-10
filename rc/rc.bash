@@ -140,6 +140,11 @@ if command -v sheldon >/dev/null; then
     eval "$(sheldon source)"
 fi
 
+# fzf-tab-completion: route Tab through fzf (loaded by sheldon above).
+if [[ $- == *i* ]] && type fzf_bash_completion >/dev/null 2>&1; then
+    bind -x '"\t": fzf_bash_completion'
+fi
+
 # fish-style abbreviations via bash-abbrev-alias (loaded by sheldon above).
 if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
     abbrev-alias zz='z $(zoxide query -i)'
