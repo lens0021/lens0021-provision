@@ -15,6 +15,9 @@ fi
 if ! [[ "$PATH" =~ $HOME/.krew/bin: ]]; then
   PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 fi
+if ! [[ "$PATH" =~ ${ASDF_DATA_DIR:-$HOME/.asdf}/shims: ]]; then
+  PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+fi
 export PATH
 
 PAGER='less -r'
@@ -76,8 +79,9 @@ y() {
 }
 
 # Completions
-[ -f "$HOME/.asdf/asdf.sh" ] && source "$HOME/.asdf/asdf.sh"
-[ -f "$HOME/.asdf/completions/asdf.bash" ] && source "$HOME/.asdf/completions/asdf.bash"
+if command -v asdf >/dev/null; then
+	source <(asdf completion bash)
+fi
 if command -v terraform >/dev/null ; then
 	complete -C /usr/bin/terraform terraform
 fi
