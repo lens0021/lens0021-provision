@@ -6,3 +6,8 @@ __pycache__
 
 # Local scratch (registry snapshots, etc.)
 /.tmp/
+
+# Claude Code per-machine state
+/.claude/settings.local.json
+/.claude/translations.log
+/.claude/translations.log.lock
