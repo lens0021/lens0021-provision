@@ -15,7 +15,7 @@ The canonical source files live alongside this SKILL.md:
 
 ## Steps
 
-1. **Check dependencies.** Run `command -v jq flock claude` and report any missing. `flock` is Linux-only; on macOS suggest `brew install flock` or note it as a known gap.
+1. **Check dependencies.** Run `command -v jq claude` and report any missing.
 2. **Inspect `~/.claude/settings.json`.**
    - If it does not exist: copy `settings.json` from this skill directory to `~/.claude/settings.json`.
    - If it exists: do NOT overwrite. Show the user the diff between the existing file and the bundled one and ask whether to merge the `statusLine` and `hooks.UserPromptSubmit` keys in (preserving any other existing config). Apply the merge only after the user confirms.
@@ -26,6 +26,7 @@ The canonical source files live alongside this SKILL.md:
 ## Notes
 
 - Do not touch `~/.claude/settings.local.json` (per-machine permissions).
-- `~/.claude/translations.log` and `~/.claude/translations.log.lock` are runtime files; do not create or commit them.
+- `~/.claude/translations.log` and `~/.claude/.translate-pids/` are runtime files; do not create or commit them.
 - The status line shows only the last 2 entries; the log is auto-trimmed to 100 lines by the translate script.
+- The translate script guards against re-entry (the inner `claude -p` would otherwise re-fire `UserPromptSubmit` and spawn nested translations) via `CLAUDE_KO_TRANSLATE_NESTED=1`, and caps concurrent translations via PID files in `.translate-pids/` (default `MAX_PARALLEL=2`).
 - If the user later wants to update the installed copy after pulling repo changes, they can re-run this skill — step 2/3 are idempotent (with consent for settings.json).
