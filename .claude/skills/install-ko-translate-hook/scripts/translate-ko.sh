@@ -10,6 +10,7 @@ MAX_PARALLEL=2
 
 input=$(cat)
 prompt=$(jq -r '.prompt // empty' <<<"$input")
+session_id=$(jq -r '.session_id // "unknown"' <<<"$input")
 
 [[ "$prompt" =~ [가-힣] ]] || exit 0
 
@@ -35,7 +36,7 @@ count=$(find "$PIDS_DIR" -maxdepth 1 -type f | wc -l)
     | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//'
   )
   [[ -n "$translation" ]] || exit 0
-  printf '%s\n' "$translation" >> "$LOG"
+  printf '%s\t%s\n' "$session_id" "$translation" >> "$LOG"
   if [[ $(wc -l < "$LOG") -gt 100 ]]; then
     tail -n 100 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
   fi
