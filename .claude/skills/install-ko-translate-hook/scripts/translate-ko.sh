@@ -12,7 +12,7 @@ input=$(cat)
 prompt=$(jq -r '.prompt // empty' <<<"$input")
 session_id=$(jq -r '.session_id // "unknown"' <<<"$input")
 
-[[ "$prompt" =~ [가-힣] ]] || exit 0
+printf '%s' "$prompt" | grep -qP '[\x{AC00}-\x{D7A3}]' || exit 0
 
 mkdir -p "$PIDS_DIR"
 for f in "$PIDS_DIR"/*; do
@@ -31,7 +31,7 @@ count=$(find "$PIDS_DIR" -maxdepth 1 -type f | wc -l)
     printf '%s\n\n---\n%s\n' \
       "Translate the following Korean text to natural English. Preserve tone, nuance, and politeness level. Output ONLY the translation, no quotes or commentary." \
       "$prompt" \
-    | CLAUDE_KO_TRANSLATE_NESTED=1 claude -p --model claude-haiku-4-5 2>/dev/null \
+    | CLAUDE_KO_TRANSLATE_NESTED=1 claude -p --model claude-haiku-4-5 --effort low 2>/dev/null \
     | tr '\n' ' ' \
     | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//'
   )
