@@ -68,16 +68,6 @@ fi
 alias pbcopy='wl-copy'
 alias pbpaste='wl-paste'
 
-y() {
-    local tmp cwd
-    tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-    yazi "$@" --cwd-file="$tmp"
-    if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-        builtin cd -- "$cwd"
-    fi
-    rm -f -- "$tmp"
-}
-
 # Completions
 if command -v asdf >/dev/null; then
 	source <(asdf completion bash)
@@ -223,6 +213,7 @@ if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
     abbrev-alias gitdelta="git -c 'core.pager=delta -s'"
     abbrev-alias fw-aws-sso='aws --profile fw configure sso'
     abbrev-alias fw-ec2='aws --profile fw --region ap-northeast-1 ec2 describe-instances --query "Reservations[*].Instances[*].[to_string(Tags), State.Name, InstanceId, PrivateIpAddress, LaunchTime]" --output table'
+    abbrev-alias y='tmp=$(mktemp -t yazi-cwd.XXXXXX) && yazi --cwd-file="$tmp"; cwd=$(<"$tmp"); rm -f "$tmp"; [[ -n $cwd && $cwd != "$PWD" ]] && cd "$cwd"'
 fi
 
 if command -v starship >/dev/null; then
