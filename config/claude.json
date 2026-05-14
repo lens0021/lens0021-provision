@@ -3,6 +3,7 @@
 		"allow": [
 			"Bash(awk *)",
 			"Bash(aws autoscaling describe-:*)",
+			"Bash(aws bedrock list-:*)",
 			"Bash(aws configure list-:*)",
 			"Bash(aws ec2 describe-:*)",
 			"Bash(aws ec2 wait:*)",
