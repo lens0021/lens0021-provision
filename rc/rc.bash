@@ -211,6 +211,8 @@ if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
     abbrev-alias fw-aws-sso='aws --profile fw configure sso'
     abbrev-alias fw-ec2='aws --profile fw --region ap-northeast-1 ec2 describe-instances --query "Reservations[*].Instances[*].[to_string(Tags), State.Name, InstanceId, PrivateIpAddress, LaunchTime]" --output table'
     abbrev-alias y='tmp=$(mktemp -t yazi-cwd.XXXXXX) && yazi --cwd-file="$tmp"; cwd=$(<"$tmp"); rm -f "$tmp"; [[ -n $cwd && $cwd != "$PWD" ]] && cd "$cwd"'
+    abbrev-alias prefer-light='gsettings set org.gnome.desktop.interface color-scheme prefer-light'
+    abbrev-alias prefer-dark='gsettings set org.gnome.desktop.interface color-scheme prefer-dark'
 fi
 
 if command -v starship >/dev/null; then
