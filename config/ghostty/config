@@ -1,0 +1,24 @@
+font-family = "Cascadia Code NF"
+font-size = 12
+
+window-theme = auto
+theme = light:Adwaita,dark:Atom One Dark
+window-show-tab-bar = never
+window-padding-x = 4
+window-padding-y = 4
+
+confirm-close-surface = false
+
+# zellij handles multiplexing inside the terminal.
+# All ghostty defaults are dropped and only essentials are re-added,
+# so tab/split shortcuts cannot be triggered accidentally.
+keybind = clear
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+keybind = ctrl+insert=copy_to_clipboard
+keybind = shift+insert=paste_from_selection
+keybind = ctrl+==increase_font_size:1
+keybind = ctrl++=increase_font_size:1
+keybind = ctrl+-=decrease_font_size:1
+keybind = ctrl+0=reset_font_size
+keybind = ctrl+shift+comma=reload_config
