@@ -79,27 +79,24 @@ fi
 
 complete -C /usr/bin/tofu tofu
 
-# fzf.fish-style key bindings (interactive only — `bind` errors out
-# in non-interactive shells with "line editing not enabled").
+# fzf bash integration: Ctrl+R (history), Alt+C (cd-into-dir), **<Tab> trigger.
+# Options for the Ctrl+R widget are customised via FZF_CTRL_R_OPTS instead of
+# a hand-rolled bind -x widget. Dedup is already handled by HISTCONTROL=erasedups.
+export FZF_CTRL_R_OPTS="
+    --height=90% --layout=reverse --border --cycle
+    --prompt='History> '
+    --scheme=history --no-sort --tiebreak=index
+    --bind=ctrl-r:toggle-sort
+    --preview='printf %s {}'
+    --preview-window=bottom:3:wrap"
 
-# Ctrl+R — history search. Sorted by recency, dedup, toggle-sort with Ctrl+R.
-__lens_fzf_history__() {
-    local out
-    out=$(
-        builtin history | sed 's/^[ ]*[0-9]\+[ ]*//' | awk '!seen[$0]++' | tac \
-        | fzf --height 90% --layout=reverse --border --cycle \
-              --prompt="History> " \
-              --scheme=history --no-sort --tiebreak=index \
-              --bind=ctrl-r:toggle-sort \
-              --preview='printf %s {}' \
-              --preview-window=bottom:3:wrap \
-              --query="$READLINE_LINE"
-    ) || return
-    READLINE_LINE="$out"
-    READLINE_POINT=${#out}
-}
 if [[ $- == *i* ]]; then
-bind -x '"\C-r": __lens_fzf_history__'
+# `bind` errors out in non-interactive shells with "line editing not enabled",
+# so the fzf eval and all bind calls are gated to interactive sessions.
+eval "$(fzf --bash)"
+# fzf rebinds Ctrl+T to its file widget; restore readline's transpose-chars
+# because the Ctrl+V file picker below already covers that need.
+bind '"\C-t": transpose-chars'
 
 # Ctrl+V — file picker, inserts path at cursor. fd + bat (fallback find/cat).
 __lens_fzf_files__() {
