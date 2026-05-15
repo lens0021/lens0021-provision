@@ -5,3 +5,7 @@ indent_size = 2
 [*.{ba,fi,}sh]
 indent_style = space
 indent_size = 2
+
+[claude.json]
+indent_style = space
+indent_size = 2
