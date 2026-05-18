@@ -679,35 +679,13 @@ Set-ItemProperty -Path $startupKey -Name 'DelegationConsole'  -Value '{2EACA947-
 Set-ItemProperty -Path $startupKey -Name 'DelegationTerminal' -Value '{E12CFF52-A866-4C77-9A90-F570A7AA2C6B}' -Type String -Force
 Write-Host '[ok] Default terminal: Windows Terminal'
 
-# Windows Terminal default profile: Git Bash. Reasoning: bash readline
-# interprets Ctrl-key bytes directly so all line-edit shortcuts (Ctrl+A/E/W/U/...)
-# survive zellij's ConPTY forwarding on Windows. pwsh's PSReadLine relies on
-# Win32 ConsoleKeyInfo modifier flags which zellij strips, so Ctrl-keys break
-# inside zellij. pwsh remains available via `pwsh` command from any bash pane.
-$wtSettings = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-$gitBashGuid = '{00000000-0000-0000-ba54-000000000002}'
-$gitBashExe  = 'C:\Program Files\Git\bin\bash.exe'
-if ((Test-Path $wtSettings) -and (Test-Path $gitBashExe)) {
-    $cfg = Get-Content $wtSettings -Raw | ConvertFrom-Json
-    $existing = $cfg.profiles.list | Where-Object { $_.guid -eq $gitBashGuid -or $_.name -eq 'Git Bash' }
-    if (-not $existing) {
-        $newProfile = [PSCustomObject]@{
-            guid              = $gitBashGuid
-            name              = 'Git Bash'
-            commandline       = "$gitBashExe -l -i"
-            icon              = 'C:\Program Files\Git\mingw64\share\git\git-for-windows.ico'
-            startingDirectory = '%USERPROFILE%'
-        }
-        $cfg.profiles.list = @($cfg.profiles.list) + $newProfile
-        Write-Host '[ok] WT: Git Bash profile added'
-    }
-    $gb = $cfg.profiles.list | Where-Object { $_.guid -eq $gitBashGuid -or $_.name -eq 'Git Bash' } | Select-Object -First 1
-    $cfg.defaultProfile = $gb.guid
-    $cfg | ConvertTo-Json -Depth 32 | Set-Content -Path $wtSettings -Encoding utf8
-    Write-Host "[ok] WT defaultProfile = Git Bash"
-} else {
-    Write-Warning "Skipping WT default profile change (settings.json or Git Bash missing)."
-}
+# Windows Terminal settings.json: deployed as a hardlink from config/wt in
+# Section D below. Repo file pins Git Bash as default profile (zellij needs
+# bash readline so Ctrl+A/E/W/U survive ConPTY forwarding. pwsh's PSReadLine
+# breaks inside zellij. pwsh stays available via `pwsh` command in any pane.
+# If WT has never run, settings.json doesn't exist yet, Section D creates it.
+$wtDir = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
+if (-not (Test-Path $wtDir)) { New-Item -ItemType Directory -Path $wtDir -Force | Out-Null }
 
 # .bashrc / .bash_profile for Git Bash: starship prompt + zoxide.
 # Idempotent: only append when our marker line isn't found.
@@ -893,6 +871,9 @@ $configs = @(
     # is not set globally, and k9s falls back to os.UserConfigDir there).
     @{ Repo = 'config/k9s/config.yaml';      Dest = "$env:APPDATA\k9s\config.yaml"; Link = $true }
     @{ Repo = 'config/k9s/views.yaml';       Dest = "$env:APPDATA\k9s\views.yaml";  Link = $true }
+    @{ Repo = 'config/wt/settings.json';
+       Dest = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json";
+       Link = $true }
 )
 
 function Resolve-Source {
