@@ -188,7 +188,7 @@
     "~/git/port/leslie-kit/configs/kaf.yaml": "~/.kaf/config",
     "~/git/port/leslie-kit/configs/kube.yaml": "~/.kube/config",
     "~/git/port/leslie-kit/rc/rc.fish": "~/.config/fish/conf.d/port.fish",
-    "~/git/port/infra-ai/.claude/settings.json": "~/.claude/settings.json"
+    "~/git/lens/provision/config/claude.json": "~/.claude/settings.json"
   },
   "uv": {
     "cqlsh-expansion": "v0.9.6"
