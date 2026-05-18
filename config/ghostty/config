@@ -9,6 +9,10 @@ window-padding-y = 4
 
 confirm-close-surface = false
 
+# Use xterm-256color so ssh into hosts without ghostty terminfo doesn't
+# break backspace/undo/arrows. Loses truecolor and curly underlines.
+term = xterm-256color
+
 # zellij handles multiplexing inside the terminal.
 # All ghostty defaults are dropped and only essentials are re-added,
 # so tab/split shortcuts cannot be triggered accidentally.
