@@ -1,0 +1,438 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EditContextSetting version="0x500">
+	<EditorLayer flag="DEL_MOVE|ARROW_MOVE">
+		<ShortcutTable>
+			<Shortcut key="VK_HANGUL" usage="IME_SWITCH" value="!A"/>
+			<Shortcut key="VK_HANJA" usage="KEYCHAR" value="C0|0x82"/>
+			<Shortcut key="VK_CAPITAL" modifier="DONT_EAT|KEEP_LAMP" usage="IME_SWITCH" value="!A"/>
+		</ShortcutTable>
+		<FinalConvTable>
+			<FinalConv from="0x1100" to="0x3131"/>
+			<FinalConv from="0x1101" to="0x3132"/>
+			<FinalConv from="0x1102" to="0x3134"/>
+			<FinalConv from="0x1103" to="0x3137"/>
+			<FinalConv from="0x1104" to="0x3138"/>
+			<FinalConv from="0x1105" to="0x3139"/>
+			<FinalConv from="0x1106" to="0x3141"/>
+			<FinalConv from="0x1107" to="0x3142"/>
+			<FinalConv from="0x1108" to="0x3143"/>
+			<FinalConv from="0x1109" to="0x3145"/>
+			<FinalConv from="0x110A" to="0x3146"/>
+			<FinalConv from="0x110B" to="0x3147"/>
+			<FinalConv from="0x110C" to="0x3148"/>
+			<FinalConv from="0x110D" to="0x3149"/>
+			<FinalConv from="0x110E" to="0x314A"/>
+			<FinalConv from="0x110F" to="0x314B"/>
+			<FinalConv from="0x1110" to="0x314C"/>
+			<FinalConv from="0x1111" to="0x314D"/>
+			<FinalConv from="0x1112" to="0x314E"/>
+			<FinalConv from="0x1114" to="0x3165"/>
+			<FinalConv from="0x1115" to="0x3166"/>
+			<FinalConv from="0x111A" to="0x3140"/>
+			<FinalConv from="0x111C" to="0x316E"/>
+			<FinalConv from="0x111D" to="0x3171"/>
+			<FinalConv from="0x111E" to="0x3172"/>
+			<FinalConv from="0x1120" to="0x3173"/>
+			<FinalConv from="0x1121" to="0x3144"/>
+			<FinalConv from="0x1122" to="0x3174"/>
+			<FinalConv from="0x1123" to="0x3175"/>
+			<FinalConv from="0x1127" to="0x3176"/>
+			<FinalConv from="0x1129" to="0x3177"/>
+			<FinalConv from="0x112B" to="0x3178"/>
+			<FinalConv from="0x112C" to="0x3179"/>
+			<FinalConv from="0x112D" to="0x317A"/>
+			<FinalConv from="0x112E" to="0x317B"/>
+			<FinalConv from="0x112F" to="0x317C"/>
+			<FinalConv from="0x1132" to="0x317D"/>
+			<FinalConv from="0x1136" to="0x317E"/>
+			<FinalConv from="0x1140" to="0x317F"/>
+			<FinalConv from="0x1147" to="0x3180"/>
+			<FinalConv from="0x114C" to="0x3181"/>
+			<FinalConv from="0x1157" to="0x3184"/>
+			<FinalConv from="0x1158" to="0x3185"/>
+			<FinalConv from="0x1159" to="0x3186"/>
+			<FinalConv from="0x115B" to="0x3167"/>
+			<FinalConv from="0x115C" to="0x3135"/>
+			<FinalConv from="0x115D" to="0x3136"/>
+			<FinalConv from="0x1161" to="0x314F"/>
+			<FinalConv from="0x1162" to="0x3150"/>
+			<FinalConv from="0x1163" to="0x3151"/>
+			<FinalConv from="0x1164" to="0x3152"/>
+			<FinalConv from="0x1165" to="0x3153"/>
+			<FinalConv from="0x1166" to="0x3154"/>
+			<FinalConv from="0x1167" to="0x3155"/>
+			<FinalConv from="0x1168" to="0x3156"/>
+			<FinalConv from="0x1169" to="0x3157"/>
+			<FinalConv from="0x116A" to="0x3158"/>
+			<FinalConv from="0x116B" to="0x3159"/>
+			<FinalConv from="0x116C" to="0x315A"/>
+			<FinalConv from="0x116D" to="0x315B"/>
+			<FinalConv from="0x116E" to="0x315C"/>
+			<FinalConv from="0x116F" to="0x315D"/>
+			<FinalConv from="0x1170" to="0x315E"/>
+			<FinalConv from="0x1171" to="0x315F"/>
+			<FinalConv from="0x1172" to="0x3160"/>
+			<FinalConv from="0x1173" to="0x3161"/>
+			<FinalConv from="0x1174" to="0x3162"/>
+			<FinalConv from="0x1175" to="0x3163"/>
+			<FinalConv from="0x1184" to="0x3187"/>
+			<FinalConv from="0x1185" to="0x3188"/>
+			<FinalConv from="0x1188" to="0x3189"/>
+			<FinalConv from="0x1191" to="0x318A"/>
+			<FinalConv from="0x1192" to="0x318B"/>
+			<FinalConv from="0x1194" to="0x318C"/>
+			<FinalConv from="0x119E" to="0x318D"/>
+			<FinalConv from="0x11A1" to="0x318E"/>
+			<FinalConv from="0x11A8" to="0x3131"/>
+			<FinalConv from="0x11A9" to="0x3132"/>
+			<FinalConv from="0x11AA" to="0x3133"/>
+			<FinalConv from="0x11AB" to="0x3134"/>
+			<FinalConv from="0x11AC" to="0x3135"/>
+			<FinalConv from="0x11AD" to="0x3136"/>
+			<FinalConv from="0x11AE" to="0x3137"/>
+			<FinalConv from="0x11AF" to="0x3139"/>
+			<FinalConv from="0x11B0" to="0x313A"/>
+			<FinalConv from="0x11B1" to="0x313B"/>
+			<FinalConv from="0x11B2" to="0x313C"/>
+			<FinalConv from="0x11B3" to="0x313D"/>
+			<FinalConv from="0x11B4" to="0x313E"/>
+			<FinalConv from="0x11B5" to="0x313F"/>
+			<FinalConv from="0x11B6" to="0x3140"/>
+			<FinalConv from="0x11B7" to="0x3141"/>
+			<FinalConv from="0x11B8" to="0x3142"/>
+			<FinalConv from="0x11B9" to="0x3144"/>
+			<FinalConv from="0x11BA" to="0x3145"/>
+			<FinalConv from="0x11BB" to="0x3146"/>
+			<FinalConv from="0x11BC" to="0x3147"/>
+			<FinalConv from="0x11BD" to="0x3148"/>
+			<FinalConv from="0x11BE" to="0x314A"/>
+			<FinalConv from="0x11BF" to="0x314B"/>
+			<FinalConv from="0x11C0" to="0x314C"/>
+			<FinalConv from="0x11C1" to="0x314D"/>
+			<FinalConv from="0x11C2" to="0x314E"/>
+			<FinalConv from="0x11C6" to="0x3166"/>
+			<FinalConv from="0x11C7" to="0x3167"/>
+			<FinalConv from="0x11C8" to="0x3168"/>
+			<FinalConv from="0x11CC" to="0x3169"/>
+			<FinalConv from="0x11CE" to="0x316A"/>
+			<FinalConv from="0x11D3" to="0x316B"/>
+			<FinalConv from="0x11D7" to="0x316C"/>
+			<FinalConv from="0x11D9" to="0x316D"/>
+			<FinalConv from="0x11DC" to="0x316E"/>
+			<FinalConv from="0x11DD" to="0x316F"/>
+			<FinalConv from="0x11DF" to="0x3170"/>
+			<FinalConv from="0x11E2" to="0x3171"/>
+			<FinalConv from="0x11E6" to="0x3178"/>
+			<FinalConv from="0x11E7" to="0x317A"/>
+			<FinalConv from="0x11E8" to="0x317C"/>
+			<FinalConv from="0x11EA" to="0x317D"/>
+			<FinalConv from="0x11EB" to="0x317F"/>
+			<FinalConv from="0x11F0" to="0x3181"/>
+			<FinalConv from="0x11F1" to="0x3182"/>
+			<FinalConv from="0x11F2" to="0x3183"/>
+			<FinalConv from="0x11F4" to="0x3184"/>
+			<FinalConv from="0x11F9" to="0x3186"/>
+			<FinalConv from="0x11FF" to="0x3165"/>
+			<FinalConv from="0xA964" to="0x313A"/>
+			<FinalConv from="0xA966" to="0x316A"/>
+			<FinalConv from="0xA968" to="0x313B"/>
+			<FinalConv from="0xA969" to="0x313C"/>
+			<FinalConv from="0xA96C" to="0x313D"/>
+			<FinalConv from="0xA971" to="0x316F"/>
+			<FinalConv from="0xD7CD" to="0x3138"/>
+			<FinalConv from="0xD7E3" to="0x3173"/>
+			<FinalConv from="0xD7E6" to="0x3143"/>
+			<FinalConv from="0xD7E7" to="0x3175"/>
+			<FinalConv from="0xD7E8" to="0x3176"/>
+			<FinalConv from="0xD7EF" to="0x317E"/>
+			<FinalConv from="0xD7F9" to="0x3149"/>
+			<FinalConv from="0xEA07" to="0x3133"/>
+			<FinalConv from="0xEA13" to="0x3168"/>
+			<FinalConv from="0xEA27" to="0x3169"/>
+			<FinalConv from="0xEA36" to="0x316B"/>
+			<FinalConv from="0xEA3C" to="0x316C"/>
+			<FinalConv from="0xEA40" to="0x313E"/>
+			<FinalConv from="0xEA41" to="0x313F"/>
+			<FinalConv from="0xEA43" to="0x316D"/>
+			<FinalConv from="0xEA51" to="0x3170"/>
+			<FinalConv from="0xEA9C" to="0x3182"/>
+			<FinalConv from="0xEA9D" to="0x3183"/>
+			<FinalConv from="0xEC57" to="0x3172"/>
+			<FinalConv from="0xEC5F" to="0x3174"/>
+			<FinalConv from="0xEC68" to="0x3177"/>
+			<FinalConv from="0xEC6C" to="0x3179"/>
+			<FinalConv from="0xEC6F" to="0x317B"/>
+			<FinalConv from="0xEC92" to="0x3180"/>
+			<FinalConv from="0xECBF" to="0x3185"/>
+		</FinalConvTable>
+	</EditorLayer>
+	<InputLayer default="0" current="2">
+		<InputEntry>
+			<InputSchemeSetting flag="0" object="CBasicInputScheme">
+				<KeyTable name="세벌식-맞춤" flag="0" from="33" to="126">
+					<Key at="0x21" value="H3|_GG"/>
+					<Key at="0x22" value="0xB7"/>
+					<Key at="0x23" value="T ? H3|_J : 0x23"/>
+					<Key at="0x24" value="T ? H3|0x1F4 : 0x24"/>
+					<Key at="0x25" value="C0|0xA"/>
+					<Key at="0x26" value="0x2015"/>
+					<Key at="0x27" value="H3|T_"/>
+					<Key at="0x28" value="0x27"/>
+					<Key at="0x29" value="0x7E"/>
+					<Key at="0x2A" value="0x2026"/>
+					<Key at="0x2B" value="0x2B"/>
+					<Key at="0x2C" value="0x2C"/>
+					<Key at="0x2D" value="0x29"/>
+					<Key at="0x2E" value="0x2E"/>
+					<Key at="0x2F" value="H3|O_"/>
+					<Key at="0x30" value="H3|K_"/>
+					<Key at="0x31" value="H3|_H"/>
+					<Key at="0x32" value="H3|_SS"/>
+					<Key at="0x33" value="H3|_B"/>
+					<Key at="0x34" value="H3|YO"/>
+					<Key at="0x35" value="H3|YU"/>
+					<Key at="0x36" value="H3|YA"/>
+					<Key at="0x37" value="H3|YE"/>
+					<Key at="0x38" value="H3|EUI"/>
+					<Key at="0x39" value="H3|U_"/>
+					<Key at="0x3A" value="0x34"/>
+					<Key at="0x3B" value="H3|B_"/>
+					<Key at="0x3C" value="T ? C0|0xF : 0x5B"/>
+					<Key at="0x3D" value="0x3E"/>
+					<Key at="0x3E" value="T ? C0|0xC : 0x5D"/>
+					<Key at="0x3F" value="0x21"/>
+					<Key at="0x40" value="T ? H3|_RG : 0x40"/>
+					<Key at="0x41" value="H3|_D"/>
+					<Key at="0x42" value="0x3F"/>
+					<Key at="0x43" value="H3|_K"/>
+					<Key at="0x44" value="H3|_RB"/>
+					<Key at="0x45" value="H3|_NJ"/>
+					<Key at="0x46" value="H3|_RM"/>
+					<Key at="0x47" value="H3|YAE"/>
+					<Key at="0x48" value="0x30"/>
+					<Key at="0x49" value="0x37"/>
+					<Key at="0x4A" value="0x31"/>
+					<Key at="0x4B" value="0x32"/>
+					<Key at="0x4C" value="0x33"/>
+					<Key at="0x4D" value="0x22"/>
+					<Key at="0x4E" value="0x2D"/>
+					<Key at="0x4F" value="0x38"/>
+					<Key at="0x50" value="0x39"/>
+					<Key at="0x51" value="H3|_P"/>
+					<Key at="0x52" value="H3|_RH"/>
+					<Key at="0x53" value="H3|_NH"/>
+					<Key at="0x54" value="C0|2"/>
+					<Key at="0x55" value="0x36"/>
+					<Key at="0x56" value="H3|_GS"/>
+					<Key at="0x57" value="H3|_T"/>
+					<Key at="0x58" value="H3|_BS"/>
+					<Key at="0x59" value="0x35"/>
+					<Key at="0x5A" value="H3|_C"/>
+					<Key at="0x5B" value="0x28"/>
+					<Key at="0x5C" value="0x3A"/>
+					<Key at="0x5D" value="0x3C"/>
+					<Key at="0x5E" value="0x3D"/>
+					<Key at="0x5F" value="0x3B"/>
+					<Key at="0x60" value="T ? C0|0xE : 0x2A"/>
+					<Key at="0x61" value="H3|_Q"/>
+					<Key at="0x62" value="H3|0x810000"/>
+					<Key at="0x63" value="H3|E_"/>
+					<Key at="0x64" value="H3|I_"/>
+					<Key at="0x65" value="H3|YEO"/>
+					<Key at="0x66" value="H3|A_"/>
+					<Key at="0x67" value="H3|0x820000"/>
+					<Key at="0x68" value="H3|N_"/>
+					<Key at="0x69" value="H3|M_"/>
+					<Key at="0x6A" value="H3|Q_"/>
+					<Key at="0x6B" value="H3|G_"/>
+					<Key at="0x6C" value="H3|J_"/>
+					<Key at="0x6D" value="H3|H_"/>
+					<Key at="0x6E" value="H3|S_"/>
+					<Key at="0x6F" value="H3|C_"/>
+					<Key at="0x70" value="H3|P_"/>
+					<Key at="0x71" value="H3|_S"/>
+					<Key at="0x72" value="H3|AE"/>
+					<Key at="0x73" value="H3|_N"/>
+					<Key at="0x74" value="H3|EO"/>
+					<Key at="0x75" value="H3|D_"/>
+					<Key at="0x76" value="H3|0x800000"/>
+					<Key at="0x77" value="H3|_R"/>
+					<Key at="0x78" value="H3|_G"/>
+					<Key at="0x79" value="H3|R_"/>
+					<Key at="0x7A" value="H3|_M"/>
+					<Key at="0x7B" value="0x25"/>
+					<Key at="0x7C" value="0x5C"/>
+					<Key at="0x7D" value="0x2F"/>
+					<Key at="0x7E" value="0x203B"/>
+				</KeyTable>
+			</InputSchemeSetting>
+			<GeneratorSetting flag="0" object="CNgsImeEx" flagex="1">
+				<UnitMixTable>
+					<UnitMix unit="CHO" a="G_" b="G_" to="GG"/>
+					<UnitMix unit="CHO" a="G_" b="500" to="GG"/>
+					<UnitMix unit="CHO" a="GG" b="500" to="G_"/>
+					<UnitMix unit="CHO" a="D_" b="D_" to="DD"/>
+					<UnitMix unit="CHO" a="D_" b="500" to="DD"/>
+					<UnitMix unit="CHO" a="DD" b="500" to="D_"/>
+					<UnitMix unit="CHO" a="B_" b="B_" to="BB"/>
+					<UnitMix unit="CHO" a="B_" b="500" to="BB"/>
+					<UnitMix unit="CHO" a="BB" b="500" to="B_"/>
+					<UnitMix unit="CHO" a="S_" b="S_" to="SS"/>
+					<UnitMix unit="CHO" a="S_" b="500" to="SS"/>
+					<UnitMix unit="CHO" a="SS" b="500" to="S_"/>
+					<UnitMix unit="CHO" a="J_" b="J_" to="JJ"/>
+					<UnitMix unit="CHO" a="J_" b="500" to="JJ"/>
+					<UnitMix unit="CHO" a="JJ" b="500" to="J_"/>
+					<UnitMix unit="JUNG" a="O_" b="A_" to="WA"/>
+					<UnitMix unit="JUNG" a="O_" b="AE" to="WAE"/>
+					<UnitMix unit="JUNG" a="O_" b="I_" to="OI"/>
+					<UnitMix unit="JUNG" a="U_" b="EO" to="UEO"/>
+					<UnitMix unit="JUNG" a="U_" b="E_" to="WE"/>
+					<UnitMix unit="JUNG" a="U_" b="I_" to="WI"/>
+					<UnitMix unit="JONG" a="R_" b="S_" to="RS"/>
+					<UnitMix unit="JONG" a="R_" b="T_" to="RT"/>
+					<UnitMix unit="JONG" a="R_" b="P_" to="RP"/>
+				</UnitMixTable>
+				<VirtualUnitTable>
+					<VirtualUnit unit="JUNG" from="128" to="O_"/>
+					<VirtualUnit unit="JUNG" from="129" to="U_"/>
+					<VirtualUnit unit="JUNG" from="130" to="EU"/>
+				</VirtualUnitTable>
+				<UnitAbbrTable/>
+				<AutomataTable default="0">
+					<Automata state="0" value="1" default="0" remark="초기 상태"/>
+					<Automata state="1" value="D==176&amp;&amp;A==176 || D==185&amp;&amp;A==185 ? 0 : A || B || C ? (A || D)&amp;&amp;(B || E) ? 2 : 1 : -2" default="-1" remark="미완성 상태"/>
+					<Automata state="2" value="A&amp;&amp;A!=500 ? 0 : B || C || A==500 ? 2 : -2" default="0" remark="한글 완성 상태"/>
+				</AutomataTable>
+				<Extra>
+					<Bksp key="1" value1="BkspAttach" value2="ByUnitStep|BkspAttach" condition1="ReverseJLTRN" condition2="0"/>
+					<Bksp key="2" value1="BySyllable|BkspAttach" value2="ByUnitStep|BkspAttach" condition1="ReverseJLTRN" condition2="0"/>
+					<Bksp key="3" value1="0" value2="BySyllable" condition1="0" condition2="0"/>
+					<Bksp key="4" value1="0" value2="BySyllable" condition1="0" condition2="0"/>
+				</Extra>
+				<UserCompoTable/>
+				<UserCandiTable/>
+				<UserKeyTable doobeolchk="T&lt;=1"/>
+				<HanSubstTable numeric="0"/>
+				<UnitSubstTable/>
+			</GeneratorSetting>
+		</InputEntry>
+		<InputEntry>
+			<InputSchemeSetting flag="0" object="CAdvancedScheme">
+				<KeyTable name="로마자 드보락" flag="0" from="33" to="126">
+					<Key at="0x21" value="0x21"/>
+					<Key at="0x22" value="0x5F"/>
+					<Key at="0x23" value="0x23"/>
+					<Key at="0x24" value="0x24"/>
+					<Key at="0x25" value="0x25"/>
+					<Key at="0x26" value="0x26"/>
+					<Key at="0x27" value="0x2D"/>
+					<Key at="0x28" value="0x28"/>
+					<Key at="0x29" value="0x29"/>
+					<Key at="0x2A" value="0x2A"/>
+					<Key at="0x2B" value="0x7D"/>
+					<Key at="0x2C" value="119^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x2D" value="0x5B"/>
+					<Key at="0x2E" value="118^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x2F" value="122^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x30" value="0x30"/>
+					<Key at="0x31" value="0x31"/>
+					<Key at="0x32" value="0x32"/>
+					<Key at="0x33" value="0x33"/>
+					<Key at="0x34" value="0x34"/>
+					<Key at="0x35" value="0x35"/>
+					<Key at="0x36" value="0x36"/>
+					<Key at="0x37" value="0x37"/>
+					<Key at="0x38" value="0x38"/>
+					<Key at="0x39" value="0x39"/>
+					<Key at="0x3A" value="83^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x3B" value="115^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x3C" value="87^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x3D" value="0x5D"/>
+					<Key at="0x3E" value="86^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x3F" value="90^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x40" value="0x40"/>
+					<Key at="0x41" value="65^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x42" value="88^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x43" value="74^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x44" value="69^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x45" value="0x3E"/>
+					<Key at="0x46" value="85^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x47" value="73^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x48" value="68^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x49" value="67^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x4A" value="72^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x4B" value="84^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x4C" value="78^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x4D" value="77^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x4E" value="66^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x4F" value="82^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x50" value="76^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x51" value="0x22"/>
+					<Key at="0x52" value="80^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x53" value="79^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x54" value="89^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x55" value="71^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x56" value="75^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x57" value="0x3C"/>
+					<Key at="0x58" value="81^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x59" value="70^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x5A" value="0x3A"/>
+					<Key at="0x5B" value="0x2F"/>
+					<Key at="0x5C" value="0x5C"/>
+					<Key at="0x5D" value="0x3D"/>
+					<Key at="0x5E" value="0x5E"/>
+					<Key at="0x5F" value="0x7B"/>
+					<Key at="0x60" value="0x60"/>
+					<Key at="0x61" value="97^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x62" value="120^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x63" value="106^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x64" value="101^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x65" value="0x2E"/>
+					<Key at="0x66" value="117^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x67" value="105^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x68" value="100^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x69" value="99^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x6A" value="104^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x6B" value="116^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x6C" value="110^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x6D" value="109^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x6E" value="98^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x6F" value="114^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x70" value="108^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x71" value="0x27"/>
+					<Key at="0x72" value="112^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x73" value="111^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x74" value="121^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x75" value="103^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x76" value="107^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x77" value="0x2C"/>
+					<Key at="0x78" value="113^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x79" value="102^(P&amp;1)&lt;&lt;5"/>
+					<Key at="0x7A" value="0x3B"/>
+					<Key at="0x7B" value="0x3F"/>
+					<Key at="0x7C" value="0x7C"/>
+					<Key at="0x7D" value="0x2B"/>
+					<Key at="0x7E" value="0x7E"/>
+				</KeyTable>
+				<KeyProgramTable/>
+			</InputSchemeSetting>
+			<GeneratorSetting flag="0" object="CNgsIme">
+				<UnitMixTable/>
+				<VirtualUnitTable/>
+				<UnitAbbrTable/>
+				<AutomataTable default="0"/>
+				<Extra>
+					<Bksp key="1" value1="0" value2="BySyllable" condition1="0" condition2="0"/>
+					<Bksp key="2" value1="0" value2="BySyllable" condition1="0" condition2="0"/>
+					<Bksp key="3" value1="0" value2="BySyllable" condition1="0" condition2="0"/>
+					<Bksp key="4" value1="0" value2="BySyllable" condition1="0" condition2="0"/>
+				</Extra>
+			</GeneratorSetting>
+		</InputEntry>
+		<InputEntry>
+			<InputSchemeSetting object="CInputScheme"/>
+			<GeneratorSetting flag="0" object="CIme"/>
+		</InputEntry>
+	</InputLayer>
+</EditContextSetting>
