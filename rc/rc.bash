@@ -38,6 +38,13 @@ HISTSIZE=100000
 HISTFILESIZE=100000
 HISTCONTROL=ignorespace:erasedups
 shopt -s histappend
+# Append each command to history immediately so it's shared across sessions.
+# PROMPT_COMMAND may be an array (bash 5.1+, used by /etc/profile.d/vte.sh).
+if [[ "$(declare -p PROMPT_COMMAND 2>/dev/null)" =~ "declare -a" ]]; then
+	PROMPT_COMMAND+=('history -a')
+else
+	PROMPT_COMMAND="history -a${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+fi
 shopt -s autocd
 shopt -s globstar
 shopt -s cdspell
