@@ -1,5 +1,11 @@
 # .bashrc
 
+# Reentry guard: this file is in ~/.bashrc.d but also loops over ~/.bashrc.d
+# itself, so on OSes (e.g. Fedora) where ~/.bashrc already does that loop,
+# fragments would be sourced twice.
+[ -n "${_LENS_RC_LOADED:-}" ] && return
+_LENS_RC_LOADED=1
+
 # Source global definitions
 if [ -f /etc/bashrc ]; then
 	source /etc/bashrc
