@@ -1,0 +1,6 @@
+# word-wrap at width (0 = disable)
+width: 0
+# mouse support (TUI-mode only)
+mouse: true
+# use pager to display markdown
+pager: true
