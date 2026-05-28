@@ -189,6 +189,7 @@
     "~/git/port/leslie-kit/configs/kube.yaml": "~/.kube/config",
     "~/git/port/leslie-kit/rc/rc.fish": "~/.config/fish/conf.d/port.fish",
     "~/git/lens/provision/config/claude.json": "~/.claude/settings.json",
+    "~/git/lens/provision/config/claude-keybindings.json": "~/.claude/keybindings.json",
     "~/git/lens/provision/config/glow.yml": "~/.config/glow/glow.yml"
   },
   "uv": {
