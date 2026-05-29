@@ -1,0 +1,13 @@
+// Reproduction of Zellij's built-in default layout.
+// Lives at ~/.config/zellij/layouts/default.kdl so the companion
+// default.swap.kdl (which appends custom swap layouts) gets picked up.
+// Identical to `zellij setup --dump-layout default`, so nothing is lost.
+layout {
+    pane size=1 borderless=true {
+        plugin location="tab-bar"
+    }
+    pane
+    pane size=1 borderless=true {
+        plugin location="status-bar"
+    }
+}
