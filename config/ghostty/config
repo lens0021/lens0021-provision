@@ -5,7 +5,7 @@ font-feature = -liga
 font-feature = -dlig
 
 window-theme = auto
-theme = light:Adwaita,dark:Atom One Dark
+theme = light:Adwaita,dark:Tomorrow Night Bright
 window-show-tab-bar = never
 window-padding-x = 4
 window-padding-y = 4
