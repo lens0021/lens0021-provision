@@ -170,7 +170,7 @@
 		<InputEntry>
 			<InputSchemeSetting flag="0" object="CBasicInputScheme">
 				<KeyTable name="세벌식-맞춤" flag="0" from="33" to="126">
-					<Key at="0x21" value="H3|_GG"/>
+					<Key at="0x21" value="T ? H3|_GG : 0x21"/>
 					<Key at="0x22" value="0xB7"/>
 					<Key at="0x23" value="T ? H3|_J : 0x23"/>
 					<Key at="0x24" value="T ? H3|0x1F4 : 0x24"/>
