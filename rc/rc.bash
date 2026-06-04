@@ -221,6 +221,10 @@ if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
     abbrev-alias kc='kubectl'
     abbrev-alias tf='terraform'
     abbrev-alias gitdelta="git -c 'core.pager=delta -s'"
+    # -e evaluates the subshell at expansion time: typing `awsctx ` pops an
+    # fzf profile picker and the line becomes `export AWS_PROFILE=<picked>`.
+    # On fzf cancel, falls back to the current profile.
+    abbrev-alias -e awsctx='export AWS_PROFILE=$(aws configure list-profiles 2>/dev/null | fzf || echo "${AWS_PROFILE:-default}")'
     abbrev-alias fw-aws-sso='aws --profile fw configure sso'
     abbrev-alias fw-ec2='aws --profile fw --region ap-northeast-1 ec2 describe-instances --query "Reservations[*].Instances[*].[to_string(Tags), State.Name, InstanceId, PrivateIpAddress, LaunchTime]" --output table'
     abbrev-alias y='tmp=$(mktemp -t yazi-cwd.XXXXXX) && yazi --cwd-file="$tmp"; cwd=$(<"$tmp"); rm -f "$tmp"; [[ -n $cwd && $cwd != "$PWD" ]] && cd "$cwd"'
