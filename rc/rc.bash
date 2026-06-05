@@ -217,19 +217,21 @@ fi
 
 # fish-style abbreviations via bash-abbrev-alias (loaded by sheldon above).
 if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
-    abbrev-alias zz='z $(zoxide query -i)'
-    abbrev-alias kc='kubectl'
-    abbrev-alias tf='terraform'
-    abbrev-alias gitdelta="git -c 'core.pager=delta -s'"
-    # -e evaluates the subshell at expansion time: typing `awsctx ` pops an
-    # fzf profile picker and the line becomes `export AWS_PROFILE=<picked>`.
-    # On fzf cancel, falls back to the current profile.
-    abbrev-alias -e awsctx='export AWS_PROFILE=$(aws configure list-profiles 2>/dev/null | fzf || echo "${AWS_PROFILE:-default}")'
-    abbrev-alias fw-aws-sso='aws --profile fw configure sso'
-    abbrev-alias fw-ec2='aws --profile fw --region ap-northeast-1 ec2 describe-instances --query "Reservations[*].Instances[*].[to_string(Tags), State.Name, InstanceId, PrivateIpAddress, LaunchTime]" --output table'
-    abbrev-alias y='tmp=$(mktemp -t yazi-cwd.XXXXXX) && yazi --cwd-file="$tmp"; cwd=$(<"$tmp"); rm -f "$tmp"; [[ -n $cwd && $cwd != "$PWD" ]] && cd "$cwd"'
-    abbrev-alias prefer-light='gsettings set org.gnome.desktop.interface color-scheme prefer-light'
-    abbrev-alias prefer-dark='gsettings set org.gnome.desktop.interface color-scheme prefer-dark'
+    abbrev-alias zz 'z $(zoxide query -i)'
+    abbrev-alias kc 'kubectl'
+    abbrev-alias tf 'terraform'
+    # abbrev-alias --set-cursor --command git switchor 'cd '\$'(git switch % 2>&1 | awk '\''{print $NF}'\'' | tr -d '\"\'\"')'
+    abbrev-alias gitdelta "git -c 'core.pager=delta -s'"
+    # The fish-clone CLI has no expansion-time eval (the old -e), so the
+    # subshell runs when the expanded line is executed: typing `awsctx`
+    # and pressing Enter pops the fzf profile picker, then exports the
+    # pick. On fzf cancel, falls back to the current profile.
+    abbrev-alias awsctx 'export AWS_PROFILE=$(aws configure list-profiles 2>/dev/null | fzf || echo "${AWS_PROFILE:-default}")'
+    abbrev-alias fw-aws-sso 'echo https://femiwiki.awsapps.com/start/# ap-northeast-2; aws --profile fw configure sso'
+    abbrev-alias fw-ec2 'aws --profile fw --region ap-northeast-1 ec2 describe-instances --query "Reservations[*].Instances[*].[to_string(Tags), State.Name, InstanceId, PrivateIpAddress, LaunchTime]" --output table'
+    abbrev-alias y 'tmp=$(mktemp -t yazi-cwd.XXXXXX) && yazi --cwd-file="$tmp"; cwd=$(<"$tmp"); rm -f "$tmp"; [[ -n $cwd && $cwd != "$PWD" ]] && cd "$cwd"'
+    abbrev-alias prefer-light 'gsettings set org.gnome.desktop.interface color-scheme prefer-light'
+    abbrev-alias prefer-dark 'gsettings set org.gnome.desktop.interface color-scheme prefer-dark'
 fi
 
 if command -v starship >/dev/null; then
