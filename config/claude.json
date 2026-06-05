@@ -215,6 +215,7 @@
 	},
 	"effortLevel": "high",
 	"theme": "auto",
+	"cleanupPeriodDays": 14,
 	"skipAutoPermissionPrompt": true,
 	"env": {
 		"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
