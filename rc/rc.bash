@@ -218,6 +218,7 @@ fi
 # fish-style abbreviations via bash-abbrev-alias (loaded by sheldon above).
 if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
     abbrev-alias zz 'z $(zoxide query -i)'
+    abbrev-alias gitgraph 'git log --graph --all --decorate --oneline --color'
     abbrev-alias kc 'kubectl'
     abbrev-alias tf 'terraform'
     # abbrev-alias --set-cursor --command git switchor 'cd '\$'(git switch % 2>&1 | awk '\''{print $NF}'\'' | tr -d '\"\'\"')'
