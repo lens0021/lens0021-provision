@@ -1,54 +1,142 @@
 #!/data/data/com.termux/files/usr/bin/bash
-# Launch Claude Code (Bun musl binary) via an Alpine proot-distro from Termux.
+# claude-native: run the official linux-arm64 Claude binary directly on Termux
+# via glibc-runner, WITHOUT proot. Side-by-side experiment alongside the proot
+# launcher (termux/bin/claude), which stays the stable fallback.
 #
-# Why proot/Alpine: Claude Code ships only as a Bun-compiled native binary for
-# glibc/musl, with no Android bionic build, so it cannot run on Termux directly.
-# Alpine under proot supplies the musl userland the linux-arm64-musl binary needs.
+# Mechanism (distilled from ferrumclaudepilgrim/claude-code-android, vetted):
+#   download official binary -> SHA-256 verify against the published manifest ->
+#   patchelf the ELF interpreter to Termux's glibc loader -> exec it.
+# No proot means the Bun fd-close cold-start tax disappears and `!`/Bash run in
+# Termux. This is an unsupported shim; it can break on a Claude release
+# (https://github.com/anthropics/claude-code/issues/50270). Keep `claude` (proot)
+# as the fallback.
 #
-# ulimit -n: Bun closes inherited file descriptors up to RLIMIT_NOFILE on *every*
-# subprocess spawn. Under proot each close() is intercepted, so the default soft
-# limit (32768) makes every git/hook/tool spawn take ~3s and cold start ~27-30s.
-# Capping to 1024 drops per-spawn cost to ~0.2s and cold start to ~6s. Override
-# with CLAUDE_PROOT_NOFILE (try 512 for faster spawns, raise it if you hit EMFILE).
+# Deliberate isolation from the proot setup:
+#   - Never touches $PREFIX/bin/claude, ~/.bashrc, or ~/.claude/settings.json.
+#   - Binaries live in their own dir (not the native-discovery path).
+#   - Disables the binary's in-process updater via DISABLE_AUTOUPDATER (launcher
+#     env only) so proot Claude's own auto-update is unaffected.
+#   - Shares ~/.claude (login, sessions) with proot Claude on purpose: one login.
 #
-# Prerequisites: `proot-distro install alpine` and Claude installed inside it at
-# /root/.local/bin/claude. The Termux home is /data/data/com.termux/files/home.
-set -eu
+# Force an immediate update check:  claude-native --update-now
 
 prefix=${PREFIX:-/data/data/com.termux/files/usr}
-alpine_root=$prefix/var/lib/proot-distro/installed-rootfs/alpine
-claude_bin=$alpine_root/root/.local/bin/claude
-nofile=${CLAUDE_PROOT_NOFILE:-1024}
+glibc_ld="$prefix/glibc/lib/ld-linux-aarch64.so.1"
+patchelf="$prefix/glibc/bin/patchelf"
+versions_dir="$HOME/.local/share/claude-native/versions"
+stamp="$versions_dir/.last-update-check"
+rate_limit=86400
+registry="https://registry.npmjs.org/@anthropic-ai/claude-code/latest"
+releases="https://downloads.claude.ai/claude-code-releases"
 
-# Preflight: surface an actionable message instead of a cryptic proot error.
-# Use -e/-L (not -x): claude is a symlink whose target is unresolvable from
-# outside the Alpine root, so -x would follow the broken link and falsely fail.
-if [ ! -d "$alpine_root" ]; then
-  echo "claude: Alpine rootfs not found at $alpine_root" >&2
-  echo "        Install it with: proot-distro install alpine" >&2
+err(){ printf '\033[0;31m[claude-native]\033[0m %s\n' "$1" >&2; }
+note(){ printf '\033[0;36m[claude-native]\033[0m %s\n' "$1" >&2; }
+
+# --- Preflight ---
+[ -z "${PREFIX:-}" ] && { err "PREFIX unset. Run inside Termux, not adb/proot."; exit 1; }
+[ "$(uname -m)" = "aarch64" ] || { err "aarch64 only; uname -m is $(uname -m)."; exit 1; }
+
+# --- Bootstrap glibc-runner + patchelf + curl/jq on first run ---
+if ! command -v curl >/dev/null || ! command -v jq >/dev/null \
+   || [ ! -x "$patchelf" ] || [ ! -f "$glibc_ld" ]; then
+  note "first-run setup: installing glibc-runner, patchelf-glibc, curl, jq (~50 MB)"
+  export DEBIAN_FRONTEND=noninteractive
+  apt_opts="-y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold"
+  apt-get update $apt_opts >/dev/null            || { err "apt-get update failed"; exit 1; }
+  apt-get install $apt_opts curl jq >/dev/null   || { err "curl/jq install failed"; exit 1; }
+  apt-get install $apt_opts glibc-repo >/dev/null || { err "glibc-repo install failed"; exit 1; }
+  apt-get update $apt_opts >/dev/null            || { err "apt-get update (glibc) failed"; exit 1; }
+  apt-get install $apt_opts glibc-runner patchelf-glibc >/dev/null \
+    || { err "glibc-runner/patchelf-glibc install failed"; exit 1; }
+  [ -x "$patchelf" ] || { err "patchelf missing at $patchelf after install"; exit 1; }
+  [ -f "$glibc_ld" ] || { err "glibc ld.so missing at $glibc_ld after install"; exit 1; }
+fi
+
+# --- Parse args: pull out --update-now ---
+force_update=0
+args=()
+for a in "$@"; do
+  if [ "$a" = "--update-now" ]; then force_update=1; else args+=("$a"); fi
+done
+
+mkdir -p "$versions_dir"
+
+# Fetch + verify + patch one version into versions_dir. Echoes nothing; returns 0
+# on success. Leaves no .tmp behind on failure.
+fetch_version(){
+  local v="$1" dst="$versions_dir/$1" base exp act
+  base="$releases/$v"
+  curl -fsSL --max-time 300 "$base/linux-arm64/claude" -o "$dst.tmp" 2>/dev/null \
+    || { err "download failed for $v"; rm -f "$dst.tmp"; return 1; }
+  exp=$(curl -fsSL --max-time 10 "$base/manifest.json" 2>/dev/null \
+        | jq -er '.platforms["linux-arm64"].checksum' 2>/dev/null || echo "")
+  act=$(sha256sum "$dst.tmp" | cut -d' ' -f1)
+  if [ -z "$exp" ] || [ "$exp" != "$act" ]; then
+    err "checksum mismatch/unavailable for $v"; rm -f "$dst.tmp"; return 1
+  fi
+  chmod +x "$dst.tmp"
+  LD_PRELOAD= "$patchelf" --set-interpreter "$glibc_ld" "$dst.tmp" 2>/dev/null \
+    || { err "patchelf failed for $v"; rm -f "$dst.tmp"; return 1; }
+  mv "$dst.tmp" "$dst"
+  return 0
+}
+
+have_binary(){ ls -1 "$versions_dir" 2>/dev/null | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; }
+
+# --- Decide whether to check for an update ---
+should_check=0
+if [ "$force_update" = 1 ] || ! have_binary; then
+  should_check=1
+elif [ ! -f "$stamp" ]; then
+  should_check=1
+else
+  now=$(date +%s); last=$(stat -c%Y "$stamp" 2>/dev/null || echo 0)
+  [ $((now - last)) -ge $rate_limit ] && should_check=1
+fi
+
+if [ "$should_check" = 1 ]; then
+  latest=$(curl -fsSL --max-time 5 "$registry" 2>/dev/null | jq -r .version 2>/dev/null || echo "")
+  if printf '%s' "$latest" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+    if [ ! -f "$versions_dir/$latest" ]; then
+      note "fetching claude $latest"
+      if fetch_version "$latest"; then
+        # Keep latest + previous for rollback (rm versions/<latest> then
+        # claude-native --update-now reverts to the prior known-good binary).
+        prev=$(ls -1 "$versions_dir" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -2 | head -1)
+        for old in "$versions_dir"/*; do
+          b=$(basename "$old")
+          [ -f "$old" ] && [ "$b" != "$latest" ] && [ "$b" != "$prev" ] && rm -f "$old"
+        done
+      else
+        note "update failed; using cached binary"
+      fi
+    fi
+  else
+    note "could not query npm registry; using cached binary"
+  fi
+  touch "$stamp"
+fi
+
+# --- Pick highest installed version ---
+if ! have_binary; then
+  err "no binary installed and none could be fetched. Check your connection and retry."
   exit 1
 fi
-if [ ! -e "$claude_bin" ] && [ ! -L "$claude_bin" ]; then
-  echo "claude: Claude not installed inside Alpine at /root/.local/bin/claude" >&2
-  echo "        Install it: proot-distro login alpine -- sh -lc 'curl -fsSL https://claude.ai/install.sh | sh'" >&2
-  exit 1
+ver=$(ls -1 "$versions_dir" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+bin="$versions_dir/$ver"
+
+# --- Self-heal: re-patch if something swapped the interpreter ---
+interp=$(LD_PRELOAD= "$patchelf" --print-interpreter "$bin" 2>/dev/null || echo unknown)
+if [ "$interp" != "$glibc_ld" ]; then
+  note "re-patching ELF interpreter (was: $interp)"
+  LD_PRELOAD= "$patchelf" --set-interpreter "$glibc_ld" "$bin" \
+    || { err "patchelf failed; cannot run $bin"; exit 1; }
 fi
 
-# proot-distro login resets the environment, so terminal/locale settings must be
-# captured here and re-injected. Inner positional args: nofile term lang colorterm
-# then the user's claude args.
-exec proot-distro login alpine \
-  --bind "$HOME:$HOME" \
-  --shared-tmp \
-  --work-dir "$PWD" \
-  -- sh -c '
-    ulimit -n "$1"
-    term=$2; lang=$3; colorterm=$4; shift 4
-    exec env \
-      HOME=/data/data/com.termux/files/home \
-      TERM="$term" \
-      LANG="$lang" \
-      ${colorterm:+COLORTERM="$colorterm"} \
-      CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL=1 \
-      /root/.local/bin/claude "$@"
-  ' sh "$nofile" "${TERM:-xterm-256color}" "${LANG:-C.UTF-8}" "${COLORTERM:-}" "$@"
+# unset LD_PRELOAD: the glibc binary crashes on libtermux-exec's unversioned
+# libc.so. Trade-off: subprocesses lose termux-exec, so a script run directly via
+# a "#!/usr/bin/env ..." shebang can't find its interpreter. bash/python/node
+# FILE and tools-by-name still work.
+unset LD_PRELOAD
+export DISABLE_AUTOUPDATER=1
+exec "$bin" "${args[@]}"

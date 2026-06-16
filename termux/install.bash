@@ -20,5 +20,6 @@ for src in "$here"/bin/*; do
 done
 
 echo
-echo "Done. Note: the 'claude' launcher expects 'proot-distro install alpine'"
-echo "and Claude installed inside Alpine at /root/.local/bin/claude."
+echo "Done. 'claude' is the native launcher (glibc-runner, self-bootstrapping)."
+echo "'claude-proot' is the Alpine-proot fallback; it expects"
+echo "'proot-distro install alpine' and Claude inside it at /root/.local/bin/claude."

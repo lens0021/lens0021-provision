@@ -1,0 +1,54 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Launch Claude Code (Bun musl binary) via an Alpine proot-distro from Termux.
+#
+# Why proot/Alpine: Claude Code ships only as a Bun-compiled native binary for
+# glibc/musl, with no Android bionic build, so it cannot run on Termux directly.
+# Alpine under proot supplies the musl userland the linux-arm64-musl binary needs.
+#
+# ulimit -n: Bun closes inherited file descriptors up to RLIMIT_NOFILE on *every*
+# subprocess spawn. Under proot each close() is intercepted, so the default soft
+# limit (32768) makes every git/hook/tool spawn take ~3s and cold start ~27-30s.
+# Capping to 1024 drops per-spawn cost to ~0.2s and cold start to ~6s. Override
+# with CLAUDE_PROOT_NOFILE (try 512 for faster spawns, raise it if you hit EMFILE).
+#
+# Prerequisites: `proot-distro install alpine` and Claude installed inside it at
+# /root/.local/bin/claude. The Termux home is /data/data/com.termux/files/home.
+set -eu
+
+prefix=${PREFIX:-/data/data/com.termux/files/usr}
+alpine_root=$prefix/var/lib/proot-distro/installed-rootfs/alpine
+claude_bin=$alpine_root/root/.local/bin/claude
+nofile=${CLAUDE_PROOT_NOFILE:-1024}
+
+# Preflight: surface an actionable message instead of a cryptic proot error.
+# Use -e/-L (not -x): claude is a symlink whose target is unresolvable from
+# outside the Alpine root, so -x would follow the broken link and falsely fail.
+if [ ! -d "$alpine_root" ]; then
+  echo "claude: Alpine rootfs not found at $alpine_root" >&2
+  echo "        Install it with: proot-distro install alpine" >&2
+  exit 1
+fi
+if [ ! -e "$claude_bin" ] && [ ! -L "$claude_bin" ]; then
+  echo "claude: Claude not installed inside Alpine at /root/.local/bin/claude" >&2
+  echo "        Install it: proot-distro login alpine -- sh -lc 'curl -fsSL https://claude.ai/install.sh | sh'" >&2
+  exit 1
+fi
+
+# proot-distro login resets the environment, so terminal/locale settings must be
+# captured here and re-injected. Inner positional args: nofile term lang colorterm
+# then the user's claude args.
+exec proot-distro login alpine \
+  --bind "$HOME:$HOME" \
+  --shared-tmp \
+  --work-dir "$PWD" \
+  -- sh -c '
+    ulimit -n "$1"
+    term=$2; lang=$3; colorterm=$4; shift 4
+    exec env \
+      HOME=/data/data/com.termux/files/home \
+      TERM="$term" \
+      LANG="$lang" \
+      ${colorterm:+COLORTERM="$colorterm"} \
+      CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL=1 \
+      /root/.local/bin/claude "$@"
+  ' sh "$nofile" "${TERM:-xterm-256color}" "${LANG:-C.UTF-8}" "${COLORTERM:-}" "$@"
