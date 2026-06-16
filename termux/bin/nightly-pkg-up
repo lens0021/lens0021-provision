@@ -1,0 +1,34 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Unattended Termux package upgrade, intended to be driven by
+# termux-job-scheduler (see termux/install.bash for the schedule command).
+#
+# Runs apt non-interactively, keeps existing config files on conflict, holds a
+# wake-lock for the duration so Android does not kill it mid-upgrade, and
+# appends a timestamped log to $PREFIX/var/log/nightly-pkg-up.log.
+set -uo pipefail
+
+PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
+log_dir="$PREFIX/var/log"
+log="$log_dir/nightly-pkg-up.log"
+mkdir -p "$log_dir"
+
+# Single-quoted to avoid double-substitution; printf evaluates it at run time.
+ts() { date '+%Y-%m-%d %H:%M:%S'; }
+
+# Keep CPU awake for the run; always release, even on failure.
+termux-wake-lock 2>/dev/null || true
+trap 'termux-wake-unlock 2>/dev/null || true' EXIT
+
+{
+  echo "===== nightly-pkg-up start $(ts) ====="
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update -y \
+    && apt-get full-upgrade -y \
+        -o Dpkg::Options::="--force-confold" \
+        -o Dpkg::Options::="--force-confdef"
+  rc=$?
+  apt-get autoremove -y || true
+  echo "===== nightly-pkg-up end $(ts) (exit $rc) ====="
+} >>"$log" 2>&1
+
+exit "${rc:-0}"

@@ -19,6 +19,21 @@ for src in "$here"/bin/*; do
   echo "linked $dest/$name -> $src"
 done
 
+# Register the nightly unattended package upgrade with Android's JobScheduler.
+# --job-id overwrites any previous job with the same id, so this is idempotent.
+# Period is approximate (Android batches around Doze); not a fixed clock time.
+if command -v termux-job-scheduler >/dev/null 2>&1; then
+  termux-job-scheduler \
+    --script "$dest/nightly-pkg-up" \
+    --job-id 4242 \
+    --period-ms 86400000 \
+    --persisted true \
+    --battery-not-low true \
+    && echo "scheduled nightly-pkg-up (job 4242, ~daily)"
+else
+  echo "termux-job-scheduler not found (install termux-api); skipped nightly-pkg-up schedule"
+fi
+
 echo
 echo "Done. 'claude' is the native launcher (glibc-runner, self-bootstrapping)."
 echo "'claude-proot' is the Alpine-proot fallback; it expects"
