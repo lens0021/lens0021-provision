@@ -26,3 +26,12 @@ credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --p
 region = ap-southeast-1
 credential_process = bash -c "saml2aws login --skip-prompt --username=leslie --password=$PORT_INTL_KEYCLOAK_PW --credential-process -a port-intl-prod --mfa-token=$(oathtool --base32 $PORT_INTL_KEYCLOAK_OTP --totp)"
 
+[profile fw]
+sso_session = 2
+sso_account_id = 302617221463
+sso_role_name = AdministratorAccess
+region = ap-northeast-1
+[sso-session 2]
+sso_start_url = https://femiwiki.awsapps.com/start/#
+sso_region = ap-northeast-2
+sso_registration_scopes = sso:account:access
