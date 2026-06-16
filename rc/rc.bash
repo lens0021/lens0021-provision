@@ -221,7 +221,13 @@ if [[ $- == *i* ]] && type abbrev-alias >/dev/null 2>&1; then
     abbrev-alias gitgraph 'git log --graph --all --decorate --oneline --color'
     abbrev-alias kc 'kubectl'
     abbrev-alias tf 'terraform'
-    # abbrev-alias --set-cursor --command git switchor 'cd '\$'(git switch % 2>&1 | awk '\''{print $NF}'\'' | tr -d '\"\'\"')'
+    # Type `switchor <branch>` (command position; the cursor lands after
+    # `git switch ` thanks to --set-cursor). Runs `git switch`; if it aborts
+    # because the branch is checked out in another worktree ("is already used
+    # by worktree at '<path>'") it silently zoxide-jumps there, otherwise it
+    # just shows git's own output (so real errors stay visible).
+    # The first `%` is the cursor marker; the `%s` in printf is left intact.
+    abbrev-alias --set-cursor switchor '_o=$(git switch % 2>&1); _re="worktree at '\''([^'\'']+)'\''"; if [[ $_o =~ $_re ]]; then z "${BASH_REMATCH[1]}"; else printf '\''%s\n'\'' "$_o"; fi'
     abbrev-alias gitdelta "git -c 'core.pager=delta -s'"
     # The fish-clone CLI has no expansion-time eval (the old -e), so the
     # subshell runs when the expanded line is executed: typing `awsctx`
