@@ -58,6 +58,11 @@ irm https://raw.githubusercontent.com/lens0021/lens0021-provision/main/windows/b
     dispatches to `wl-copy` / `xclip` / `Set-Clipboard` / `pbcopy`
     by `uname -s`. Works around clip.exe's CP949 mojibake of UTF-8
     Hangul on Korean Windows.
+- `termux/` — Termux-only launchers. `install.bash` symlinks
+  `termux/bin/*` into `~/.local/bin` (run by `termux.bash`).
+  - `bin/claude` — runs Claude Code via an Alpine proot-distro, with
+    `ulimit -n 1024` to work around Bun's per-spawn fd-close loop being
+    pathologically slow under proot (cold start ~27s → ~6s).
 - `config/` — application configs hardlinked into runtime locations
   (helix, yazi, zellij, starship, ahk, powershell, 날개셋
   `imeconf.dat`, …). Linux and Windows share the cross-OS files.

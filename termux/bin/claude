@@ -1,0 +1,19 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Launch Claude Code (Bun musl binary) via an Alpine proot-distro from Termux.
+#
+# `ulimit -n 1024`: Claude is a Bun binary, and Bun closes inherited file
+# descriptors up to RLIMIT_NOFILE on *every* subprocess spawn. Under proot each
+# close() is intercepted, so the default soft limit of 32768 makes every
+# git/hook/tool spawn take ~3s and cold start ~27-30s. Capping the limit drops
+# per-spawn cost to ~0.2s and cold start to ~6s. Raise it if you hit EMFILE.
+#
+# Prerequisites: `proot-distro install alpine` and Claude installed inside it at
+# /root/.local/bin/claude. The Termux home is always /data/data/com.termux/files/home.
+exec proot-distro login alpine \
+  --bind "$HOME:$HOME" \
+  --shared-tmp \
+  --work-dir "$PWD" \
+  -- sh -c 'ulimit -n 1024; exec env HOME=/data/data/com.termux/files/home \
+       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 \
+       CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL=1 \
+       /root/.local/bin/claude "$@"' sh "$@"
