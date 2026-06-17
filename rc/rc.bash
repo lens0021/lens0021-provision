@@ -98,7 +98,7 @@ complete -C /usr/bin/tofu tofu
 export FZF_CTRL_R_OPTS="
     --height=90% --layout=reverse --border --cycle
     --prompt='History> '
-    --scheme=history --no-sort --tiebreak=index
+    --scheme=history --tiebreak=index
     --bind=ctrl-r:toggle-sort
     --preview='printf %s {}'
     --preview-window=bottom:3:wrap"
