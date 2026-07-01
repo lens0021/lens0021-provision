@@ -3,9 +3,24 @@
   "$docs": "https://code.claude.com/docs/en/keybindings",
   "bindings": [
     {
+      "context": "Global",
+      "bindings": {
+        "ctrl+shift+b": null
+      }
+    },
+    {
       "context": "Chat",
       "bindings": {
         "ctrl+/": "chat:undo"
+      }
+    },
+    {
+      "context": "Scroll",
+      "bindings": {
+        "ctrl+shift+k": "scroll:lineUp",
+        "ctrl+shift+j": "scroll:lineDown",
+        "ctrl+shift+b": "scroll:fullPageUp",
+        "ctrl+shift+f": "scroll:fullPageDown"
       }
     }
   ]
