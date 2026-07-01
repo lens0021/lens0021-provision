@@ -16,3 +16,7 @@ use = ["abbrev-alias.plugin.bash"]
 [plugins.fzf-tab-completion]
 github = "lincheney/fzf-tab-completion"
 use = ["bash/fzf-bash-completion.sh"]
+
+[plugins.claude-completion]
+github = "cldotdev/claude-bash-completion"
+use = ["claude-completion.bash"]
