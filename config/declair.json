@@ -177,6 +177,7 @@
     "~/git/lens/provision/config/zellij.kdl": "~/.config/zellij/config.kdl",
     "~/git/lens/provision/config/zellij-layouts/default.kdl": "~/.config/zellij/layouts/default.kdl",
     "~/git/lens/provision/config/zellij-layouts/default.swap.kdl": "~/.config/zellij/layouts/default.swap.kdl",
+    "~/git/lens/provision/config/zellij-plugins/scrollnav.wasm": "~/.config/zellij/plugins/scrollnav.wasm",
     "~/git/lens/provision/bin/zellij-copy-command": "~/.local/bin/zellij-copy-command",
     "~/git/lens/provision/rc/rc.bash": "~/.bashrc.d/lens.bash",
     "~/git/port/leslie-kit/rc/rc.bash": "~/.bashrc.d/port.bash",

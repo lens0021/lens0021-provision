@@ -4,6 +4,9 @@
 
 __pycache__
 
+# Rust plugin build output (the built .wasm is committed alongside its crate)
+/config/zellij-plugins/*/target/
+
 # Local scratch (registry snapshots, etc.)
 /.tmp/
 

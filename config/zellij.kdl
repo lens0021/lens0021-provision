@@ -82,8 +82,8 @@ keybinds {
         bind "Ctrl c" { ScrollToBottom; SwitchToMode "Normal"; }
         bind "j" "Down" { ScrollDown; }
         bind "k" "Up" { ScrollUp; }
-        bind "Ctrl f" "PageDown" "Right" "l" { PageScrollDown; }
-        bind "Ctrl b" "PageUp" "Left" "h" { PageScrollUp; }
+        bind "Ctrl f" "PageDown" "Right" "l" "Ctrl Shift f" { PageScrollDown; }
+        bind "Ctrl b" "PageUp" "Left" "h" "Ctrl Shift b" { PageScrollUp; }
         bind "d" { HalfPageScrollDown; }
         bind "u" { HalfPageScrollUp; }
         // uncomment this and adjust key if using copy_on_select=false
@@ -94,8 +94,8 @@ keybinds {
         bind "Ctrl c" { ScrollToBottom; SwitchToMode "Normal"; }
         bind "j" "Down" { ScrollDown; }
         bind "k" "Up" { ScrollUp; }
-        bind "Ctrl f" "PageDown" "Right" "l" { PageScrollDown; }
-        bind "Ctrl b" "PageUp" "Left" "h" { PageScrollUp; }
+        bind "Ctrl f" "PageDown" "Right" "l" "Ctrl Shift f" { PageScrollDown; }
+        bind "Ctrl b" "PageUp" "Left" "h" "Ctrl Shift b" { PageScrollUp; }
         bind "d" { HalfPageScrollDown; }
         bind "u" { HalfPageScrollUp; }
         bind "n" { Search "down"; }
@@ -226,6 +226,14 @@ keybinds {
     shared_except "scroll" "locked" {
         bind "Ctrl s" { SwitchToMode "Scroll"; }
     }
+    // Route Ctrl+Shift+F/B to the scrollnav plugin, which either forwards the key
+    // to the focused app (if it is a trigger command like claude) or page-scrolls
+    // the pane. Bound outside "locked" so Ctrl+g stays a real, full lock, and
+    // outside "scroll"/"search" where those keys page-scroll directly (above).
+    shared_except "scroll" "search" "locked" {
+        bind "Ctrl Shift f" { MessagePlugin "scrollnav" { payload "down"; }; }
+        bind "Ctrl Shift b" { MessagePlugin "scrollnav" { payload "up"; }; }
+    }
     shared_except "session" "locked" {
         bind "Ctrl o" { SwitchToMode "Session"; }
     }
@@ -258,10 +266,18 @@ plugins {
     configuration location="zellij:configuration"
     plugin-manager location="zellij:plugin-manager"
     about location="zellij:about"
+    // Context-aware page scroll: forwards Ctrl+Shift+F/B to the focused app when
+    // it is a trigger command (so e.g. Claude Code scrolls itself), otherwise
+    // page-scrolls the pane's scrollback. See config/zellij-plugins/scrollnav.
+    scrollnav location="file:~/.config/zellij/plugins/scrollnav.wasm" {
+        triggers "claude"
+        print_to_log false
+    }
 }
 
 // Plugins to load in the background when a new session starts
 load_plugins {
+  scrollnav
   // "file:/path/to/my-plugin.wasm"
   // "https://example.com/my-plugin.wasm"
 }
