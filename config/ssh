@@ -2,7 +2,9 @@ IdentityFile ~/.ssh/id_ed25519
 
 Host gerrit.wikimedia.org
   Hostname gerrit.wikimedia.org
-  RSAMinSize 1023
+  Port 29418
+  User lens0021
+  RequiredRSASize 1024
 
 Host github.com
   Hostname github.com
