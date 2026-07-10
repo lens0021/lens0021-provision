@@ -182,6 +182,7 @@
       "ExitPlanMode"
     ]
   },
+  "model": "sonnet",
   "hooks": {
     "UserPromptSubmit": [
       {
