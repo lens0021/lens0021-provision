@@ -3,6 +3,22 @@
 	<EditorLayer flag="DEL_MOVE|ARROW_MOVE">
 		<ShortcutTable>
 			<Shortcut key="VK_HANGUL" usage="IME_SWITCH" value="!A"/>
+			<!-- 한자·특수문자 변환 키. 아래 한 줄이 "한자 키(Hangul_Hanja 키심)를 누르면
+			     후보 변환 1(C0|0x82)을 실행"이라는 뜻이다. 조합 중 자음이면 특수문자,
+			     음절이면 한자 후보창이 뜬다.
+
+			     - key 에 쓸 수 있는 이름(geulbus 가 해석하는 VK → 키심):
+			         VK_HANJA    = Hangul_Hanja (전용 한자 키·재매핑된 키)
+			         VK_RCONTROL = 오른쪽 Ctrl  (윈도우 101키 종류 1의 한자 대용)
+			         VK_RMENU    = 오른쪽 Alt   (단, XKB 가 Alt_R 키심을 낼 때만)
+			       예) 오른쪽 Ctrl 로도 한자 변환을 하려면 한 줄 추가:
+			         <Shortcut key="VK_RCONTROL" usage="KEYCHAR" value="C0|0x82"/>
+
+			     - 주의: 이 표는 "키심"으로 매칭된다. 물리 키가 실제로 그 키심을 내야
+			       동작한다. 이 머신의 "한/영" 각인 키는 물리적으로 오른쪽 Alt 이고
+			       dvorak-mac 배열에서 ISO_Level3_Shift 를 내므로, presguel(geulbus) 저장소의
+			       scripts/setup-hanja-key.sh 로 Hangul_Hanja 키심을 내게 만들어
+			       VK_HANJA 줄에 걸리게 해 두었다 (XKB 옵션 geulbus:ralt_hanja). -->
 			<Shortcut key="VK_HANJA" usage="KEYCHAR" value="C0|0x82"/>
 			<Shortcut key="VK_CAPITAL" modifier="DONT_EAT|KEEP_LAMP" usage="IME_SWITCH" value="!A"/>
 		</ShortcutTable>
