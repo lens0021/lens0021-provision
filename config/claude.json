@@ -218,10 +218,6 @@
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "bash $HOME/.claude/scripts/statusline.sh"
-  },
   "enabledPlugins": {
     "slack@claude-plugins-official": true,
     "ralph-loop@claude-plugins-official": true,
