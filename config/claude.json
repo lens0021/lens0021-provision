@@ -193,6 +193,15 @@
             "command": "bash ~/git/lens/provision/config/claude-scripts/claude-usage-limit-gate.sh"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-gh-attribution.py"
+          }
+        ]
       }
     ],
     "Stop": [
