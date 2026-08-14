@@ -9,15 +9,21 @@ missing the line
 
     🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-this hook appends it. It handles the two forms Claude actually emits:
+this hook appends it. It handles the three forms Claude actually emits:
 
   * a heredoc body:  --body "$(cat <<'EOF' ... EOF)"
   * a quoted body:   --body "..."  /  -b '...'  /  --body=...
     (same for --comment/-c on close/reopen)
+  * a file body:     --body-file notes.md  /  -F notes.md
+
+The file form is stamped by splicing an append ahead of the gh call rather
+than by editing the file here, because the file is usually written by a
+heredoc in the same command and so does not exist yet when this hook runs.
 
 If the attribution is already present the command is left untouched. Forms
-where the body lives elsewhere (--body-file/-F, --fill*, --web, --editor)
-are left alone, as is a bare close/reopen with no comment. `gh pr merge
+whose body comes from commits or an interactive surface (--fill*, --web,
+--editor) are left alone, as is a bare close/reopen with no comment, a
+--body-file reading stdin, and a path the shell would expand. `gh pr merge
 --body` is a merge commit message, not an authored comment, so it is out of
 scope. If the body can't be located at all, the command is denied with a
 fix-it reason so nothing ships without attribution.
@@ -49,12 +55,25 @@ CLOSE_SUBCMD_RE = re.compile(
 )
 COMMENT_FLAG_RE = re.compile(r"(?:^|\s)(?:--comment|-c)(?:=|\s)")
 
-# Body-source forms we must not rewrite (body comes from a file, commits, an
-# editor, or the browser).
+# Body-source forms we must not rewrite (body comes from commits, an editor, or
+# the browser). --body-file is handled separately, below.
 SKIP_RE = re.compile(
-    r"(?:^|\s)(?:--body-file(?:=|\s)|-F(?:=|\s)|--fill\b|--fill-first\b"
-    r"|--fill-verbose\b|--web\b|--editor\b)"
+    r"(?:^|\s)(?:--fill\b|--fill-first\b|--fill-verbose\b|--web\b|--editor\b)"
 )
+
+# --body-file/-F, capturing the path with its quoting intact so it can be
+# handed straight back to the shell.
+BODY_FILE_RE = re.compile(
+    r"(?:^|\s)(?:--body-file|-F)(?:=|\s+)("
+    r"'[^']*'"  # single-quoted
+    r'|"[^"]*"'  # double-quoted
+    r"|[^\s;|&<>]+"  # bare
+    r")"
+)
+
+# A path we cannot reason about statically: the shell would expand it, and
+# guessing wrong means appending to the wrong file.
+UNSAFE_PATH_RE = re.compile(r"[$`*?\[\]]")
 
 
 def allow():
@@ -98,6 +117,31 @@ def append_body_flag(cmd):
     return cmd[:close_quote] + "\n\n" + ATTR + cmd[close_quote:]
 
 
+def append_body_file(cmd, match):
+    """Stamp the file --body-file points at, from inside the command itself.
+
+    The file is often written by a heredoc in the same command, so it does not
+    exist yet when this hook runs and cannot be edited here. Instead the append
+    is spliced in ahead of the gh call, where it runs after the file exists.
+    The grep keeps it idempotent for a file that is already stamped, and the
+    braces keep && and || chains around it intact.
+    """
+    path = match.group(1)
+    bare = path.strip("'\"")
+    if bare == "-" or UNSAFE_PATH_RE.search(bare):
+        return None
+
+    gh = SUBCMD_RE.search(cmd) or CLOSE_SUBCMD_RE.search(cmd)
+    if not gh:
+        return None
+
+    stamp = (
+        "{ grep -qF '" + MARKER + "' " + path
+        + " || printf '\\n\\n%s\\n' '" + ATTR + "' >> " + path + "; } && "
+    )
+    return cmd[:gh.start()] + stamp + cmd[gh.start():]
+
+
 def main():
     data = json.loads(sys.stdin.read())
     if data.get("tool_name") != "Bash":
@@ -114,10 +158,14 @@ def main():
         allow()
     if MARKER in cmd:  # already stamped
         allow()
-    if SKIP_RE.search(cmd):  # body from file/fill/web/editor
+    if SKIP_RE.search(cmd):  # body from commits/web/editor
         allow()
 
-    new_cmd = append_heredoc(cmd) or append_body_flag(cmd)
+    body_file = BODY_FILE_RE.search(cmd)
+    if body_file:
+        new_cmd = append_body_file(cmd, body_file)
+    else:
+        new_cmd = append_heredoc(cmd) or append_body_flag(cmd)
     if new_cmd and new_cmd != cmd:
         updated = dict(tool_input)
         updated["command"] = new_cmd
