@@ -200,6 +200,10 @@
           {
             "type": "command",
             "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-gh-attribution.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-pr-body-linear-id.py"
           }
         ]
       }
