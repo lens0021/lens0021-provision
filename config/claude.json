@@ -247,5 +247,13 @@
   "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "autoMode": {
+    "environment": [
+      "$defaults"
+    ],
+    "soft_deny": [
+      "$defaults"
+    ]
+  }
 }
