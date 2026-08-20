@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+"""Draw homing marks under the F and J keys of the GJS OSK on-screen keyboard.
+
+GJS OSK takes its key labels from JSON maps it extracts out of the extension's
+keycodes.tar.xz into ~/.cache/gjs-osk/keycodes/<xkb-layout>.json, and it gives
+no way to restyle a single key: every key button gets the same style classes,
+and the extension overrides the stylesheet with an inline border anyway. So the
+mark goes in the label itself. Appending a combining low line to the two
+home-row index positions underlines them, standing in for the bumps a physical
+keyboard has there.
+
+Those files live under the cache, so a cache wipe reverts them. Re-run this
+afterwards, then restart the extension to pick the labels back up:
+
+    gnome-extensions disable gjsosk@vishram1123.com
+    gnome-extensions enable gjsosk@vishram1123.com
+
+Usage: gjs-osk-homing-marks [xkb-layout-glob ...]   (default: us+dvorak*)
+"""
+import json
+import os
+import sys
+import tarfile
+from pathlib import Path
+
+MARK = "̲"  # COMBINING LOW LINE
+HOMING = ("AC04", "AC07")  # evdev 33 and 36, the physical F and J positions
+DEFAULT_LAYOUTS = ("us+dvorak*",)
+
+EXTENSION = (
+    Path.home()
+    / ".local/share/gnome-shell/extensions/gjsosk@vishram1123.com"
+)
+CACHE = (
+    Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    / "gjs-osk/keycodes"
+)
+
+
+def ensure_cache():
+    """Extract the label maps if GJS OSK has not been opened yet."""
+    if CACHE.is_dir() and any(CACHE.glob("*.json")):
+        return
+    archive = EXTENSION / "keycodes.tar.xz"
+    if not archive.is_file():
+        sys.exit(f"{archive} not found, is the GJS OSK extension installed?")
+    CACHE.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(archive) as tar:
+        tar.extractall(CACHE, filter="data")
+
+
+def mark(path):
+    data = json.loads(path.read_text(encoding="utf-8"))
+    marked = 0
+    for name in HOMING:
+        layers = data[name]["layers"]
+        for layer, label in layers.items():
+            if label is None or label.endswith(MARK):
+                continue
+            layers[layer] = label + MARK
+            marked += 1
+    if marked:
+        path.write_text(
+            json.dumps(data, ensure_ascii=False, separators=(",", ":")),
+            encoding="utf-8",
+        )
+    return marked
+
+
+ensure_cache()
+
+patterns = sys.argv[1:] or DEFAULT_LAYOUTS
+paths = sorted({p for pat in patterns for p in CACHE.glob(f"{pat}.json")})
+if not paths:
+    sys.exit(f"no label maps in {CACHE} matched {' '.join(patterns)}")
+
+for path in paths:
+    marked = mark(path)
+    print(f"{path.name}: {marked} labels marked" if marked else f"{path.name}: already marked")

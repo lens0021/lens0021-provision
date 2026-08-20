@@ -58,6 +58,10 @@ irm https://raw.githubusercontent.com/lens0021/lens0021-provision/main/windows/b
     dispatches to `wl-copy` / `xclip` / `Set-Clipboard` / `pbcopy`
     by `uname -s`. Works around clip.exe's CP949 mojibake of UTF-8
     Hangul on Korean Windows.
+  - `gjs-osk-homing-marks` — underlines the F and J keys of the GJS OSK
+    on-screen keyboard by editing its label cache, which is the only
+    place the extension lets a single key be styled. Run again after a
+    cache wipe, then restart the extension.
 - `termux/` — Termux-only launchers. `install.bash` symlinks
   `termux/bin/*` into `~/.local/bin` (run by `termux.bash`).
   - `bin/claude` — runs Claude Code via an Alpine proot-distro, with

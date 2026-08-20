@@ -23,6 +23,10 @@ gsettings --schemadir $SCHEMADIR set org.gnome.shell.extensions.extensions-sync 
 gsettings set org.gnome.shell.extensions.extensions-sync gitlab-gist-id '2401246'
 gsettings set org.gnome.shell.extensions.extensions-sync gitlab-user-token "'$(bw get password f4de295d-c2bc-4d78-841d-af1500c7f2de)'"
 
+# GJS OSK: the split layout rides along in gsettings via extensions-sync, but
+# the F/J homing marks live in the label cache and have to be redrawn.
+~/git/lens/provision/bin/gjs-osk-homing-marks
+
 #
 # Wine
 #
