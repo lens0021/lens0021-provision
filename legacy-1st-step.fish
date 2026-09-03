@@ -1,3 +1,4 @@
+# DEPRECATED. fish is no longer maintained here; kept for reference only.
 set -q PROVISION_BRANCH || set PROVISION_BRANCH main
 
 if ! string match --regex --quiet nemo "$(cat /etc/passwd)"

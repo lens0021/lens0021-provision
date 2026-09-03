@@ -48,9 +48,8 @@ irm https://raw.githubusercontent.com/lens0021/lens0021-provision/main/windows/b
   `bootstrap.ps1` entry point with five sections (packages, IME /
   keyboard, cosmetic / debloat / shell rc, config hardlinks,
   host-specific drivers gated by `Win32_ComputerSystem`).
-- `rc/` — shell rc files (`rc.bash`, `rc.fish`, …) sourced from
-  `~/.bashrc` / `~/.config/fish/config.fish`. Contains starship +
-  zoxide hooks, `bash-abbrev-alias` integration, fzf.fish-style
+- `rc/` — shell rc files (`rc.bash`) sourced from `~/.bashrc`. Contains
+  starship + zoxide hooks, `bash-abbrev-alias` integration, fzf.fish-style
   Ctrl+R history / Ctrl+V file picker, and `zz` (zoxide interactive
   query) abbreviation.
 - `bin/` — cross-OS scripts placed on `$PATH`.
@@ -76,3 +75,11 @@ irm https://raw.githubusercontent.com/lens0021/lens0021-provision/main/windows/b
 - `cache/` — one-shot download cache.
 - `legacy-1st-step.{fish,sh}` — earlier iterations kept for
   reference.
+
+## Fish (deprecated)
+
+bash is the shell in use; the fish counterparts are no longer
+maintained and only the bash side gets fixes. Still present, unpruned:
+`termux.fish` (superseded by `termux.bash`), `legacy-1st-step.fish`,
+`fish_plugins`, the `install_fish` step in `1st-step.ab`, and the two
+fish symlinks in `config/declair.json`.

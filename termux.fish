@@ -1,3 +1,4 @@
+# DEPRECATED. fish is no longer maintained here; termux.bash supersedes this.
 set -q PROVISION_BRANCH || set PROVISION_BRANCH main
 
 if set -q TERMUX_VERSION
