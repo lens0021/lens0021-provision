@@ -206,6 +206,15 @@
             "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-pr-body-linear-id.py"
           }
         ]
+      },
+      {
+        "matcher": "mcp__linear__save_issue|mcp__linear__save_comment|mcp__linear-infra__save_issue|mcp__linear-infra__save_comment",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-linear-attribution.py"
+          }
+        ]
       }
     ],
     "Stop": [
