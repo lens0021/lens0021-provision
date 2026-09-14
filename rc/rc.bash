@@ -63,6 +63,41 @@ VISUAL=hx
 KUBE_EDITOR=hx
 export EDITOR VISUAL KUBE_EDITOR
 
+# Bitwarden (vaultwarden) CLI session, shared across shells via the login keyring.
+# `bw` holds its unlock session in an env var only, so each new shell would
+# otherwise re-prompt for the master password. The keyring keeps it out of the
+# plain-text dotfiles a backup would sweep up. The lookup is lazy: one D-Bus
+# round trip, paid only when `bw` actually runs.
+bw() {
+    if [ -z "${BW_SESSION:-}" ]; then
+        BW_SESSION="$(secret-tool lookup service bitwarden key session 2>/dev/null)"
+        if [ -n "$BW_SESSION" ]; then
+            export BW_SESSION
+        fi
+    fi
+    command bw "$@"
+}
+
+# `bw unlock --raw` writes its "? Master password:" prompt to stdout together
+# with the key, so the session is the trailing base64 run, not the whole output.
+bw-unlock() {
+    local session
+    session="$(command bw unlock --raw | grep -oE '[A-Za-z0-9+/=]{40,}' | tail -1)"
+    if [ -z "$session" ]; then
+        echo 'bw-unlock: no session key in the unlock output' >&2
+        return 1
+    fi
+    printf '%s' "$session" |
+        secret-tool store --label='Bitwarden CLI session' service bitwarden key session
+    export BW_SESSION="$session"
+}
+
+bw-lock() {
+    command bw lock >/dev/null 2>&1
+    secret-tool clear service bitwarden key session 2>/dev/null
+    unset BW_SESSION
+}
+
 # Load ~/.bashrc.d fragments, skipping this file to prevent recursion on OSes
 # (e.g. Fedora) that already loop over ~/.bashrc.d from their default ~/.bashrc.
 if [ -d ~/.bashrc.d ]; then
