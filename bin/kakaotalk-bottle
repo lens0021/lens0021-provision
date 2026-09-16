@@ -175,6 +175,11 @@ install_desktop_entry() {
 
   step "installing the desktop entry"
   install -Dm644 "$icon_src" "$icon_dest"
+  # GTK trusts hicolor's icon-theme.cache over the directory when one exists,
+  # so a stale cache hides the icon and the entry falls back to a generic one.
+  # --ignore-theme-index: the per-user hicolor tree carries no index.theme,
+  # and without the flag the cache is left stale with only a warning.
+  gtk-update-icon-cache -f -q --ignore-theme-index "${icon_dest%/scalable/*}"
   install -d "${entry%/*}"
   cat >"$entry" <<EOF
 [Desktop Entry]
