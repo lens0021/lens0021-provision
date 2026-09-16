@@ -1,0 +1,205 @@
+#!/bin/bash
+# Install KakaoTalk, in Korean, into a Bottles bottle.
+#
+# KakaoTalk has no Linux build, so it runs under Wine. This used to be a bare
+# ~/.wine prefix poked by hand out of 2nd-step.md; Bottles keeps the prefix
+# inside its own flatpak data directory instead, which is why every path here
+# goes through ~/.var/app/com.usebottles.bottles rather than $HOME.
+#
+# Four things have to be Korean *before* the installer runs. Each one fails
+# quietly, and differently, when it is missing:
+#
+#   1. The runtime locale. Bottles rides on org.gnome.Platform, whose Locale
+#      extension only carries the host's own language, so on an en_US host
+#      LC_ALL=ko_KR.UTF-8 dies with "cannot change locale" and Wine drops back
+#      to C without saying so.
+#   2. The bottle's locale. Bottles' Language setting is nothing but LC_ALL
+#      for the runner.
+#   3. The Windows UI language in the registry -- see kakaotalk-korean.reg.
+#   4. A Korean font inside the prefix. Wine ships none, so every Hangul glyph
+#      renders as a box until NanumGothic lands in drive_c/windows/Fonts.
+#
+# And KakaoTalk itself only reads the UI language while installing: a client
+# installed against an English prefix stays English afterwards no matter what
+# the prefix says, window title included. Hence the ordering below, and hence
+# --reinstall, which is the way out if the bottle was built in the wrong order.
+#
+# Idempotent: re-running fills in only what is missing.
+#
+# Usage: kakaotalk-bottle [--reinstall]
+set -euo pipefail
+IFS=$'\n\t'
+
+readonly FLATPAK_ID=com.usebottles.bottles
+readonly BOTTLE=KakaoTalk
+readonly PROGRAM=카카오톡
+readonly LOCALE=ko_KR
+readonly INSTALLER_URL=https://app-pc.kakaocdn.net/talk/win32/KakaoTalk_Setup.exe
+
+# readlink: bin/ scripts get symlinked onto $PATH, and the registry bundle and
+# the download cache both live next to this file in the repo, not next to the
+# symlink.
+REPO="$(cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/.." && pwd)"
+readonly REPO
+readonly REG_BUNDLE="$REPO/config/bottles/kakaotalk-korean.reg"
+readonly INSTALLER="$REPO/cache/KakaoTalk_Setup.exe"
+
+readonly BOTTLES_DATA="$HOME/.var/app/$FLATPAK_ID/data/bottles"
+readonly PREFIX="$BOTTLES_DATA/bottles/$BOTTLE"
+readonly BOTTLE_CONFIG="$PREFIX/bottle.yml"
+readonly EXE="$PREFIX/drive_c/Program Files (x86)/Kakao/KakaoTalk/KakaoTalk.exe"
+
+reinstall=false
+for arg in "$@"; do
+  case $arg in
+    --reinstall) reinstall=true ;;
+    *) echo "usage: ${0##*/} [--reinstall]" >&2; exit 2 ;;
+  esac
+done
+
+cli() {
+  flatpak run --command=bottles-cli "$FLATPAK_ID" "$@"
+}
+
+step() {
+  echo "==> $*"
+}
+
+# flatpak only fetches the locale subsets matching the host's language, and
+# there is no per-app knob for it -- extra-languages is global.
+ensure_runtime_locale() {
+  local configured
+  configured=$(flatpak config --get extra-languages)
+  [[ $configured == '*unset*' ]] && configured=''
+  if [[ ";$configured;" != *";ko;"* ]]; then
+    step "adding ko to flatpak extra-languages"
+    sudo flatpak config --set extra-languages "${configured:+$configured;}ko"
+  fi
+  # DBUS_SESSION_BUS_ADDRESS: flatpak under sudo otherwise tries to spawn
+  # dbus-launch, which is not installed, and fails before doing any work.
+  step "pulling the ko locale into the Bottles runtime"
+  sudo DBUS_SESSION_BUS_ADDRESS=/dev/null \
+    flatpak update -y --noninteractive org.gnome.Platform.Locale
+}
+
+ensure_bottles() {
+  if ! flatpak info "$FLATPAK_ID" >/dev/null 2>&1; then
+    step "installing Bottles"
+    flatpak install -y --noninteractive flathub "$FLATPAK_ID"
+  fi
+}
+
+ensure_bottle() {
+  if cli list bottles 2>/dev/null | grep -qx -- "- $BOTTLE"; then
+    return
+  fi
+  # sys-wine is the Wine the flatpak already carries, so this needs no extra
+  # runner download; take whatever version is on offer.
+  local runner
+  runner=$(cli list components -f runner 2>/dev/null | sed -n 's/^- //p' | head -1)
+  step "creating the $BOTTLE bottle on $runner"
+  cli new --bottle-name "$BOTTLE" --environment application --arch win64 --runner "$runner"
+}
+
+# Bottles turns this into LC_ALL for the runner. bottles-cli has no flag for
+# it, so patch the bottle config; Bottles re-reads the file on every launch.
+set_bottle_locale() {
+  if ! grep -qx "Language: $LOCALE" "$BOTTLE_CONFIG"; then
+    step "setting the bottle locale to $LOCALE"
+    sed -i "s/^Language: .*/Language: $LOCALE/" "$BOTTLE_CONFIG"
+  fi
+}
+
+# Stored in the bottle config and replayed whenever the runner or components
+# change, so a runner swap cannot quietly take the prefix back to English.
+apply_registry_rule() {
+  step "applying the Korean UI language registry rule"
+  # The flatpak cannot see $HOME, so hand it the bundle through the prefix.
+  local staged="$PREFIX/kakaotalk-korean.reg"
+  install -m644 "$REG_BUNDLE" "$staged"
+  cli reg-rules set -b "$BOTTLE" --name korean-locale --bundle "$staged" \
+    --description "Korean Windows UI language" \
+    --triggers runner_change,components
+  cli reg-rules apply -b "$BOTTLE" --rules korean-locale
+  rm -f "$staged"
+}
+
+install_font() {
+  local dest="$PREFIX/drive_c/windows/Fonts"
+  local regular bold
+  regular=$(fc-match -f '%{file}' NanumGothic)
+  # fc-match answers with *something* whatever it is asked, so check the file
+  # it points at rather than trusting the query.
+  case ${regular##*/} in
+    NanumGothic.ttf) ;;
+    *) echo "NanumGothic missing; dnf install naver-nanum-gothic-fonts" >&2; return 1 ;;
+  esac
+  bold="${regular%/*}/NanumGothicBold.ttf"
+  step "installing NanumGothic into the prefix"
+  install -m644 -t "$dest" "$regular"
+  if [[ -f $bold ]]; then
+    install -m644 -t "$dest" "$bold"
+  fi
+}
+
+install_kakaotalk() {
+  if [[ -f $EXE ]] && [[ $reinstall == false ]]; then
+    return
+  fi
+  if [[ ! -f $INSTALLER ]]; then
+    step "downloading the KakaoTalk installer"
+    curl -fsSL --create-dirs -o "$INSTALLER" "$INSTALLER_URL"
+  fi
+  # Same sandbox problem as the registry bundle: stage it inside the prefix.
+  local staged="$PREFIX/drive_c/users/$USER/Downloads/KakaoTalk_Setup.exe"
+  install -Dm644 "$INSTALLER" "$staged"
+  step "running the installer (NSIS, silent)"
+  cli run -b "$BOTTLE" -e "$staged" /S
+  rm -f "$staged"
+}
+
+register_program() {
+  if cli programs -b "$BOTTLE" 2>/dev/null | grep -qx -- "- $PROGRAM"; then
+    return
+  fi
+  step "registering $PROGRAM with Bottles"
+  cli add -b "$BOTTLE" -n "$PROGRAM" -p "$EXE"
+}
+
+# Bottles only writes desktop entries from its GUI, through a portal, so write
+# one here. The Exec line is the same one the GUI would generate.
+install_desktop_entry() {
+  local icon_src="${EXE%/*}/skin/default/image/3.0/svgs/common_img_appicon.svg"
+  local icon_dest="$HOME/.local/share/icons/hicolor/scalable/apps/kakaotalk.svg"
+  local entry="$HOME/.local/share/applications/kakaotalk.desktop"
+
+  step "installing the desktop entry"
+  install -Dm644 "$icon_src" "$icon_dest"
+  install -d "${entry%/*}"
+  cat >"$entry" <<EOF
+[Desktop Entry]
+Type=Application
+Name=$PROGRAM
+GenericName=KakaoTalk
+Comment=카카오톡 (Bottles/Wine)
+Exec=flatpak run --command=bottles-cli $FLATPAK_ID run -b $BOTTLE -p $PROGRAM
+Icon=kakaotalk
+Terminal=false
+Categories=Network;InstantMessaging;
+StartupWMClass=kakaotalk.exe
+EOF
+  update-desktop-database "${entry%/*}" 2>/dev/null || true
+}
+
+ensure_runtime_locale
+ensure_bottles
+ensure_bottle
+set_bottle_locale
+apply_registry_rule
+install_font
+install_kakaotalk
+register_program
+install_desktop_entry
+
+step "done; launch it from the app grid or with"
+echo "    flatpak run --command=bottles-cli $FLATPAK_ID run -b $BOTTLE -p $PROGRAM"

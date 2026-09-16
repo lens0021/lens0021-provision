@@ -200,7 +200,8 @@
     "cqlsh-expansion": "v0.9.6"
   },
   "flathub": {
-    "com.collaboraoffice.Office": null
+    "com.collaboraoffice.Office": null,
+    "com.usebottles.bottles": null
   },
   "dconf": {
     "/desktop/ibus/general/preload-engines": "['hangul']",

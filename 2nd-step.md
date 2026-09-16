@@ -93,22 +93,8 @@ Input Sources &rarr; Korean &rarr; Hangul &rarr; Preferences &rarr; Sebeolsik fi
 ibus-setup-hangul
 ```
 
-## Wine
-
-```
-WINEPREFIX=~/.wine wine wineboot
-winecfg
-```
-
-## Kakaotalk
-
-```sh
-LANG=ko_KR.UTF-8 wine ~/Downloads/KakaoTalk_Setup.exe
-```
-
 ## Login
 
-- KakaoTalk
 - Steam
 
 # Wikimedia Gerrit

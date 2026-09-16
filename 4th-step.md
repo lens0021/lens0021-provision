@@ -27,4 +27,5 @@ git clone "ssh://lens0021@gerrit.wikimedia.org:29418/mediawiki/skins/Vector" ~/g
 
 ## Kakaotalk
 
-https://hamonikr.org/used_hamonikr/82280
+`3rd-step.sh` installs and configures it; all that is left is to log in from
+the app grid entry (카카오톡).

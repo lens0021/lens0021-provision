@@ -5,15 +5,8 @@ IFS=$'\n\t'
 # Rclone
 systemctl --user enable rclone@dropbox
 
-# KakaoTalk
-sed -i 's/Exec=env WINEPREFIX/Exec=env LANG="ko_KR.UTF-8" WINEPREFIX/' \
-  ~/.local/share/applications/wine/Programs/카카오톡/카카오톡.desktop
-
-rm ~/Downloads/KakaoTalk_Setup.exe
-rm -f \
-  "$HOME/.local/share/applications/wine/Programs/카카오톡/카카오톡 제거.desktop" \
-  "$HOME/.local/share/applications/wine/카카오톡.desktop" \
-  ~/Desktop/카카오톡.desktop
+# KakaoTalk, in a Bottles bottle rather than a bare ~/.wine prefix
+~/git/lens/provision/bin/kakaotalk-bottle
 
 # gsettings
 SCHEMADIR=~/.local/share/gnome-shell/extensions/extensions-sync@elhan.io/schemas
@@ -26,24 +19,6 @@ gsettings set org.gnome.shell.extensions.extensions-sync gitlab-user-token "'$(b
 # GJS OSK: the split layout rides along in gsettings via extensions-sync, but
 # the F/J homing marks live in the label cache and have to be redrawn.
 ~/git/lens/provision/bin/gjs-osk-homing-marks
-
-#
-# Wine
-#
-WINEPREFIX=~/.wine wine wineboot
-# Change Wine system font (NanumGothic.ttf)
-sed -i 's/"MS Shell Dlg"="Tahoma"/"MS Shell Dlg"="NanumGothic"/' ~/.wine/system.reg
-sed -i 's/"MS Shell Dlg 2"="Tahoma"/"MS Shell Dlg 2"="NanumGothic"/' ~/.wine/system.reg
-# Setup font
-mkdir -p ~/.wine/drive_c/windows/Fonts/
-case $LINUX_NODENAME in
-  "fedora")
-    cp /usr/share/fonts/naver-nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
-    ;;
-  "debian" | 'ubuntu')
-    cp /usr/share/fonts/truetype/nanum/NanumGothic.ttf ~/.wine/drive_c/windows/Fonts/
-    ;;
-esac
 
 # ADB
 # sudo ln -s "$HOME/Android/Sdk/platform-tools/adb" /usr/bin/adb

@@ -1,0 +1,24 @@
+Windows Registry Editor Version 5.00
+
+; Wine picks the Windows UI language when the prefix is first created and then
+; never revisits it, so a prefix born on an en_US host keeps reporting 0409 no
+; matter what LC_ALL says afterwards. 0412 is ko-KR.
+;
+; This matters because KakaoTalk reads the UI language at *install* time: a
+; client installed while the prefix still said 0409 stays English forever,
+; window title included. Apply this before running the installer.
+
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\Language]
+"Default"="0412"
+"InstallLanguage"="0412"
+
+; MUI override, for the calls that ask for the preferred UI language list
+; rather than the system default.
+;
+; REG_MULTI_SZ as "ko-KR\0\0" in *8-bit* chars, not UTF-16, even though the
+; header above says 5.00: Bottles hands this file to `reg import` without a
+; BOM, and Wine falls back to reading a BOM-less file as ANSI, so UTF-16 hex
+; would land in the registry as "k\0o\0-\0K\0R\0".
+
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"PreferredUILanguages"=hex(7):6b,6f,2d,4b,52,00,00
