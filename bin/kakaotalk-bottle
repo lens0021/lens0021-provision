@@ -24,6 +24,15 @@
 # the prefix says, window title included. Hence the ordering below, and hence
 # --reinstall, which is the way out if the bottle was built in the wrong order.
 #
+# Known limitation, already chased down once: alt-tab labels the window
+# "Bottles", not 카카오톡. GNOME trusts a window's sandbox identity over the
+# WM_CLASS it claims, so that a sandboxed app cannot pose as another one, and
+# `flatpak run` puts every process in app-flatpak-com.usebottles.bottles-*
+# .scope. The desktop entry below carries a correct StartupWMClass and loses
+# to it anyway. Same reason a game started from flatpak Steam says "Steam".
+# Nothing on this side can change it; the only cure is running Wine outside
+# the flatpak, which costs more than a wrong label in the switcher.
+#
 # Idempotent: re-running fills in only what is missing.
 #
 # Usage: kakaotalk-bottle [--reinstall]
