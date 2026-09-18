@@ -245,6 +245,7 @@
     "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/name": "'gromit-mpx'",
     "/org/gnome/settings-daemon/plugins/power/power-button-action": "'suspend'",
     "/org/gnome/shell/favorite-apps": "['org.mozilla.firefox.desktop', 'org.gnome.Ptyxis.desktop', 'slack.desktop', 'org.gnome.Nautilus.desktop', 'com.vixalien.sticky.desktop']",
+    "/org/gnome/shell/extensions/appindicator/icon-size": "24",
     "/org/gnome/shell/extensions/lockkeys/notification-preferences": "'off'",
     "/org/gnome/shell/extensions/lockkeys/style": "'both'",
     "/org/gnucash/GnuCash/general/autosave-interval-minutes": "0.0",

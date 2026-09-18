@@ -53,14 +53,24 @@ readonly INSTALLER_URL=https://app-pc.kakaocdn.net/talk/win32/KakaoTalk_Setup.ex
 # and GNOME's xwayland-native-scaling hands XWayland the panel's real pixels,
 # so a 96 DPI prefix is tiny on a 4K screen.
 #
-# 216 = 96 * 1.5 * 1.5. The first 1.5 is the scale GNOME prefers for the 4K
-# monitor here. The second is measured, not guessed: side by side at 176 DPI,
-# GNOME's list rows came out around a 23px em against KakaoTalk's 19px, and
-# KakaoTalk draws its own chrome at sizes chosen for a denser Windows UI, so
-# matching the monitor scale alone still leaves it looking small.
+# 144 = 96 * 1.5, the scale GNOME prefers for the 4K monitor here.
+#
+# Text alone would want more: measured side by side at 176 DPI, GNOME's list
+# rows sat around a 23px em against KakaoTalk's 19px, because KakaoTalk draws
+# its chrome at sizes chosen for a denser Windows UI. But the tray icon hangs
+# off the same number and loses first. Wine sizes it from SM_CXSMICON, which
+# is DPI and nothing else -- it reads no Shell Small Icon Size or any other
+# override -- so 216 DPI hands the panel a 36px icon, the AppIndicator
+# extension drops it into a 16px actor, and it arrives centre-cropped to a
+# brown smear. 144 keeps that icon at 24px, which the extension's icon-size,
+# set to 24 to match, shows whole and at a size that sits with its neighbours.
+#
+# So the two move together: raising this means raising that key, which lives
+# in config/declair.json under dconf, and a tray icon overtopping the rest of
+# the panel is what that buys.
 #
 # Set KAKAOTALK_DPI on a machine that scales differently.
-readonly DPI=${KAKAOTALK_DPI:-216}
+readonly DPI=${KAKAOTALK_DPI:-144}
 
 # readlink: bin/ scripts get symlinked onto $PATH, and the registry bundle and
 # the download cache both live next to this file in the repo, not next to the
