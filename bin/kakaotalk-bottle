@@ -24,9 +24,15 @@
 # the prefix says, window title included. Hence the ordering below, and hence
 # --reinstall, which is the way out if the bottle was built in the wrong order.
 #
-# Known limitation: KakaoTalk's emoji stay boxes, two per emoji, one for each
-# half of the surrogate pair. They are not being composed into a character in
-# the first place, so no font or link answers for them. See link_emoji_font.
+# Known limitation: emoji come out as boxes. Not a composition problem --
+# notepad in this prefix draws one box per astral emoji, not two, so the
+# surrogate pairs are being put together correctly and the pairs of boxes in
+# KakaoTalk are the emoji plus its variation selector. What fails is the
+# fallback: the emoji face is installed, Wine loads it, and the SystemLink
+# entries are read at startup, yet missing glyphs never reach it. Tried and
+# didn't help: linking under the substituted name and under the name the app
+# asks for, linking from a face that is not a substitution target at all
+# (Arial, same boxes), and the soda runner. Hangul is unaffected throughout.
 #
 # Known limitation, already chased down once: alt-tab labels the window
 # "Bottles", not 카카오톡. GNOME trusts a window's sandbox identity over the
@@ -134,9 +140,19 @@ ensure_bottle() {
     return
   fi
   # sys-wine is the Wine the flatpak already carries, so this needs no extra
-  # runner download; take whatever version is on offer.
+  # download; take whatever version of it is on offer, and only fall back to
+  # another runner if there is none.
+  #
+  # Not just the first runner listed. Bottles will happily hand over soda, and
+  # soda was tried here: it fixes nothing that matters -- emoji still come out
+  # as boxes -- while dressing every window in the old Windows theme and
+  # reporting WM_CLASS as steam_proton, which breaks the StartupWMClass in the
+  # desktop entry. It also logged the account out on the way in.
   local runner
-  runner=$(cli list components -f runner 2>/dev/null | sed -n 's/^- //p' | head -1)
+  runner=$(cli list components -f runner 2>/dev/null | sed -n 's/^- //p' | grep '^sys-wine' | head -1)
+  if [[ -z $runner ]]; then
+    runner=$(cli list components -f runner 2>/dev/null | sed -n 's/^- //p' | head -1)
+  fi
   step "creating the $BOTTLE bottle on $runner"
   cli new --bottle-name "$BOTTLE" --environment application --arch win64 --runner "$runner"
 }
