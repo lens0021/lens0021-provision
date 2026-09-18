@@ -24,16 +24,9 @@
 # the prefix says, window title included. Hence the ordering below, and hence
 # --reinstall, which is the way out if the bottle was built in the wrong order.
 #
-# Known limitation, chased down at length and unsolved: the tray icon's
-# right-click menu draws every Hangul character as a box. Everything else is
-# fine, including Wine's own dialogs -- the uninstaller renders Korean -- so
-# it is one drawing path, not the prefix. Ruled out, so start elsewhere: the
-# font is present and now registered under HKLM ...\CurrentVersion\Fonts; the
-# Latin face names and 맑은 고딕 are substituted in both FontSubstitutes and
-# Wine's Replacements; the font cache was deleted and rebuilt with wineboot
-# -u; the locale is Korean and the codepage is 949. What is left is finding
-# which face the menu actually asks for and through which API, which means a
-# WINEDEBUG=+font trace taken while the menu is open.
+# Known limitation: KakaoTalk's emoji stay boxes, two per emoji, one for each
+# half of the surrogate pair. They are not being composed into a character in
+# the first place, so no font or link answers for them. See link_emoji_font.
 #
 # Known limitation, already chased down once: alt-tab labels the window
 # "Bottles", not 카카오톡. GNOME trusts a window's sandbox identity over the
@@ -208,6 +201,95 @@ substitute_korean_fonts() {
   rm -f "$staged"
 }
 
+# The fonts Wine draws its own chrome with are named in LOGFONT blobs under
+# Control Panel\Desktop\WindowMetrics, and they all say Tahoma. Substitution
+# cannot reach them: Wine ships its own Tahoma, so the requested face exists
+# and both FontSubstitutes and the Replacements key stand aside -- a +font
+# trace of the tray menu shows it loading Z:\app\share\wine\fonts\tahomabd.ttf
+# no matter what those keys say. Tahoma has no Hangul, hence the boxes.
+#
+# So rename the face inside each blob instead. Only the name: the sizes in
+# there follow the DPI set below and are not ours to invent.
+rename_chrome_fonts() {
+  step "pointing the window metrics fonts at NanumGothic"
+  local staged="$PREFIX/window-metrics.reg"
+  python3 - "$PREFIX/user.reg" "$staged" <<'PY'
+import re, struct, sys
+
+src, dest = sys.argv[1], sys.argv[2]
+text = open(src, encoding="utf-8", errors="surrogateescape").read()
+out = ["Windows Registry Editor Version 5.00", "",
+       r"[HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics]"]
+
+def read(name):
+    m = re.search(r'"%s"=hex:((?:[0-9a-f,\\\s]+?))\n(?=")' % name, text)
+    if not m:
+        return None
+    return bytearray(int(b, 16) for b in
+                     re.sub(r"[\\\s]", "", m.group(1)).rstrip(",").split(","))
+
+for name in ("CaptionFont", "SmCaptionFont", "MenuFont",
+             "StatusFont", "MessageFont", "IconFont"):
+    blob = read(name)
+    if blob is None:
+        # Wine leaves StatusFont unwritten and falls back to a built-in,
+        # which is how tooltips kept their boxes after the rest were fixed.
+        # MenuFont is the same shape and the same size, so start from it.
+        blob = read("MenuFont")
+    if blob is None:
+        continue
+    # lfFaceName is the last field of LOGFONTW: 32 UTF-16 code units at
+    # offset 28, null padded.
+    face = "NanumGothic"
+    blob[28:28 + 64] = struct.pack("<32H", *([ord(c) for c in face] + [0] * (32 - len(face))))
+    out.append('"%s"=hex:%s' % (name, ",".join("%02x" % b for b in blob)))
+
+out.append("")
+open(dest, "w").write("\n".join(out))
+PY
+  timeout 180 cli shell -b "$BOTTLE" -i "reg import $staged"
+  rm -f "$staged"
+}
+
+# Fall back to an emoji face for the characters NanumGothic has no glyph for.
+#
+# Keyed on the names KakaoTalk actually asks for, never on NanumGothic: Wine
+# drops a SystemLink whose key is itself a substitution target, and says so --
+# "SystemLink entry for substituted font, ignoring" -- so an entry under
+# NanumGothic is thrown away because 맑은 고딕 maps onto it.
+#
+# Monochrome Noto Emoji rather than the colour one, which is a CBDT bitmap
+# font that GDI cannot draw. This does not rescue KakaoTalk's own emoji: those
+# arrive as two boxes each, one per half of the surrogate pair, so they are
+# not being composed into a character at all and no font can answer for them.
+# It covers the symbols that do live in the BMP.
+link_emoji_font() {
+  local src="/usr/share/fonts/google-noto-emoji-fonts/NotoEmoji-Regular.ttf"
+  [[ -f $src ]] || return 0
+  step "linking an emoji fallback"
+  install -m644 -t "$PREFIX/drive_c/windows/Fonts" "$src"
+  local staged="$PREFIX/emoji.reg"
+  python3 - "$staged" <<'PY'
+import sys
+
+def multi_sz(items):
+    data = b"".join(s.encode("utf-16-le") + b"\x00\x00" for s in items) + b"\x00\x00"
+    return ",".join("%02x" % b for b in data)
+
+link = multi_sz(["NotoEmoji-Regular.ttf,Noto Emoji"])
+lines = ["Windows Registry Editor Version 5.00", "",
+         r"[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Fonts]",
+         '"Noto Emoji (TrueType)"="NotoEmoji-Regular.ttf"', "",
+         r"[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontLink\SystemLink]"]
+for base in ("맑은 고딕", "Malgun Gothic", "Meiryo UI", "Arial", "Tahoma", "System"):
+    lines.append('"%s"=hex(7):%s' % (base, link))
+lines.append("")
+open(sys.argv[1], "w", encoding="utf-16-le").write("﻿" + "\n".join(lines))
+PY
+  timeout 180 cli shell -b "$BOTTLE" -i "reg import $staged"
+  rm -f "$staged"
+}
+
 set_dpi() {
   step "setting the prefix to $DPI DPI"
   cli edit -b "$BOTTLE" --params "custom_dpi:$DPI"
@@ -308,6 +390,8 @@ set_bottle_locale
 apply_registry_rule
 install_font
 substitute_korean_fonts
+rename_chrome_fonts
+link_emoji_font
 set_dpi
 install_kakaotalk
 register_program

@@ -44,8 +44,10 @@ Windows Registry Editor Version 5.00
 "Batang"="NanumGothic"
 "BatangChe"="NanumGothic"
 "Malgun Gothic"="NanumGothic"
-; Tahoma is named outright by the LOGFONTs Wine writes into Control Panel\
-; Desktop\WindowMetrics, so menus and tooltips ask for it by name and never
-; reach MS Shell Dlg. It carries no Hangul, which is why the tray context menu
-; stayed boxes after the substitutions above.
+; Tahoma is listed for completeness and does nothing. Wine ships its own
+; Tahoma, and substitution only steps in for a face that is missing, so this
+; line loses to Z:\app\share\wine\fonts\tahoma.ttf -- a +font trace of the
+; tray menu shows exactly that. The LOGFONTs under Control Panel\Desktop\
+; WindowMetrics name Tahoma outright, which is why the menu drew boxes for so
+; long; kakaotalk-bottle rewrites the face inside those blobs instead.
 "Tahoma"="NanumGothic"
