@@ -44,3 +44,8 @@ Windows Registry Editor Version 5.00
 "Batang"="NanumGothic"
 "BatangChe"="NanumGothic"
 "Malgun Gothic"="NanumGothic"
+; Tahoma is named outright by the LOGFONTs Wine writes into Control Panel\
+; Desktop\WindowMetrics, so menus and tooltips ask for it by name and never
+; reach MS Shell Dlg. It carries no Hangul, which is why the tray context menu
+; stayed boxes after the substitutions above.
+"Tahoma"="NanumGothic"

@@ -35,6 +35,10 @@
 #
 # Idempotent: re-running fills in only what is missing.
 #
+# Close KakaoTalk before running this. Every registry step starts a wine
+# session against the prefix, and while the app holds the wineserver they
+# crawl, turning a half-minute run into several minutes.
+#
 # Usage: kakaotalk-bottle [--reinstall]
 set -euo pipefail
 IFS=$'\n\t'
@@ -44,6 +48,19 @@ readonly BOTTLE=KakaoTalk
 readonly PROGRAM=카카오톡
 readonly LOCALE=ko_KR
 readonly INSTALLER_URL=https://app-pc.kakaocdn.net/talk/win32/KakaoTalk_Setup.exe
+
+# Wine does no scaling of its own: it renders at whatever DPI the prefix says,
+# and GNOME's xwayland-native-scaling hands XWayland the panel's real pixels,
+# so a 96 DPI prefix is tiny on a 4K screen.
+#
+# 216 = 96 * 1.5 * 1.5. The first 1.5 is the scale GNOME prefers for the 4K
+# monitor here. The second is measured, not guessed: side by side at 176 DPI,
+# GNOME's list rows came out around a 23px em against KakaoTalk's 19px, and
+# KakaoTalk draws its own chrome at sizes chosen for a denser Windows UI, so
+# matching the monitor scale alone still leaves it looking small.
+#
+# Set KAKAOTALK_DPI on a machine that scales differently.
+readonly DPI=${KAKAOTALK_DPI:-216}
 
 # readlink: bin/ scripts get symlinked onto $PATH, and the registry bundle and
 # the download cache both live next to this file in the repo, not next to the
@@ -133,6 +150,50 @@ apply_registry_rule() {
   rm -f "$staged"
 }
 
+# bottles-cli writes custom_dpi into the bottle config but does not push it to
+# the registry the way the GUI does, so set both: the config keeps the GUI
+# honest, LogPixels is what Wine actually reads.
+# KakaoTalk asks for its fonts by Korean face name -- skin/default/font/
+# font_ko.xml names 맑은 고딕 throughout -- so the Latin-named substitutions in
+# the .reg bundle never match, and tooltips and menus come out as boxes. These
+# cannot live in the bundle: Bottles hands that file to `reg import` without a
+# BOM, Wine then reads it as CP949, and the UTF-8 bytes arrive as mojibake.
+# Going through reg.exe's argv instead keeps the names intact.
+substitute_korean_fonts() {
+  step "substituting the Korean face names"
+  # One reg import, not one wine session per face: each `bottles-cli reg add`
+  # starts its own session, sixteen of them take minutes, and one that wedges
+  # holds the prefix's wineserver so the app will not start at all afterwards.
+  #
+  # UTF-16LE with a BOM is what makes the Korean names survive. Wine reads a
+  # BOM-less file as CP949 whatever the header claims, which is exactly why
+  # these cannot ride along in the .reg bundle -- Bottles rewrites that one as
+  # UTF-8 on its way to reg.exe.
+  local staged="$PREFIX/korean-fonts.reg"
+  {
+    printf 'Windows Registry Editor Version 5.00\n\n'
+    local key
+    for key in 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontSubstitutes' \
+               'HKEY_CURRENT_USER\Software\Wine\Fonts\Replacements'; do
+      printf '[%s]\n' "$key"
+      local face
+      for face in "맑은 고딕" "Malgun Gothic" 굴림 굴림체 돋움 돋움체 바탕 바탕체; do
+        printf '"%s"="NanumGothic"\n' "$face"
+      done
+      printf '\n'
+    done
+  } | iconv -f UTF-8 -t UTF-16LE | { printf '\xff\xfe'; cat; } >"$staged"
+  timeout 180 cli shell -b "$BOTTLE" -i "reg import $staged"
+  rm -f "$staged"
+}
+
+set_dpi() {
+  step "setting the prefix to $DPI DPI"
+  cli edit -b "$BOTTLE" --params "custom_dpi:$DPI"
+  cli reg add -b "$BOTTLE" -k 'HKEY_CURRENT_USER\Control Panel\Desktop' \
+    -v LogPixels -d "$DPI" -t REG_DWORD
+}
+
 install_font() {
   local dest="$PREFIX/drive_c/windows/Fonts"
   local regular bold
@@ -211,6 +272,8 @@ ensure_bottle
 set_bottle_locale
 apply_registry_rule
 install_font
+substitute_korean_fonts
+set_dpi
 install_kakaotalk
 register_program
 install_desktop_entry
