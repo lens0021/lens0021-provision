@@ -24,6 +24,17 @@
 # the prefix says, window title included. Hence the ordering below, and hence
 # --reinstall, which is the way out if the bottle was built in the wrong order.
 #
+# Known limitation, chased down at length and unsolved: the tray icon's
+# right-click menu draws every Hangul character as a box. Everything else is
+# fine, including Wine's own dialogs -- the uninstaller renders Korean -- so
+# it is one drawing path, not the prefix. Ruled out, so start elsewhere: the
+# font is present and now registered under HKLM ...\CurrentVersion\Fonts; the
+# Latin face names and 맑은 고딕 are substituted in both FontSubstitutes and
+# Wine's Replacements; the font cache was deleted and rebuilt with wineboot
+# -u; the locale is Korean and the codepage is 949. What is left is finding
+# which face the menu actually asks for and through which API, which means a
+# WINEDEBUG=+font trace taken while the menu is open.
+#
 # Known limitation, already chased down once: alt-tab labels the window
 # "Bottles", not 카카오톡. GNOME trusts a window's sandbox identity over the
 # WM_CLASS it claims, so that a sandboxed app cannot pose as another one, and
@@ -219,6 +230,20 @@ install_font() {
   install -m644 -t "$dest" "$regular"
   if [[ -f $bold ]]; then
     install -m644 -t "$dest" "$bold"
+  fi
+
+  # Dropping the file in the prefix is not enough on its own. Inside the
+  # flatpak /usr/share/fonts is the GNOME runtime's own set, Latin only, and
+  # the host's fonts hang off /run/host/fonts where Wine never looks, so the
+  # prefix starts with no Korean face at all. Wine also declined to pick these
+  # two up by itself -- the font list stayed at its original 117 across a
+  # cache wipe and a wineboot -u -- so name them outright.
+  local reg='HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Fonts'
+  timeout 120 cli reg add -b "$BOTTLE" -k "$reg" \
+    -v 'NanumGothic (TrueType)' -d "${regular##*/}" -t REG_SZ
+  if [[ -f $bold ]]; then
+    timeout 120 cli reg add -b "$BOTTLE" -k "$reg" \
+      -v 'NanumGothic Bold (TrueType)' -d "${bold##*/}" -t REG_SZ
   fi
 }
 
