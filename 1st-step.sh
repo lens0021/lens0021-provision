@@ -1,57 +1,60 @@
 #!/usr/bin/env bash
 # Written in [Amber](https://amber-lang.com/)
-# version: 0.5.1-alpha
+# version: 0.6.0-alpha
+[ "$EUID" -ne 0 ] && { { command -v sudo >/dev/null 2>&1 && __sudo=sudo; } || { command -v doas >/dev/null 2>&1 && __sudo=doas; }; }
+if [ -n "$ZSH_VERSION" ]; then
+    EXEC_SHELL="zsh"
+    IFS='.' read -A EXEC_SHELL_VERSION <<< "$ZSH_VERSION"
+elif [ -n "$KSH_VERSION" ]; then
+    EXEC_SHELL="ksh"
+    __exec_shell_version="${.sh.version##*/}"
+    IFS='.' read -a EXEC_SHELL_VERSION <<< "${__exec_shell_version%% *}"
+else
+    EXEC_SHELL="bash"
+    EXEC_SHELL_VERSION=("${BASH_VERSINFO[0]}" "${BASH_VERSINFO[1]}" "${BASH_VERSINFO[2]}")
+fi
+# array_find(array: [Text], value: Text)
 array_find__0_v0() {
-    local array=("${!1}")
-    local value=$2
-    index_21=0;
-    for element_20 in "${array[@]}"; do
-        if [ "$([ "_${value}" != "_${element_20}" ]; echo $?)" != 0 ]; then
-            ret_array_find0_v0="${index_21}"
+    local array_114=("${!1}")
+    local value_115="${2}"
+    index_117=0;
+    for element_116 in "${array_114[@]}"; do
+        if [ "$([ "_${value_115}" != "_${element_116}" ]; echo $?)" != 0 ]; then
+            ret_array_find0_v0="${index_117}"
             return 0
         fi
-        (( index_21++ )) || true
+        (( index_117++ )) || true
     done
     ret_array_find0_v0=-1
     return 0
 }
 
+# array_contains(array: [Text], value: Text)
 array_contains__2_v0() {
-    local array=("${!1}")
-    local value=$2
-    array_find__0_v0 array[@] "${value}"
-    result_22="${ret_array_find0_v0}"
-    ret_array_contains2_v0="$(( ${result_22} >= 0 ))"
+    local array_112=("${!1}")
+    local value_113="${2}"
+    array_find__0_v0 array_112[@] "${value_113}"
+    local result_118="${ret_array_find0_v0}"
+    ret_array_contains2_v0="$(( result_118 >= 0 ))"
     return 0
 }
 
-# We cannot import `bash_version` from `env.ab` because it imports `text.ab` making a circular dependency.
-# This is a workaround to avoid that issue and the import system should be improved in the future.
-bash_version__11_v0() {
-    major_11="$(echo "${BASH_VERSINFO[0]}")"
-    minor_12="$(echo "${BASH_VERSINFO[1]}")"
-    command_2="$(echo "${BASH_VERSINFO[2]}")"
-    __status=$?
-    patch_13="${command_2}"
-    ret_bash_version11_v0=("${major_11}" "${minor_12}" "${patch_13}")
-    return 0
-}
-
-replace__12_v0() {
-    local source=$1
-    local search=$2
-    local replace=$3
+# replace(source: Text, search: Text, replace: Text)
+replace__13_v0() {
+    local source_120="${1}"
+    local search_121="${2}"
+    local replace_122="${3}"
     # Here we use a command to avoid #646
-    result_10=""
-    bash_version__11_v0 
-    left_comp=("${ret_bash_version11_v0[@]}")
+    local result_123=""
+    left_comp=("${EXEC_SHELL_VERSION[@]}")
     right_comp=(4 3)
+    local comp
     comp="$(
         # Compare if left array >= right array
         len_comp="$( (( "${#left_comp[@]}" < "${#right_comp[@]}" )) && echo "${#left_comp[@]}"|| echo "${#right_comp[@]}")"
         for (( i=0; i<len_comp; i++ )); do
-            left="${left_comp[i]:-0}"
-            right="${right_comp[i]:-0}"
+            left="${left_comp[i]?"Index out of bounds (at unknown)"}"
+            right="${right_comp[i]?"Index out of bounds (at unknown)"}"
             if (( "${left}" > "${right}" )); then
                 echo 1
                 exit
@@ -62,304 +65,259 @@ replace__12_v0() {
         done
         (( "${#left_comp[@]}" == "${#right_comp[@]}" || "${#left_comp[@]}" > "${#right_comp[@]}" )) && echo 1 || echo 0
 )"
-    if [ "${comp}" != 0 ]; then
-        result_10="${source//"${search}"/"${replace}"}"
+    if [ "$(( $([ "_${EXEC_SHELL}" != "_ksh" ]; echo $?) || $(( $([ "_${EXEC_SHELL}" != "_bash" ]; echo $?) && comp )) ))" != 0 ]; then
+        result_123="${source_120//"${search_121}"/"${replace_122}"}"
         __status=$?
     else
-        result_10="${source//"${search}"/${replace}}"
+        result_123="${source_120//"${search_121}"/${replace_122}}"
         __status=$?
     fi
-    ret_replace12_v0="${result_10}"
+    ret_replace13_v0="${result_123}"
     return 0
 }
 
-split__16_v0() {
-    local text=$1
-    local delimiter=$2
-    result_5=()
-    IFS="${delimiter}" read -rd '' -a result_5 < <(printf %s "$text")
-    __status=$?
-    ret_split16_v0=("${result_5[@]}")
-    return 0
-}
-
-text_contains__28_v0() {
-    local source=$1
-    local search=$2
-    command_6="$(if [[ "${source}" == *"${search}"* ]]; then
-    echo 1
-  fi)"
-    __status=$?
-    result_27="${command_6}"
-    ret_text_contains28_v0="$([ "_${result_27}" != "_1" ]; echo $?)"
-    return 0
-}
-
-rpad__40_v0() {
-    local text=$1
-    local pad=$2
-    local length=$3
-    __length_7="${text}"
-    if [ "$(( ${length} <= ${#__length_7} ))" != 0 ]; then
-        ret_rpad40_v0="${text}"
-        return 0
-    fi
-    __length_8="${text}"
-    length="$(( ${#__length_8} - ${length} ))"
-    command_9="$(printf "%${length}s" "" | tr " " "${pad}")"
-    __status=$?
-    pad="${command_9}"
-    ret_rpad40_v0="${text}""${pad}"
-    return 0
-}
-
-dir_exists__47_v0() {
-    local path=$1
-    [ -d "${path}" ]
-    __status=$?
-    ret_dir_exists47_v0="$(( ${__status} == 0 ))"
-    return 0
-}
-
-file_exists__48_v0() {
-    local path=$1
-    [ -f "${path}" ]
-    __status=$?
-    ret_file_exists48_v0="$(( ${__status} == 0 ))"
-    return 0
-}
-
-file_read__49_v0() {
-    local path=$1
-    command_10="$(< "${path}")"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_file_read49_v0=''
-        return "${__status}"
-    fi
-    ret_file_read49_v0="${command_10}"
-    return 0
-}
-
-file_write__50_v0() {
-    local path=$1
-    local content=$2
-    command_11="$(echo "${content}" > "${path}")"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_file_write50_v0=''
-        return "${__status}"
-    fi
-    ret_file_write50_v0="${command_11}"
-    return 0
-}
-
-file_append__51_v0() {
-    local path=$1
-    local content=$2
-    command_12="$(echo "${content}" >> "${path}")"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_file_append51_v0=''
-        return "${__status}"
-    fi
-    ret_file_append51_v0="${command_12}"
-    return 0
-}
-
-symlink_create__52_v0() {
-    local origin=$1
-    local destination=$2
-    file_exists__48_v0 "${origin}"
-    ret_file_exists48_v0__71_8="${ret_file_exists48_v0}"
-    if [ "${ret_file_exists48_v0__71_8}" != 0 ]; then
-        ln -s "${origin}" "${destination}"
+# split(text: Text, delimiter: Text)
+split__17_v0() {
+    local text_107="${1}"
+    local delimiter_108="${2}"
+    local result_109=()
+    # zsh uses -A for array, bash uses -a, ksh is VERY bad at splitting anything
+    if [ "$([ "_${EXEC_SHELL}" != "_zsh" ]; echo $?)" != 0 ]; then
+        IFS="${delimiter_108}" read -rd '' -A result_109 < <(printf %s "$text_107")
         __status=$?
-        if [ "${__status}" != 0 ]; then
-            ret_symlink_create52_v0=''
-            return "${__status}"
-        fi
-        ret_symlink_create52_v0=''
-        return 0
-    fi
-    echo "The file ${origin} doesn't exist"'!'""
-    ret_symlink_create52_v0=''
-    return 1
-}
-
-dir_create__53_v0() {
-    local path=$1
-    dir_exists__47_v0 "${path}"
-    ret_dir_exists47_v0__87_12="${ret_dir_exists47_v0}"
-    if [ "$(( ! ${ret_dir_exists47_v0__87_12} ))" != 0 ]; then
-        mkdir -p "${path}"
-        __status=$?
-        if [ "${__status}" != 0 ]; then
-            ret_dir_create53_v0=''
-            return "${__status}"
-        fi
-    fi
-}
-
-file_chmod__56_v0() {
-    local path=$1
-    local mode=$2
-    file_exists__48_v0 "${path}"
-    ret_file_exists48_v0__153_8="${ret_file_exists48_v0}"
-    if [ "${ret_file_exists48_v0__153_8}" != 0 ]; then
-        chmod "${mode}" "${path}"
-        __status=$?
-        if [ "${__status}" != 0 ]; then
-            ret_file_chmod56_v0=''
-            return "${__status}"
-        fi
-        ret_file_chmod56_v0=''
-        return 0
-    fi
-    echo "The file ${path} doesn't exist"'!'""
-    ret_file_chmod56_v0=''
-    return 1
-}
-
-command_13="$(sudo -u#1000 bash -c 'echo $HOME')"
-__status=$?
-user_home_3="${command_13}"
-resolve__70_v0() {
-    local path=$1
-    replace__12_v0 "${path}" "~" "${user_home_3}"
-    ret_resolve70_v0="${ret_replace12_v0}"
-    return 0
-}
-
-dirname__71_v0() {
-    local path=$1
-    command_14="$(dirname ${path})"
-    __status=$?
-    ret_dirname71_v0="${command_14}"
-    return 0
-}
-
-sym_list__72_v0() {
-    command_15="$(jq -r '.sym | keys | .[]' ~/.config/declair/config.json)"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_sym_list72_v0=''
-        return "${__status}"
-    fi
-    split__16_v0 "${command_15}" "
-"
-    srcs_6=("${ret_split16_v0[@]}")
-    command_16="$(jq -r '.sym | keys | .[]' ~/.config/declair/config.json | wc -L)"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_sym_list72_v0=''
-        return "${__status}"
-    fi
-    longest_src_col_7="${command_16}"
-    command_17="$(jq -r '.sym | values | .[]' ~/.config/declair/config.json | wc -L)"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_sym_list72_v0=''
-        return "${__status}"
-    fi
-    longest_dist_col_8="${command_17}"
-    for src_9 in "${srcs_6[@]}"; do
-        replace__12_v0 "${src_9}" "~" "${user_home_3}"
-        resolved_src_14="${ret_replace12_v0}"
-        command_18="$(jq -r '.sym["'"${src_9}"'"]' ~/.config/declair/config.json)"
-        __status=$?
-        if [ "${__status}" != 0 ]; then
-            ret_sym_list72_v0=''
-            return "${__status}"
-        fi
-        dist_15="${command_18}"
-        replace__12_v0 "${dist_15}" "~" "${user_home_3}"
-        resolved_dist_16="${ret_replace12_v0}"
-        state_17="Unknown"
-        file_exists__48_v0 "${resolved_dist_16}"
-        ret_file_exists48_v0__37_12="${ret_file_exists48_v0}"
-        if [ "${ret_file_exists48_v0__37_12}" != 0 ]; then
-            state_17="Existing"
-            command_19="$(realpath ${resolved_dist_16})"
+    elif [ "$([ "_${EXEC_SHELL}" != "_ksh" ]; echo $?)" != 0 ]; then
+        if [ "$([ "_${delimiter_108}" != "_
+" ]; echo $?)" != 0 ]; then
+            while read -r -d $'\n'; do result_109+=("$REPLY"); done < <(echo "$text_107")
             __status=$?
-            if [ "${__status}" != 0 ]; then
-                ret_sym_list72_v0=''
-                return "${__status}"
-            fi
-            if [ "$([ "_${command_19}" != "_${resolved_src_14}" ]; echo $?)" != 0 ]; then
-                state_17="OK"
-            fi
+        else
+            IFS="${delimiter_108}" read -rd '' -a result_109 < <(printf %s "$text_107")
+            __status=$?
         fi
-        # TODO: Colorize
-        rpad__40_v0 "${src_9}" " " "$(( ${longest_src_col_7} + 2 ))"
-        ret_rpad40_v0__44_14="${ret_rpad40_v0}"
-        rpad__40_v0 "${dist_15}" " " "$(( ${longest_dist_col_8} + 2 ))"
-        ret_rpad40_v0__44_52="${ret_rpad40_v0}"
-        echo "${ret_rpad40_v0__44_14}""${ret_rpad40_v0__44_52}""${state_17}"
-    done
+    elif [ "$([ "_${EXEC_SHELL}" != "_bash" ]; echo $?)" != 0 ]; then
+        IFS="${delimiter_108}" read -rd '' -a result_109 < <(printf %s "$text_107")
+        __status=$?
+    fi
+    ret_split17_v0=("${result_109[@]}")
+    return 0
 }
 
-sym_ensure__73_v0() {
-    local targets=("${!1}")
-    command_20="$(jq -r '.sym | keys | .[]' ~/.config/declair/config.json)"
+# text_contains(source: Text, search: Text)
+text_contains__29_v0() {
+    local source_29="${1}"
+    local search_30="${2}"
+    [[ "${source_29}" == *"${search_30}"* ]]
+    __status=$?
+    ret_text_contains29_v0="$(( __status == 0 ))"
+    return 0
+}
+
+# dir_exists(path: Text)
+dir_exists__51_v0() {
+    local path_25="${1}"
+    [ -d "${path_25}" ]
+    __status=$?
+    ret_dir_exists51_v0="$(( __status == 0 ))"
+    return 0
+}
+
+# file_exists(path: Text)
+file_exists__52_v0() {
+    local path_26="${1}"
+    [ -f "${path_26}" ]
+    __status=$?
+    ret_file_exists52_v0="$(( __status == 0 ))"
+    return 0
+}
+
+# file_read(path: Text)
+file_read__53_v0() {
+    local path_27="${1}"
+    local command_4
+    command_4="$(< "${path_27}")"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_sym_ensure73_v0=''
+        ret_file_read53_v0=''
         return "${__status}"
     fi
-    split__16_v0 "${command_20}" "
-"
-    srcs_18=("${ret_split16_v0[@]}")
-    __length_21=("${targets[@]}")
-    __length_22=("${targets[@]}")
-    if [ "$(( $(( ${#__length_21[@]} == 0 )) || $(( $(( ${#__length_22[@]} == 1 )) && $([ "_${targets[0]}" != "_" ]; echo $?) )) ))" != 0 ]; then
-        targets=("${srcs_18[@]}")
+    ret_file_read53_v0="${command_4}"
+    return 0
+}
+
+# file_write(path: Text, content: Text)
+file_write__54_v0() {
+    local path_33="${1}"
+    local content_34="${2}"
+    local command_5
+    command_5="$(printf '%s
+' "${content_34}" > "${path_33}")"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_file_write54_v0=''
+        return "${__status}"
     fi
-    for target_19 in "${targets[@]}"; do
-        if [ "$([ "_${target_19}" != "_" ]; echo $?)" != 0 ]; then
+    ret_file_write54_v0="${command_5}"
+    return 0
+}
+
+# file_append(path: Text, content: Text)
+file_append__55_v0() {
+    local path_31="${1}"
+    local content_32="${2}"
+    local command_6
+    command_6="$(printf '%s
+' "${content_32}" >> "${path_31}")"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_file_append55_v0=''
+        return "${__status}"
+    fi
+    ret_file_append55_v0="${command_6}"
+    return 0
+}
+
+# symlink_create(origin: Text, destination: Text)
+symlink_create__56_v0() {
+    local origin_45="${1}"
+    local destination_46="${2}"
+    file_exists__52_v0 "${origin_45}"
+    local ret_file_exists52_v0__71_8="${ret_file_exists52_v0}"
+    if [ "${ret_file_exists52_v0__71_8}" != 0 ]; then
+        ln -fs "${origin_45}" "${destination_46}"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_symlink_create56_v0=''
+            return "${__status}"
+        fi
+        ret_symlink_create56_v0=''
+        return 0
+    fi
+    echo "The file ${origin_45} doesn't exist"'!'""
+    ret_symlink_create56_v0=''
+    return 1
+}
+
+# dir_create(path: Text)
+dir_create__57_v0() {
+    local path_44="${1}"
+    dir_exists__51_v0 "${path_44}"
+    local ret_dir_exists51_v0__87_12="${ret_dir_exists51_v0}"
+    if [ "$(( ! ret_dir_exists51_v0__87_12 ))" != 0 ]; then
+        mkdir -p "${path_44}"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_dir_create57_v0=''
+            return "${__status}"
+        fi
+    fi
+}
+
+# file_chmod(path: Text, mode: Text)
+file_chmod__60_v0() {
+    local path_145="${1}"
+    local mode_146="${2}"
+    file_exists__52_v0 "${path_145}"
+    local ret_file_exists52_v0__153_8="${ret_file_exists52_v0}"
+    if [ "${ret_file_exists52_v0__153_8}" != 0 ]; then
+        chmod "${mode_146}" "${path_145}"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_file_chmod60_v0=''
+            return "${__status}"
+        fi
+        ret_file_chmod60_v0=''
+        return 0
+    fi
+    echo "The file ${path_145} doesn't exist"'!'""
+    ret_file_chmod60_v0=''
+    return 1
+}
+
+command_7="$(sudo -u#1000 bash -c 'echo $HOME')"
+__status=$?
+user_home_3="${command_7}"
+# resolve(path: Text)
+resolve__74_v0() {
+    local path_119="${1}"
+    replace__13_v0 "${path_119}" "~" "${user_home_3}"
+    ret_resolve74_v0="${ret_replace13_v0}"
+    return 0
+}
+
+# dirname(path: Text)
+dirname__75_v0() {
+    local path_125="${1}"
+    local command_8
+    command_8="$(dirname ${path_125})"
+    __status=$?
+    ret_dirname75_v0="${command_8}"
+    return 0
+}
+
+# sym_ensure(targets: [Text])
+sym_ensure__77_v0() {
+    local targets_106=("${!1}")
+    local command_9
+    command_9="$(jq -r '.sym | keys | .[]' ~/.config/declair/config.json)"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_sym_ensure77_v0=''
+        return "${__status}"
+    fi
+    split__17_v0 "${command_9}" "
+"
+    local srcs_110=("${ret_split17_v0[@]}")
+    local __length_10=("${targets_106[@]}")
+    local __length_11=("${targets_106[@]}")
+    if [ "$(( $(( ${#__length_10[@]} == 0 )) || $(( $(( ${#__length_11[@]} == 1 )) && $([ "_${targets_106[0]?"Index out of bounds (at /home/nemo/git/lens/provision/amber/sym.ab:51:60)"}" != "_" ]; echo $?) )) ))" != 0 ]; then
+        targets_106=("${srcs_110[@]}")
+    fi
+    for target_111 in "${targets_106[@]}"; do
+        if [ "$([ "_${target_111}" != "_" ]; echo $?)" != 0 ]; then
             continue
         fi
-        array_contains__2_v0 srcs_18[@] "${target_19}"
-        ret_array_contains2_v0__58_16="${ret_array_contains2_v0}"
-        if [ "$(( ! ${ret_array_contains2_v0__58_16} ))" != 0 ]; then
-            resolve__70_v0 "${target_19}"
-            target_19="${ret_resolve70_v0}"
-            echo "No ${target_19} declared in config.json"
+        array_contains__2_v0 srcs_110[@] "${target_111}"
+        local ret_array_contains2_v0__58_16="${ret_array_contains2_v0}"
+        if [ "$(( ! ret_array_contains2_v0__58_16 ))" != 0 ]; then
+            resolve__74_v0 "${target_111}"
+            target_111="${ret_resolve74_v0}"
+            echo "No ${target_111} declared in config.json"
             continue
         fi
-        resolve__70_v0 "${target_19}"
-        ret_resolve70_v0__63_28="${ret_resolve70_v0}"
-        file_exists__48_v0 "${ret_resolve70_v0__63_28}"
-        ret_file_exists48_v0__63_16="${ret_file_exists48_v0}"
-        if [ "$(( ! ${ret_file_exists48_v0__63_16} ))" != 0 ]; then
-            echo "no ${target_19}, skipping"
+        resolve__74_v0 "${target_111}"
+        local ret_resolve74_v0__63_28="${ret_resolve74_v0}"
+        file_exists__52_v0 "${ret_resolve74_v0__63_28}"
+        local ret_file_exists52_v0__63_16="${ret_file_exists52_v0}"
+        if [ "$(( ! ret_file_exists52_v0__63_16 ))" != 0 ]; then
+            echo "no ${target_111}, skipping"
             continue
         else
-            command_23="$(jq -r '.sym["'"${target_19}"'"]' ~/.config/declair/config.json)"
+            local command_14
+            command_14="$(jq -r '.sym["'"${target_111}"'"]' ~/.config/declair/config.json)"
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_sym_ensure73_v0=''
+                ret_sym_ensure77_v0=''
                 return "${__status}"
             fi
-            resolve__70_v0 "${command_23}"
-            dist_23="${ret_resolve70_v0}"
-            file_exists__48_v0 "${dist_23}"
-            ret_file_exists48_v0__68_20="${ret_file_exists48_v0}"
-            if [ "$(( ! ${ret_file_exists48_v0__68_20} ))" != 0 ]; then
-                dirname__71_v0 "${dist_23}"
-                ret_dirname71_v0__69_28="${ret_dirname71_v0}"
-                dir_create__53_v0 "${ret_dirname71_v0__69_28}"
+            resolve__74_v0 "${command_14}"
+            local dist_124="${ret_resolve74_v0}"
+            file_exists__52_v0 "${dist_124}"
+            local ret_file_exists52_v0__68_20="${ret_file_exists52_v0}"
+            if [ "$(( ! ret_file_exists52_v0__68_20 ))" != 0 ]; then
+                dirname__75_v0 "${dist_124}"
+                local ret_dirname75_v0__69_28="${ret_dirname75_v0}"
+                dir_create__57_v0 "${ret_dirname75_v0__69_28}"
                 __status=$?
                 if [ "${__status}" != 0 ]; then
-                    ret_sym_ensure73_v0=''
+                    ret_sym_ensure77_v0=''
                     return "${__status}"
                 fi
-                resolve__70_v0 "${target_19}"
-                ret_resolve70_v0__70_32="${ret_resolve70_v0}"
-                symlink_create__52_v0 "${ret_resolve70_v0__70_32}" "${dist_23}"
+                resolve__74_v0 "${target_111}"
+                local ret_resolve74_v0__70_32="${ret_resolve74_v0}"
+                symlink_create__56_v0 "${ret_resolve74_v0__70_32}" "${dist_124}"
                 __status=$?
                 if [ "${__status}" != 0 ]; then
-                    ret_sym_ensure73_v0=''
+                    ret_sym_ensure77_v0=''
                     return "${__status}"
                 fi
             fi
@@ -367,375 +325,412 @@ sym_ensure__73_v0() {
     done
 }
 
-env_var_get__131_v0() {
-    local name=$1
-    command_24="$(echo ${!name})"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_env_var_get131_v0=''
-        return "${__status}"
-    fi
-    ret_env_var_get131_v0="${command_24}"
-    return 0
-}
-
-is_command__133_v0() {
-    local command=$1
-    [ -x "$(command -v "${command}")" ]
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_is_command133_v0=0
+# env_var_get(name: Text)
+env_var_get__143_v0() {
+    local name_153="${1}"
+    if [ "$([ "_${EXEC_SHELL}" != "_bash" ]; echo $?)" != 0 ]; then
+        local command_15
+        command_15="$(printf "%s
+" "${!name_153}")"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_get143_v0=''
+            return "${__status}"
+        fi
+        ret_env_var_get143_v0="${command_15}"
+        return 0
+    elif [ "$([ "_${EXEC_SHELL}" != "_zsh" ]; echo $?)" != 0 ]; then
+        local command_16
+        command_16="$(printf "%s
+" "${(P)name_153}")"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_get143_v0=''
+            return "${__status}"
+        fi
+        ret_env_var_get143_v0="${command_16}"
+        return 0
+    elif [ "$([ "_${EXEC_SHELL}" != "_ksh" ]; echo $?)" != 0 ]; then
+        local command_17
+        command_17="$(eval "echo \${$name_153}")"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_get143_v0=''
+            return "${__status}"
+        fi
+        ret_env_var_get143_v0="${command_17}"
         return 0
     fi
-    ret_is_command133_v0=1
+}
+
+# is_command(command: Text)
+is_command__145_v0() {
+    local command_142="${1}"
+    [ -x "$(command -v "${command_142}")" ]
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_is_command145_v0=0
+        return 0
+    fi
+    ret_is_command145_v0=1
     return 0
 }
 
-file_download__176_v0() {
-    local url=$1
-    local path=$2
-    is_command__133_v0 "curl"
-    ret_is_command133_v0__14_9="${ret_is_command133_v0}"
-    is_command__133_v0 "wget"
-    ret_is_command133_v0__17_9="${ret_is_command133_v0}"
-    is_command__133_v0 "aria2c"
-    ret_is_command133_v0__20_9="${ret_is_command133_v0}"
-    if [ "${ret_is_command133_v0__14_9}" != 0 ]; then
-        curl -L -o "${path}" "${url}" >/dev/null 2>&1
+# file_download(url: Text, path: Text)
+file_download__257_v0() {
+    local url_143="${1}"
+    local path_144="${2}"
+    is_command__145_v0 "curl"
+    local ret_is_command145_v0__15_9="${ret_is_command145_v0}"
+    is_command__145_v0 "wget"
+    local ret_is_command145_v0__18_9="${ret_is_command145_v0}"
+    is_command__145_v0 "aria2c"
+    local ret_is_command145_v0__21_9="${ret_is_command145_v0}"
+    if [ "${ret_is_command145_v0__15_9}" != 0 ]; then
+        curl -L -o "${path_144}" "${url_143}">/dev/null 2>&1
         __status=$?
-    elif [ "${ret_is_command133_v0__17_9}" != 0 ]; then
-        wget "${url}" -P "${path}" >/dev/null 2>&1
+    elif [ "${ret_is_command145_v0__18_9}" != 0 ]; then
+        wget "${url_143}" -P "${path_144}">/dev/null 2>&1
         __status=$?
-    elif [ "${ret_is_command133_v0__20_9}" != 0 ]; then
-        aria2c "${url}" -d "${path}" >/dev/null 2>&1
+    elif [ "${ret_is_command145_v0__21_9}" != 0 ]; then
+        aria2c "${url_143}" -d "${path_144}">/dev/null 2>&1
         __status=$?
     else
-        ret_file_download176_v0=''
+        ret_file_download257_v0=''
         return 1
     fi
 }
 
-command_25="$(sudo -u#1000 bash -c 'echo $HOME')"
+command_18="$(sudo -u#1000 bash -c 'echo $HOME')"
 __status=$?
-user_home_24="${command_25}"
-prepare_provision_repo__180_v0() {
-    dir_exists__47_v0 "${user_home_24}/git/lens/provision"
-    ret_dir_exists47_v0__19_12="${ret_dir_exists47_v0}"
-    if [ "$(( ! ${ret_dir_exists47_v0__19_12} ))" != 0 ]; then
-        git clone https://github.com/lens0021/provision ${user_home_24}/git/lens/provision
+user_home_4="${command_18}"
+# prepare_provision_repo()
+prepare_provision_repo__262_v0() {
+    dir_exists__51_v0 "${user_home_4}/git/lens/provision"
+    local ret_dir_exists51_v0__19_12="${ret_dir_exists51_v0}"
+    if [ "$(( ! ret_dir_exists51_v0__19_12 ))" != 0 ]; then
+        git clone https://github.com/lens0021/provision ${user_home_4}/git/lens/provision
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_prepare_provision_repo180_v0=''
+            ret_prepare_provision_repo262_v0=''
             return "${__status}"
         fi
     fi
-    command_26="$(git --git-dir "${user_home_24}/git/lens/provision/.git" rev-parse --is-shallow-repository)"
+    local command_19
+    command_19="$(git --git-dir "${user_home_4}/git/lens/provision/.git" rev-parse --is-shallow-repository)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_prepare_provision_repo180_v0=''
+        ret_prepare_provision_repo262_v0=''
         return "${__status}"
     fi
-    if [ "$([ "_${command_26}" != "_true" ]; echo $?)" != 0 ]; then
-        git --git-dir "${user_home_24}/git/lens/provision/.git" fetch --unshallow
+    if [ "$([ "_${command_19}" != "_true" ]; echo $?)" != 0 ]; then
+        git --git-dir "${user_home_4}/git/lens/provision/.git" fetch --unshallow
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_prepare_provision_repo180_v0=''
+            ret_prepare_provision_repo262_v0=''
             return "${__status}"
         fi
     fi
 }
 
-setup_rbw__181_v0() {
-    is_command__133_v0 "rbw"
-    ret_is_command133_v0__28_12="${ret_is_command133_v0}"
-    if [ "$(( ! ${ret_is_command133_v0__28_12} ))" != 0 ]; then
+# setup_rbw()
+setup_rbw__263_v0() {
+    is_command__145_v0 "rbw"
+    local ret_is_command145_v0__28_12="${ret_is_command145_v0}"
+    if [ "$(( ! ret_is_command145_v0__28_12 ))" != 0 ]; then
         sudo dnf install -y rbw
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_rbw181_v0=''
+            ret_setup_rbw263_v0=''
             return "${__status}"
         fi
     fi
     rbw config set email lorentz0021@gmail.com
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_setup_rbw181_v0=''
+        ret_setup_rbw263_v0=''
         return "${__status}"
     fi
     rbw login
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_setup_rbw181_v0=''
+        ret_setup_rbw263_v0=''
         return "${__status}"
     fi
 }
 
-post_prepare_provision__182_v0() {
-    file_exists__48_v0 "${user_home_24}/.config/declair/config.json"
-    ret_file_exists48_v0__36_12="${ret_file_exists48_v0}"
-    if [ "$(( ! ${ret_file_exists48_v0__36_12} ))" != 0 ]; then
-        dir_create__53_v0 "${user_home_24}/.config/declair"
+# post_prepare_provision()
+post_prepare_provision__264_v0() {
+    file_exists__52_v0 "${user_home_4}/.config/declair/config.json"
+    local ret_file_exists52_v0__36_12="${ret_file_exists52_v0}"
+    if [ "$(( ! ret_file_exists52_v0__36_12 ))" != 0 ]; then
+        dir_create__57_v0 "${user_home_4}/.config/declair"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_post_prepare_provision182_v0=''
+            ret_post_prepare_provision264_v0=''
             return "${__status}"
         fi
-        symlink_create__52_v0 "${user_home_24}/git/lens/provision/config/declair.json" "${user_home_24}/.config/declair/config.json"
+        symlink_create__56_v0 "${user_home_4}/git/lens/provision/config/declair.json" "${user_home_4}/.config/declair/config.json"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_post_prepare_provision182_v0=''
-            return "${__status}"
-        fi
-    fi
-    dir_exists__47_v0 "${user_home_24}/.config/bin"
-    ret_dir_exists47_v0__40_12="${ret_dir_exists47_v0}"
-    if [ "$(( ! ${ret_dir_exists47_v0__40_12} ))" != 0 ]; then
-        dir_create__53_v0 "${user_home_24}/.config/bin"
-        __status=$?
-        if [ "${__status}" != 0 ]; then
-            ret_post_prepare_provision182_v0=''
+            ret_post_prepare_provision264_v0=''
             return "${__status}"
         fi
     fi
-    file_exists__48_v0 "${user_home_24}/.config/bin/config.json"
-    ret_file_exists48_v0__43_12="${ret_file_exists48_v0}"
-    if [ "$(( ! ${ret_file_exists48_v0__43_12} ))" != 0 ]; then
-        symlink_create__52_v0 "${user_home_24}/git/lens/provision/config/bin.config" "${user_home_24}/.config/bin/config.json"
+    dir_exists__51_v0 "${user_home_4}/.config/bin"
+    local ret_dir_exists51_v0__40_12="${ret_dir_exists51_v0}"
+    if [ "$(( ! ret_dir_exists51_v0__40_12 ))" != 0 ]; then
+        dir_create__57_v0 "${user_home_4}/.config/bin"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_post_prepare_provision182_v0=''
+            ret_post_prepare_provision264_v0=''
+            return "${__status}"
+        fi
+    fi
+    file_exists__52_v0 "${user_home_4}/.config/bin/config.json"
+    local ret_file_exists52_v0__43_12="${ret_file_exists52_v0}"
+    if [ "$(( ! ret_file_exists52_v0__43_12 ))" != 0 ]; then
+        symlink_create__56_v0 "${user_home_4}/git/lens/provision/config/bin.config" "${user_home_4}/.config/bin/config.json"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_post_prepare_provision264_v0=''
             return "${__status}"
         fi
     fi
 }
 
-install_bin__183_v0() {
-    is_command__133_v0 "bin"
-    ret_is_command133_v0__49_12="${ret_is_command133_v0}"
-    if [ "$(( ! ${ret_is_command133_v0__49_12} ))" != 0 ]; then
-        file_exists__48_v0 "bin"
-        ret_file_exists48_v0__50_16="${ret_file_exists48_v0}"
-        if [ "$(( ! ${ret_file_exists48_v0__50_16} ))" != 0 ]; then
-            file_download__176_v0 "https://github.com/marcosnils/bin/releases/download/v0.21.2/bin_0.21.2_linux_amd64" "bin"
+# install_bin()
+install_bin__265_v0() {
+    is_command__145_v0 "bin"
+    local ret_is_command145_v0__49_12="${ret_is_command145_v0}"
+    if [ "$(( ! ret_is_command145_v0__49_12 ))" != 0 ]; then
+        file_exists__52_v0 "bin"
+        local ret_file_exists52_v0__50_16="${ret_file_exists52_v0}"
+        if [ "$(( ! ret_file_exists52_v0__50_16 ))" != 0 ]; then
+            file_download__257_v0 "https://github.com/marcosnils/bin/releases/download/v0.21.2/bin_0.21.2_linux_amd64" "bin"
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_install_bin183_v0=''
+                ret_install_bin265_v0=''
                 return "${__status}"
             fi
         fi
-        file_chmod__56_v0 "bin" "+x"
+        file_chmod__60_v0 "bin" "+x"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_bin183_v0=''
+            ret_install_bin265_v0=''
             return "${__status}"
         fi
-        mkdir -p ${user_home_24}/.local.bin
+        mkdir -p ${user_home_4}/.local/bin
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_bin183_v0=''
+            ret_install_bin265_v0=''
             return "${__status}"
         fi
         ./bin ensure bin
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_bin183_v0=''
+            ret_install_bin265_v0=''
             return "${__status}"
         fi
         rm ./bin
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_bin183_v0=''
+            ret_install_bin265_v0=''
             return "${__status}"
         fi
     fi
 }
 
-install_fish__184_v0() {
-    is_command__133_v0 "fish"
-    ret_is_command133_v0__61_12="${ret_is_command133_v0}"
-    if [ "$(( ! ${ret_is_command133_v0__61_12} ))" != 0 ]; then
+# install_fish()
+install_fish__266_v0() {
+    is_command__145_v0 "fish"
+    local ret_is_command145_v0__61_12="${ret_is_command145_v0}"
+    if [ "$(( ! ret_is_command145_v0__61_12 ))" != 0 ]; then
         sudo dnf install -y fish
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_fish184_v0=''
+            ret_install_fish266_v0=''
             return "${__status}"
         fi
     fi
     fish -c "functions -q fisher"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        fisher_url_30="https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
-        fish -c "curl -sL ${fisher_url_30} | source && fisher install jorgebucaran/fisher"
+        local fisher_url_155="https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
+        fish -c "curl -sL ${fisher_url_155} | source && fisher install jorgebucaran/fisher"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_fish184_v0=''
+            ret_install_fish266_v0=''
             return "${__status}"
         fi
     fi
 }
 
-setup_sudoer__185_v0() {
+# setup_sudoer()
+setup_sudoer__267_v0() {
     # https://github.com/amber-lang/amber/issues/220
-    dir_exists__47_v0 "/etc/sudoers.d/"
-    ret_dir_exists47_v0__75_12="${ret_dir_exists47_v0}"
-    if [ "$(( ! ${ret_dir_exists47_v0__75_12} ))" != 0 ]; then
+    dir_exists__51_v0 "/etc/sudoers.d/"
+    local ret_dir_exists51_v0__73_12="${ret_dir_exists51_v0}"
+    if [ "$(( ! ret_dir_exists51_v0__73_12 ))" != 0 ]; then
         # dir_create("/etc/sudoersh.d")
         sudo mkdir -p /etc/sudoers.d/
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer185_v0=''
+            ret_setup_sudoer267_v0=''
             return "${__status}"
         fi
     fi
-    file_exists__48_v0 "/etc/sudoers.d/nemo"
-    ret_file_exists48_v0__79_8="${ret_file_exists48_v0}"
-    if [ "${ret_file_exists48_v0__79_8}" != 0 ]; then
-        file_read__49_v0 "/etc/sudoers.d/nemo"
+    file_exists__52_v0 "/etc/sudoers.d/nemo"
+    local ret_file_exists52_v0__77_8="${ret_file_exists52_v0}"
+    if [ "${ret_file_exists52_v0__77_8}" != 0 ]; then
+        file_read__53_v0 "/etc/sudoers.d/nemo"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer185_v0=''
+            ret_setup_sudoer267_v0=''
             return "${__status}"
         fi
-        content_26="${ret_file_read49_v0}"
-        text_contains__28_v0 "${content_26}" "nemo ALL=(ALL:ALL) NOPASSWD: ALL"
-        ret_text_contains28_v0__81_16="${ret_text_contains28_v0}"
-        if [ "$(( ! ${ret_text_contains28_v0__81_16} ))" != 0 ]; then
-            file_append__51_v0 "/etc/sudoers.d/nemo" "nemo ALL=(ALL:ALL) NOPASSWD: ALL
+        local content_28="${ret_file_read53_v0}"
+        text_contains__29_v0 "${content_28}" "nemo ALL=(ALL:ALL) NOPASSWD: ALL"
+        local ret_text_contains29_v0__79_16="${ret_text_contains29_v0}"
+        if [ "$(( ! ret_text_contains29_v0__79_16 ))" != 0 ]; then
+            file_append__55_v0 "/etc/sudoers.d/nemo" "nemo ALL=(ALL:ALL) NOPASSWD: ALL
 "
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_setup_sudoer185_v0=''
+                ret_setup_sudoer267_v0=''
                 return "${__status}"
             fi
         fi
     else
         sudo touch /etc/sudoers.d/nemo
         __status=$?
-        file_write__50_v0 "/tmp/sudoer-nemo" "nemo ALL=(ALL:ALL) NOPASSWD: ALL
+        file_write__54_v0 "/tmp/sudoer-nemo" "nemo ALL=(ALL:ALL) NOPASSWD: ALL
 "
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer185_v0=''
+            ret_setup_sudoer267_v0=''
             return "${__status}"
         fi
         sudo chown -R root:root /tmp/sudoer-nemo
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer185_v0=''
+            ret_setup_sudoer267_v0=''
             return "${__status}"
         fi
         sudo mv /tmp/sudoer-nemo /etc/sudoers.d/nemo
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_sudoer185_v0=''
+            ret_setup_sudoer267_v0=''
             return "${__status}"
         fi
     fi
     sudo chmod 0440 /usr/bin/sudo
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_setup_sudoer185_v0=''
+        ret_setup_sudoer267_v0=''
         return "${__status}"
     fi
 }
 
-setup_bin__187_v0() {
+# setup_bin()
+setup_bin__269_v0() {
     while :
     do
-        done_28=1
+        local done_151=1
         gh auth token
         __status=$?
         if [ "${__status}" != 0 ]; then
-            done_28=0
+            done_151=0
             echo "Sign in to bitwarden to see the Github Password"
             rbw get 356c6b3b-2dbe-4804-9918-af0700970344
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_setup_bin187_v0=''
+                ret_setup_bin269_v0=''
                 return "${__status}"
             fi
             gh auth login
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_setup_bin187_v0=''
+                ret_setup_bin269_v0=''
                 return "${__status}"
             fi
         fi
-        if [ "${done_28}" != 0 ]; then
+        if [ "${done_151}" != 0 ]; then
             break
         fi
     done
     while :
     do
-        done_29=1
-        env_var_get__131_v0 "GITHUB_AUTH_TOKEN"
+        local done_152=1
+        env_var_get__143_v0 "GITHUB_AUTH_TOKEN"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            done_29=0
+            done_152=0
             echo "Visit https://github.com/settings/personal-access-tokens and copy the token."
         fi
-        if [ "${done_29}" != 0 ]; then
+        if [ "${done_152}" != 0 ]; then
             break
         fi
     done
 }
 
-setup_gh__188_v0() {
-    is_command__133_v0 "gh"
-    ret_is_command133_v0__127_12="${ret_is_command133_v0}"
-    if [ "$(( ! ${ret_is_command133_v0__127_12} ))" != 0 ]; then
+# setup_gh()
+setup_gh__270_v0() {
+    is_command__145_v0 "gh"
+    local ret_is_command145_v0__125_12="${ret_is_command145_v0}"
+    if [ "$(( ! ret_is_command145_v0__125_12 ))" != 0 ]; then
         sudo dnf install -y gh
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_setup_gh188_v0=''
+            ret_setup_gh270_v0=''
             return "${__status}"
         fi
     fi
 }
 
-declare -r args_25=("$0" "$@")
+typeset -r args_5=("$0" "$@")
 sudo -v
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-setup_sudoer__185_v0 
+setup_sudoer__267_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-prepare_provision_repo__180_v0 
+prepare_provision_repo__262_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-post_prepare_provision__182_v0 
+post_prepare_provision__264_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-array_29=()
-sym_ensure__73_v0 array_29[@]
+array_21=()
+sym_ensure__77_v0 array_21[@]
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-install_bin__183_v0 
+install_bin__265_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-setup_rbw__181_v0 
+setup_rbw__263_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-setup_gh__188_v0 
+setup_gh__270_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-setup_bin__187_v0 
+setup_bin__269_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
@@ -755,16 +750,16 @@ __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-is_command__133_v0 "hx"
-ret_is_command133_v0__145_12="${ret_is_command133_v0}"
-if [ "$(( ! ${ret_is_command133_v0__145_12} ))" != 0 ]; then
+is_command__145_v0 "hx"
+ret_is_command145_v0__143_12="${ret_is_command145_v0}"
+if [ "$(( ! ret_is_command145_v0__143_12 ))" != 0 ]; then
     sudo dnf install -y helix
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
 fi
-install_fish__184_v0 
+install_fish__266_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
