@@ -29,6 +29,7 @@ fun setup_rbw() {
         $ sudo dnf install -y rbw $?
     }
     $ rbw config set email lorentz0021@gmail.com $?
+    $ rbw config set lock_timeout 32400 $?
     $ rbw login $?
 }
 

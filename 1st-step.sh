@@ -451,6 +451,12 @@ setup_rbw__263_v0() {
         ret_setup_rbw263_v0=''
         return "${__status}"
     fi
+    rbw config set lock_timeout 32400
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_setup_rbw263_v0=''
+        return "${__status}"
+    fi
     rbw login
     __status=$?
     if [ "${__status}" != 0 ]; then
@@ -462,8 +468,8 @@ setup_rbw__263_v0() {
 # post_prepare_provision()
 post_prepare_provision__264_v0() {
     file_exists__52_v0 "${user_home_4}/.config/declair/config.json"
-    local ret_file_exists52_v0__36_12="${ret_file_exists52_v0}"
-    if [ "$(( ! ret_file_exists52_v0__36_12 ))" != 0 ]; then
+    local ret_file_exists52_v0__37_12="${ret_file_exists52_v0}"
+    if [ "$(( ! ret_file_exists52_v0__37_12 ))" != 0 ]; then
         dir_create__57_v0 "${user_home_4}/.config/declair"
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -478,8 +484,8 @@ post_prepare_provision__264_v0() {
         fi
     fi
     dir_exists__51_v0 "${user_home_4}/.config/bin"
-    local ret_dir_exists51_v0__40_12="${ret_dir_exists51_v0}"
-    if [ "$(( ! ret_dir_exists51_v0__40_12 ))" != 0 ]; then
+    local ret_dir_exists51_v0__41_12="${ret_dir_exists51_v0}"
+    if [ "$(( ! ret_dir_exists51_v0__41_12 ))" != 0 ]; then
         dir_create__57_v0 "${user_home_4}/.config/bin"
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -488,8 +494,8 @@ post_prepare_provision__264_v0() {
         fi
     fi
     file_exists__52_v0 "${user_home_4}/.config/bin/config.json"
-    local ret_file_exists52_v0__43_12="${ret_file_exists52_v0}"
-    if [ "$(( ! ret_file_exists52_v0__43_12 ))" != 0 ]; then
+    local ret_file_exists52_v0__44_12="${ret_file_exists52_v0}"
+    if [ "$(( ! ret_file_exists52_v0__44_12 ))" != 0 ]; then
         symlink_create__56_v0 "${user_home_4}/git/lens/provision/config/bin.config" "${user_home_4}/.config/bin/config.json"
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -502,11 +508,11 @@ post_prepare_provision__264_v0() {
 # install_bin()
 install_bin__265_v0() {
     is_command__145_v0 "bin"
-    local ret_is_command145_v0__49_12="${ret_is_command145_v0}"
-    if [ "$(( ! ret_is_command145_v0__49_12 ))" != 0 ]; then
+    local ret_is_command145_v0__50_12="${ret_is_command145_v0}"
+    if [ "$(( ! ret_is_command145_v0__50_12 ))" != 0 ]; then
         file_exists__52_v0 "bin"
-        local ret_file_exists52_v0__50_16="${ret_file_exists52_v0}"
-        if [ "$(( ! ret_file_exists52_v0__50_16 ))" != 0 ]; then
+        local ret_file_exists52_v0__51_16="${ret_file_exists52_v0}"
+        if [ "$(( ! ret_file_exists52_v0__51_16 ))" != 0 ]; then
             file_download__257_v0 "https://github.com/marcosnils/bin/releases/download/v0.21.2/bin_0.21.2_linux_amd64" "bin"
             __status=$?
             if [ "${__status}" != 0 ]; then
@@ -544,8 +550,8 @@ install_bin__265_v0() {
 # install_fish()
 install_fish__266_v0() {
     is_command__145_v0 "fish"
-    local ret_is_command145_v0__61_12="${ret_is_command145_v0}"
-    if [ "$(( ! ret_is_command145_v0__61_12 ))" != 0 ]; then
+    local ret_is_command145_v0__62_12="${ret_is_command145_v0}"
+    if [ "$(( ! ret_is_command145_v0__62_12 ))" != 0 ]; then
         sudo dnf install -y fish
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -570,8 +576,8 @@ install_fish__266_v0() {
 setup_sudoer__267_v0() {
     # https://github.com/amber-lang/amber/issues/220
     dir_exists__51_v0 "/etc/sudoers.d/"
-    local ret_dir_exists51_v0__73_12="${ret_dir_exists51_v0}"
-    if [ "$(( ! ret_dir_exists51_v0__73_12 ))" != 0 ]; then
+    local ret_dir_exists51_v0__74_12="${ret_dir_exists51_v0}"
+    if [ "$(( ! ret_dir_exists51_v0__74_12 ))" != 0 ]; then
         # dir_create("/etc/sudoersh.d")
         sudo mkdir -p /etc/sudoers.d/
         __status=$?
@@ -581,8 +587,8 @@ setup_sudoer__267_v0() {
         fi
     fi
     file_exists__52_v0 "/etc/sudoers.d/nemo"
-    local ret_file_exists52_v0__77_8="${ret_file_exists52_v0}"
-    if [ "${ret_file_exists52_v0__77_8}" != 0 ]; then
+    local ret_file_exists52_v0__78_8="${ret_file_exists52_v0}"
+    if [ "${ret_file_exists52_v0__78_8}" != 0 ]; then
         file_read__53_v0 "/etc/sudoers.d/nemo"
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -591,8 +597,8 @@ setup_sudoer__267_v0() {
         fi
         local content_28="${ret_file_read53_v0}"
         text_contains__29_v0 "${content_28}" "nemo ALL=(ALL:ALL) NOPASSWD: ALL"
-        local ret_text_contains29_v0__79_16="${ret_text_contains29_v0}"
-        if [ "$(( ! ret_text_contains29_v0__79_16 ))" != 0 ]; then
+        local ret_text_contains29_v0__80_16="${ret_text_contains29_v0}"
+        if [ "$(( ! ret_text_contains29_v0__80_16 ))" != 0 ]; then
             file_append__55_v0 "/etc/sudoers.d/nemo" "nemo ALL=(ALL:ALL) NOPASSWD: ALL
 "
             __status=$?
@@ -677,8 +683,8 @@ setup_bin__269_v0() {
 # setup_gh()
 setup_gh__270_v0() {
     is_command__145_v0 "gh"
-    local ret_is_command145_v0__125_12="${ret_is_command145_v0}"
-    if [ "$(( ! ret_is_command145_v0__125_12 ))" != 0 ]; then
+    local ret_is_command145_v0__126_12="${ret_is_command145_v0}"
+    if [ "$(( ! ret_is_command145_v0__126_12 ))" != 0 ]; then
         sudo dnf install -y gh
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -751,8 +757,8 @@ if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 is_command__145_v0 "hx"
-ret_is_command145_v0__143_12="${ret_is_command145_v0}"
-if [ "$(( ! ret_is_command145_v0__143_12 ))" != 0 ]; then
+ret_is_command145_v0__144_12="${ret_is_command145_v0}"
+if [ "$(( ! ret_is_command145_v0__144_12 ))" != 0 ]; then
     sudo dnf install -y helix
     __status=$?
     if [ "${__status}" != 0 ]; then
