@@ -1,0 +1,33 @@
+# Root service, so it can read the power button and lid switch evdev nodes,
+# write /proc/sysrq-trigger and restart gdm. 3rd-step.sh installs it, along
+# with the script it runs. ExecStart deliberately points at /usr/local/bin
+# rather than the checkout: SELinux labels everything under /home user_home_t,
+# and init_t may not execute that, so systemd fails the unit with a bare
+# "Permission denied".
+[Unit]
+Description=Recover the GNOME session when the compositor stops answering
+After=graphical.target
+
+[Service]
+Type=simple
+Environment=INTERVAL=30
+Environment=PING_TIMEOUT=10
+Environment=STRIKES=6
+# Three power-button presses inside this window force an immediate check. The
+# window is wide because the presses during the 2026-09-21 freeze were spread
+# over 29 seconds. A burst still only acts if the shell fails to answer.
+Environment=POWER_PRESSES=3
+Environment=POWER_WINDOW=45
+Environment=RESUME_GRACE=60
+# Suspend on lid close, which GNOME declines to do while the dock's monitor is
+# attached. Set to 0 to restore GNOME's clamshell behaviour.
+Environment=LID_SUSPEND=1
+# restart = dump kernel state, then restart gdm. dump-only = just the dumps,
+# for watching the detector's judgement before letting it end sessions.
+Environment=ACTION=restart
+ExecStart=/usr/local/bin/gnome-shell-watchdog
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=graphical.target

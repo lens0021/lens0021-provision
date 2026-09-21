@@ -5,6 +5,34 @@ IFS=$'\n\t'
 # Rclone
 systemctl --user enable rclone@dropbox
 
+# systemd-oomd, which the Fedora preset enables but this machine had switched
+# off. Swap is zram-only, so a memory pressure spike livelocks the whole desktop
+# instead of costing one app.
+sudo systemctl enable --now systemd-oomd.service
+
+# Compositor freeze recovery. gnome-shell wedges here every day or two with the
+# kernel still healthy, and every manual escape is blocked: Ctrl+Alt+F3 never
+# reaches logind because mutter holds the keyboard, the power key is swallowed
+# by gsd-media-keys' block inhibitor, and SysRq cannot be typed because PrtScr
+# is Fn+F10 and the EC suppresses other keys while Fn is held. The watchdog
+# pings the shell over D-Bus and restarts gdm when it stops answering, takes a
+# triple power-button press as an immediate trigger, and suspends on lid close
+# since GNOME declines to while the dock's monitor is attached.
+#
+# These are copied rather than declared as `sym` entries in
+# config/declair.json. SELinux labels everything under /home user_home_t, and
+# init_t may not execute that, so systemd fails the unit with a bare
+# "Permission denied" if ExecStart points into the checkout. /home is also its
+# own btrfs subvolume, and systemd-sysctl and systemd's unit scan both run
+# around the time it is mounted, so a symlink into $HOME can dangle at boot and
+# drop the setting silently.
+sudo install -m 0755 ~/git/lens/provision/bin/gnome-shell-watchdog /usr/local/bin/
+sudo install -m 0644 ~/git/lens/provision/config/sysrq.conf /etc/sysctl.d/99-sysrq.conf
+sudo sysctl --system >/dev/null
+sudo install -m 0644 ~/git/lens/provision/systemd/gnome-shell-watchdog.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now gnome-shell-watchdog.service
+
 # KakaoTalk, in a Bottles bottle rather than a bare ~/.wine prefix
 ~/git/lens/provision/bin/kakaotalk-bottle
 

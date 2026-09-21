@@ -1,0 +1,265 @@
+#!/usr/bin/env python3
+"""Recover the desktop when the GNOME Shell compositor wedges.
+
+This machine freezes every day or two in one specific way: gnome-shell stops
+servicing its main loop while the kernel and every system service stay alive
+and keep logging. Every escape a user would reach for is blocked here.
+
+Ctrl+Alt+F3 does nothing, because under Wayland mutter holds the keyboard
+through evdev and the VT-switch keys never reach logind. The power key does
+nothing, because gsd-media-keys holds a block-mode handle-power-key inhibitor
+that a frozen GNOME never releases, and logind honours low-level locks
+unconditionally. SysRq would work, but PrtScr is Fn+F10 on this keyboard and
+the embedded controller suppresses other keys while Fn is held, so the letter
+after Alt+SysRq never arrives; no spare key is left to remap either. What
+remained was a hard power cut, which is how 37 unsafe shutdowns accumulated.
+
+The system layer stays healthy throughout the hang, so a root service can do
+what the user cannot. Two triggers, one recovery:
+
+  * a periodic D-Bus ping of org.gnome.Shell over the user's session bus, and
+  * the power button, read straight off its evdev node.
+
+Reading the button directly is the point: it sidesteps both logind and the
+GNOME inhibitor that make the press useless otherwise, and it is the one key
+on this laptop that can be hit with a single finger. A press burst only acts
+if a ping confirms the shell really is wedged, so a healthy desktop keeps its
+normal power-button behaviour.
+
+It also suspends on lid close, which GNOME refuses to do here. Both logind
+(HandleLidSwitchDocked, "ignore" by default once more than one display is
+connected) and gsd-power ("no external monitors or session inactive for a
+while; uninhibiting lid close") keep the machine awake while the dock's
+monitor is attached. That default assumes a clamshell setup, and this laptop
+has no external keyboard, so a closed lid means no way to type at all. Reading
+the switch off evdev sidesteps the gsd-power inhibitor the same way the power
+button does. It suspends through `systemctl suspend`, which still honours
+block-mode sleep inhibitors, so Caffeine keeps working as the override.
+
+Recovery dumps kernel state through sysrq first. The hang has so far left no
+trace of its own in the journal, so those dumps are the only material we get
+for finding the cause; read them after the next freeze with
+
+    journalctl -b -1 -k
+"""
+
+import glob
+import os
+import select
+import struct
+import subprocess
+import sys
+import time
+
+INTERVAL = int(os.environ.get("INTERVAL", 30))  # seconds between pings
+PING_TIMEOUT = int(os.environ.get("PING_TIMEOUT", 10))  # seconds per ping
+STRIKES = int(os.environ.get("STRIKES", 6))  # misses before acting
+ACTION = os.environ.get("ACTION", "restart")  # restart | dump-only
+POWER_PRESSES = int(os.environ.get("POWER_PRESSES", 3))  # presses to force it
+POWER_WINDOW = float(os.environ.get("POWER_WINDOW", 45.0))  # within N seconds
+RESUME_GRACE = float(os.environ.get("RESUME_GRACE", 60.0))  # settle after resume
+
+LID_SUSPEND = os.environ.get("LID_SUSPEND", "1") != "0"
+
+EV_KEY, KEY_POWER, KEY_PRESS = 0x01, 116, 1
+EV_SW, SW_LID, LID_SHUT = 0x05, 0, 1
+EVENT = struct.Struct("llHHi")
+
+
+def log(msg):
+    print(msg, flush=True)
+
+
+def evdev_node(wanted):
+    """The /dev/input node of the named input device, or None if absent."""
+    for sysdev in sorted(glob.glob("/sys/class/input/event*")):
+        try:
+            name = open(f"{sysdev}/device/name").read().strip()
+        except OSError:
+            continue
+        if name == wanted:
+            return f"/dev/input/{os.path.basename(sysdev)}"
+    return None
+
+
+def suspend():
+    """Suspend, unless something holds a block-mode sleep inhibitor."""
+    done = subprocess.run(["systemctl", "suspend"], capture_output=True, text=True)
+    if done.returncode:
+        log(f"lid closed but suspend was refused: {done.stderr.strip()}")
+    else:
+        log("lid closed, suspending")
+
+
+def active_graphical_uid():
+    """The uid of the active graphical session, or None if there is none.
+
+    The gdm greeter runs a gnome-shell of its own as uid 42; it is not ours to
+    restart, so anything below 1000 is skipped.
+    """
+
+    def show(*args):
+        out = subprocess.run(
+            ["loginctl", *args, "--value"], capture_output=True, text=True
+        )
+        return out.stdout.strip() if out.returncode == 0 else ""
+
+    sid = show("show-seat", "seat0", "--property=ActiveSession")
+    if not sid:
+        return None
+    if show("show-session", sid, "--property=Type") not in ("wayland", "x11"):
+        return None
+    uid = show("show-session", sid, "--property=User")
+    if not uid.isdigit() or int(uid) < 1000:
+        return None
+    return int(uid) if os.path.exists(f"/run/user/{uid}/bus") else None
+
+
+def shell_answers(uid):
+    """True if gnome-shell replied to a D-Bus ping within PING_TIMEOUT."""
+    try:
+        return (
+            subprocess.run(
+                [
+                    "setpriv", f"--reuid={uid}", f"--regid={uid}", "--init-groups",
+                    "env", f"DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/{uid}/bus",
+                    "gdbus", "call", "--session", "--timeout", str(PING_TIMEOUT),
+                    "--dest", "org.gnome.Shell",
+                    "--object-path", "/org/gnome/Shell",
+                    "--method", "org.freedesktop.DBus.Peer.Ping",
+                ],
+                capture_output=True,
+                timeout=PING_TIMEOUT + 2,
+            ).returncode
+            == 0
+        )
+    except subprocess.TimeoutExpired:
+        return False
+
+
+def recover(why):
+    log(f"{why}; dumping kernel state")
+    for key in ("w", "t"):
+        try:
+            with open("/proc/sysrq-trigger", "w") as f:
+                f.write(key)
+        except OSError as exc:
+            log(f"sysrq {key} failed: {exc}")
+    if ACTION != "restart":
+        log(f"ACTION={ACTION}, leaving the session alone")
+        return
+    log("restarting the display manager")
+    if subprocess.run(["systemctl", "restart", "gdm.service"]).returncode:
+        log("gdm restart failed")
+
+
+def main():
+    kinds = {"Power Button": "power"}
+    if LID_SUSPEND:
+        kinds["Lid Switch"] = "lid"
+    fds = {}
+    for name, kind in kinds.items():
+        node = evdev_node(name)
+        if not node:
+            log(f"no {name} found")
+            continue
+        try:
+            fds[os.open(node, os.O_RDONLY | os.O_NONBLOCK)] = kind
+            log(f"watching the {name.lower()} on {node}")
+        except OSError as exc:
+            log(f"cannot read {node}: {exc}")
+    if not fds:
+        log("no input devices, falling back to ping-only")
+
+    strikes, presses = 0, []
+    # Act on the open -> shut transition only. The kernel re-reports the switch
+    # state on resume, so reacting to the level would suspend again the moment
+    # the machine was woken with the lid still down.
+    lid_shut = False
+    # CLOCK_MONOTONIC stops while the machine is suspended, so a resume is only
+    # visible in CLOCK_BOOTTIME. Schedule on the former, spot gaps with the latter.
+    last_boot = time.clock_gettime(time.CLOCK_BOOTTIME)
+    deadline = time.monotonic() + INTERVAL
+    grace_until = 0.0
+
+    while True:
+        timeout = max(0.0, deadline - time.monotonic())
+        forced = False
+
+        ready = select.select(list(fds), [], [], timeout)[0] if fds else []
+        if not fds:
+            time.sleep(timeout)
+        for fd in ready:
+            try:
+                data = os.read(fd, EVENT.size * 64)
+            except OSError:
+                continue
+            now = time.monotonic()
+            for off in range(0, len(data) - EVENT.size + 1, EVENT.size):
+                _, _, etype, code, value = EVENT.unpack_from(data, off)
+                if fds[fd] == "lid" and etype == EV_SW and code == SW_LID:
+                    was, lid_shut = lid_shut, value == LID_SHUT
+                    if lid_shut and not was:
+                        suspend()
+                elif (
+                    fds[fd] == "power"
+                    and etype == EV_KEY
+                    and code == KEY_POWER
+                    and value == KEY_PRESS
+                ):
+                    presses = [t for t in presses if now - t < POWER_WINDOW]
+                    presses.append(now)
+                    if len(presses) >= POWER_PRESSES:
+                        presses.clear()
+                        forced = True
+        if ready and not forced:
+            continue
+
+        now = time.monotonic()
+        now_boot = time.clock_gettime(time.CLOCK_BOOTTIME)
+        # A suspend shows up as a boottime gap far larger than the interval. The
+        # session is still settling just after a resume, and the press that woke
+        # the machine is not a recovery request, so drop both.
+        if now_boot - last_boot > INTERVAL * 3:
+            log(f"resumed after a {now_boot - last_boot:.0f}s gap, settling")
+            strikes, presses, forced = 0, [], False
+            grace_until = now + RESUME_GRACE
+        last_boot = now_boot
+        if not forced:
+            deadline = now + INTERVAL
+        elif now < grace_until:
+            log("power button burst ignored, the session just resumed")
+            continue
+
+        uid = active_graphical_uid()
+        if uid is None:
+            strikes = 0
+            continue
+
+        if shell_answers(uid):
+            if strikes:
+                log(f"shell answered again after {strikes} miss(es)")
+            strikes = 0
+            if forced:
+                log("power button burst ignored, the shell is responsive")
+            continue
+
+        if forced:
+            recover("power button burst and the shell did not answer")
+        else:
+            strikes += 1
+            log(f"gnome-shell missed ping {strikes}/{STRIKES}")
+            if strikes < STRIKES:
+                continue
+            recover(f"compositor unresponsive for ~{STRIKES * INTERVAL}s")
+
+        strikes, presses = 0, []
+        # Let the replacement session come up before pinging again.
+        deadline = time.monotonic() + 120
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)
