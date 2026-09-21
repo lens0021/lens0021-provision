@@ -204,6 +204,10 @@
           {
             "type": "command",
             "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-pr-body-linear-id.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-pr-body-ticket-dup.py"
           }
         ]
       },
