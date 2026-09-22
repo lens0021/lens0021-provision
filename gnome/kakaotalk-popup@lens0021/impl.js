@@ -1,12 +1,20 @@
-// Put KakaoTalk's windows where the app asks for them.
+// Put KakaoTalk's new-message popup where the app asks for it.
 //
-// Wayland does not let a client position its own windows, and it does not
-// let one ask where the pointer is either. KakaoTalk wants both: its tray
-// menu opens at the cursor, its new-message popup in the bottom right
-// corner. Under Wine it gets neither, so the menu lands in a corner of the
-// screen far from the tray and reads as a right-click that does nothing.
+// Wayland does not let a client position its own windows. KakaoTalk's popup
+// asks for the bottom right corner and arrives mid-screen instead, and no
+// amount of work inside Wine can change that. The compositor can, so it
+// does the placing.
 //
-// The compositor knows what the client is not allowed to. So it places them.
+// The tray menu is not in scope, though it looks like the same problem.
+// Right-clicking the floating tray window produces no window at all -- not a
+// misplaced one -- so there is nothing here to move. Wine's Wayland driver
+// appears not to realise those menus as windows. Left-clicking the same
+// window does work and restores the main window, which is worth knowing
+// before anyone decides the tray is useless and hides it.
+//
+// The pointer action is kept because it is correct and cost nothing to
+// leave: a client cannot ask where the cursor is either, and the compositor
+// can, so any menu that does turn up as a window can be put under it.
 //
 // The rules live in a JSON file, not in here, and are re-read when it
 // changes. That is not tidiness: a Wayland session offers no way to make the
@@ -15,12 +23,18 @@
 //
 //   ~/.config/kakaotalk-popup.json
 //   {
-//     "log": true,
+//     "log": false,
 //     "rules": [
-//       {"type": [9, 10], "action": "pointer"},
-//       {"type": [0], "title": "", "max_width": 600, "action": "bottom-right"}
+//       {"type": [0], "title": "KakaoTalkShadowWnd", "action": "bottom-right"}
 //     ]
 //   }
+//
+// Turn "log" on to find out what a window looks like before writing a rule
+// for it. That is how KakaoTalkShadowWnd was named: a message arrived while
+// the log was running and the popup announced itself, 315 wide, its height
+// growing and shrinking as it slid. Do not go by size alone -- Firefox's
+// menus come through the same width as KakaoTalk's, with no class and no
+// title, which is why ownership is settled by pid.
 //
 // A rule matches a window owned by one of KakaoTalk's processes when every
 // field it names matches: "type" against Meta.WindowType, "title" exactly,
