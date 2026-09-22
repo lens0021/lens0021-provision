@@ -217,6 +217,10 @@
           {
             "type": "command",
             "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-linear-attribution.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-linear-parent-dup.py"
           }
         ]
       }
@@ -254,7 +258,21 @@
     "clangd-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "terraform@claude-plugins-official": true,
-    "discord@claude-plugins-official": true
+    "discord@claude-plugins-official": true,
+    "eli5@claude-community": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-community": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-community"
+      }
+    }
+  },
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "high"
+    }
   },
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
@@ -262,10 +280,10 @@
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
-    "environment": [
+    "soft_deny": [
       "$defaults"
     ],
-    "soft_deny": [
+    "environment": [
       "$defaults"
     ]
   }
