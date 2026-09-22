@@ -33,8 +33,14 @@ sudo install -m 0644 ~/git/lens/provision/systemd/gnome-shell-watchdog.service /
 sudo systemctl daemon-reload
 sudo systemctl enable --now gnome-shell-watchdog.service
 
-# KakaoTalk, in a Bottles bottle rather than a bare ~/.wine prefix
-~/git/lens/provision/bin/kakaotalk-bottle
+# KakaoTalk. Lives in its own repo now: the setup is long, most of it is
+# knowledge about Wine and GNOME rather than anything personal, and it is of
+# no use to anyone buried in here.
+KAKAOTALK=~/git/chaotic-ground/kakaotalk-on-wine
+if [ ! -d "$KAKAOTALK" ]; then
+  git clone https://github.com/chaotic-ground/kakaotalk-on-wine "$KAKAOTALK"
+fi
+"$KAKAOTALK/bin/kakaotalk-bottle"
 
 # gsettings
 SCHEMADIR=~/.local/share/gnome-shell/extensions/extensions-sync@elhan.io/schemas

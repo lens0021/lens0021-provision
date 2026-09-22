@@ -61,12 +61,12 @@ irm https://raw.githubusercontent.com/lens0021/lens0021-provision/main/windows/b
     on-screen keyboard by editing its label cache, which is the only
     place the extension lets a single key be styled. Run again after a
     cache wipe, then restart the extension.
-  - `kakaotalk-bottle` — installs KakaoTalk into a Bottles bottle, in
-    Korean. Run by `3rd-step.sh`; idempotent, and `--reinstall` rebuilds
-    the client against an already-Korean prefix. KakaoTalk reads the UI
-    language only while installing, so the locale, the registry rule in
-    `config/bottles/` and the prefix fonts all have to be in place before
-    the installer runs.
+  KakaoTalk used to live here too. It now has its own repo,
+  [chaotic-ground/kakaotalk-on-wine](https://github.com/chaotic-ground/kakaotalk-on-wine),
+  which `3rd-step.sh` clones and runs: the setup grew long, and almost
+  none of it is personal — it is what Wine, Bottles and GNOME do about a
+  Korean Windows app, which is no use to anybody buried in a dotfiles
+  repo.
 - `termux/` — Termux-only launchers. `install.bash` symlinks
   `termux/bin/*` into `~/.local/bin` (run by `termux.bash`).
   - `bin/claude` — runs Claude Code via an Alpine proot-distro, with
@@ -75,8 +75,6 @@ irm https://raw.githubusercontent.com/lens0021/lens0021-provision/main/windows/b
 - `config/` — application configs hardlinked into runtime locations
   (helix, yazi, zellij, starship, ahk, powershell, 날개셋
   `imeconf.dat`, …). Linux and Windows share the cross-OS files.
-  `config/bottles/` is the exception: a Wine registry bundle that
-  `kakaotalk-bottle` feeds to Bottles, not a hardlink.
 - `public_keys/` — SSH public keys.
 - `secrets/` — gitignored secret material.
 - `systemd/` — Linux systemd units.
