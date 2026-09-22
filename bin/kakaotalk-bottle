@@ -24,6 +24,12 @@
 # the prefix says, window title included. Hence the ordering below, and hence
 # --reinstall, which is the way out if the bottle was built in the wrong order.
 #
+# Known limitations that come with the Wayland driver, chosen deliberately --
+# see use_wayland_driver: the tray icon is a floating window rather than a
+# panel icon and its right-click does nothing, and two-finger scroll does not
+# reach the app. New-message popups do appear, which they did not before,
+# though not where the app asks for them.
+#
 # Known limitation: emoji come out as boxes. Not a composition problem --
 # notepad in this prefix draws one box per astral emoji, not two, so the
 # surrogate pairs are being put together correctly and the pairs of boxes in
@@ -306,6 +312,32 @@ PY
   rm -f "$staged"
 }
 
+# Draw through Wine's Wayland driver rather than X11.
+#
+# The default is winex11.drv, which on a Wayland session goes through
+# XWayland, and XWayland cannot see the pointer while it sits over a native
+# Wayland surface. Measured: the position it reports stayed frozen at one
+# coordinate for 35 seconds of moving the mouse. An app that asks where the
+# cursor is before opening a menu gets that frozen answer, which is why the
+# tray popup landed at the far edge of the screen.
+#
+# This is a trade, not a win. What it buys: new-message popups appear at all.
+# What it costs: no Wayland system tray protocol exists, so Wine draws the
+# tray as a floating window whose right-click does nothing -- the desktop
+# entry's actions are the way out now, not a nicety -- and two-finger scroll
+# stops working, which Wine's Wayland driver does not pick up from the
+# touchpad. Emoji are unaffected either way.
+#
+# Popup placement is not fixed by this and cannot be: Wayland forbids a
+# client from positioning its own windows, so an app asking for the bottom
+# right corner does not get it. Set WINE_GRAPHICS=x11 to go back.
+use_wayland_driver() {
+  local driver=${WINE_GRAPHICS:-wayland}
+  step "pointing Wine at the $driver driver"
+  timeout 120 cli reg add -b "$BOTTLE" -k 'HKEY_CURRENT_USER\Software\Wine\Drivers' \
+    -v Graphics -d "$driver" -t REG_SZ
+}
+
 set_dpi() {
   step "setting the prefix to $DPI DPI"
   cli edit -b "$BOTTLE" --params "custom_dpi:$DPI"
@@ -428,6 +460,7 @@ install_font
 substitute_korean_fonts
 rename_chrome_fonts
 link_emoji_font
+use_wayland_driver
 set_dpi
 install_kakaotalk
 register_program
