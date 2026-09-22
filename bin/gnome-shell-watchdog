@@ -105,20 +105,44 @@ def run(argv, timeout):
     """Run argv in its own process group, killing the group on timeout."""
     proc = subprocess.Popen(
         argv,
-        stdout=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         start_new_session=True,
         text=True,
     )
     try:
-        _, err = proc.communicate(timeout=timeout)
-        return proc.returncode, (err or "").strip()
+        out, err = proc.communicate(timeout=timeout)
+        return proc.returncode, (out or ""), (err or "").strip()
     except subprocess.TimeoutExpired:
         try:
             os.killpg(proc.pid, signal.SIGKILL)
         except OSError:
             pass
-        return 124, "timed out"
+        return 124, "", "timed out"
+
+
+def backtrace(uid):
+    """Log where every gnome-shell thread is stuck, before gdm takes it away.
+
+    The freeze leaves no trace of its own, and the two standing suspects sit on
+    opposite sides of the same main loop: mutter itself, or an extension doing
+    blocking work inside the shell process. Only a stack answers that, and only
+    while the wedged process is still alive.
+    """
+    code, out, err = run(["pgrep", "-u", str(uid), "-x", "gnome-shell"], 10)
+    pid = out.split("\n")[0].strip() if not code else ""
+    if not pid.isdigit():
+        log(f"no gnome-shell pid to trace: {err or out!r}")
+        return
+    code, out, err = run(["eu-stack", "-p", pid], 45)
+    if code:
+        log(f"eu-stack on pid {pid} failed: {err}")
+        return
+    lines = out.splitlines()[:400]
+    log(f"--- eu-stack of gnome-shell pid {pid}, {len(lines)} lines ---")
+    for line in lines:
+        log(line)
+    log("--- end eu-stack ---")
 
 
 def evdev_node(wanted):
@@ -135,7 +159,7 @@ def evdev_node(wanted):
 
 def suspend():
     """Suspend, unless something holds a block-mode sleep inhibitor."""
-    code, err = run(["systemctl", "suspend"], 20)
+    code, _, err = run(["systemctl", "suspend"], 20)
     log("lid closed, suspending" if not code else f"lid closed but suspend was refused: {err}")
 
 
@@ -178,7 +202,7 @@ def shell_answers(uid):
     answer = queue.Queue(maxsize=1)
 
     def ask():
-        code, _ = run(
+        code, _, _ = run(
             [
                 "setpriv", f"--reuid={uid}", f"--regid={uid}", "--init-groups",
                 "env", f"DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/{uid}/bus",
@@ -202,8 +226,9 @@ def shell_answers(uid):
         return False
 
 
-def recover(why):
-    log(f"{why}; dumping kernel state")
+def recover(why, uid):
+    log(f"{why}; dumping state")
+    backtrace(uid)
     for key in ("w", "t"):
         try:
             with open("/proc/sysrq-trigger", "w") as trigger:
@@ -214,7 +239,7 @@ def recover(why):
         log(f"ACTION={ACTION}, leaving the session alone")
         return
     log("restarting the display manager")
-    code, err = run(["systemctl", "restart", "gdm.service"], 60)
+    code, _, err = run(["systemctl", "restart", "gdm.service"], 60)
     if code:
         log(f"gdm restart failed: {err}")
 
@@ -322,13 +347,13 @@ def main():
             continue
 
         if forced:
-            recover("power button burst and the shell did not answer")
+            recover("power button burst and the shell did not answer", uid)
         else:
             strikes += 1
             log(f"gnome-shell missed probe {strikes}/{STRIKES}")
             if strikes < STRIKES:
                 continue
-            recover(f"compositor unresponsive for ~{STRIKES * INTERVAL}s")
+            recover(f"compositor unresponsive for ~{STRIKES * INTERVAL}s", uid)
 
         strikes, presses = 0, []
         # Let the replacement session come up before probing again.
