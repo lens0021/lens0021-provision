@@ -1,0 +1,34 @@
+#!/bin/bash
+# Stop KakaoTalk and start it again.
+#
+# This exists because the tray menu is the only way KakaoTalk offers to quit,
+# and that menu is exactly what breaks when the display layout changes while
+# it runs: Wine caches monitor geometry, a monitor coming or going leaves it
+# stale, and the popup then lands nowhere near the pointer -- sometimes on the
+# far side of the screen, which reads as a dead right-click. Restarting is the
+# fix, and with no reachable menu there is nothing to restart it with.
+#
+# Reached from the desktop entry's right-click actions, which GNOME draws
+# itself and Wine cannot spoil.
+set -euo pipefail
+IFS=$'\n\t'
+
+readonly FLATPAK_ID=com.usebottles.bottles
+readonly BOTTLE=KakaoTalk
+readonly PROGRAM=카카오톡
+
+if pgrep -f 'KakaoTalk\.exe' >/dev/null; then
+  pkill -f 'KakaoTalk\.exe' || true
+  # Wait for the prefix to go quiet. A new instance started while the old
+  # wineserver is still winding down tends to exit without a window.
+  for _ in {1..20}; do
+    pgrep -f 'KakaoTalk\.exe' >/dev/null || break
+    sleep 1
+  done
+fi
+
+case ${1-} in
+  --quit) exit 0 ;;
+esac
+
+exec flatpak run --command=bottles-cli "$FLATPAK_ID" run -b "$BOTTLE" -p "$PROGRAM"

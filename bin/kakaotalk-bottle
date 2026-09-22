@@ -376,6 +376,11 @@ install_desktop_entry() {
   local icon_dest="$HOME/.local/share/icons/hicolor/scalable/apps/kakaotalk.svg"
   local entry="$HOME/.local/share/applications/kakaotalk.desktop"
 
+  # The two actions are not decoration. KakaoTalk offers no way out but its
+  # tray menu, and that menu is what breaks when the display layout changes
+  # under it -- the popup lands far from the pointer and reads as a dead
+  # right-click, leaving no way to restart the thing that needs restarting.
+  # GNOME draws these itself, so they work whatever Wine thinks.
   step "installing the desktop entry"
   install -Dm644 "$icon_src" "$icon_dest"
   # GTK trusts hicolor's icon-theme.cache over the directory when one exists,
@@ -395,6 +400,15 @@ Icon=kakaotalk
 Terminal=false
 Categories=Network;InstantMessaging;
 StartupWMClass=kakaotalk.exe
+Actions=restart;quit;
+
+[Desktop Action restart]
+Name=다시 시작
+Exec=$REPO/bin/kakaotalk-restart
+
+[Desktop Action quit]
+Name=종료
+Exec=$REPO/bin/kakaotalk-restart --quit
 EOF
   update-desktop-database "${entry%/*}" 2>/dev/null || true
 }
