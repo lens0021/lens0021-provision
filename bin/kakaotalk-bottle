@@ -374,7 +374,13 @@ register_program() {
 install_desktop_entry() {
   local icon_src="${EXE%/*}/skin/default/image/3.0/svgs/common_img_appicon.svg"
   local icon_dest="$HOME/.local/share/icons/hicolor/scalable/apps/kakaotalk.svg"
-  local entry="$HOME/.local/share/applications/kakaotalk.desktop"
+  # kakaotalk-bottle.desktop, not kakaotalk.desktop. GNOME Shell keeps the
+  # action list it read the first time it saw a desktop file id and does not
+  # pick up actions added later, however often the file is rewritten, and a
+  # Wayland session gives no way to restart the shell and make it look again.
+  # A file name it has never seen gets read fresh.
+  local entry="$HOME/.local/share/applications/kakaotalk-bottle.desktop"
+  rm -f "$HOME/.local/share/applications/kakaotalk.desktop"
 
   # The two actions are not decoration. KakaoTalk offers no way out but its
   # tray menu, and that menu is what breaks when the display layout changes
