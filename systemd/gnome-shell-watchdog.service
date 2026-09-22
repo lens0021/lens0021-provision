@@ -9,7 +9,13 @@ Description=Recover the GNOME session when the compositor stops answering
 After=graphical.target
 
 [Service]
-Type=simple
+# Type=notify plus WatchdogSec is the point, not a formality. During the
+# 2026-09-22 freeze this service wedged itself and went silent for eight
+# minutes, ignoring a four-press burst and a lid close. Now a loop that stalls
+# past WatchdogSec gets killed and restarted by systemd, and says so.
+Type=notify
+NotifyAccess=main
+WatchdogSec=150
 Environment=INTERVAL=30
 Environment=PING_TIMEOUT=10
 Environment=STRIKES=6
@@ -19,6 +25,8 @@ Environment=STRIKES=6
 Environment=POWER_PRESSES=3
 Environment=POWER_WINDOW=45
 Environment=RESUME_GRACE=60
+# One line every ten minutes, so silence in the journal is itself evidence.
+Environment=HEARTBEAT=600
 # Suspend on lid close, which GNOME declines to do while the dock's monitor is
 # attached. Set to 0 to restore GNOME's clamshell behaviour.
 Environment=LID_SUSPEND=1

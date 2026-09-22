@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Recover the desktop when the GNOME Shell compositor wedges.
 
-This machine freezes every day or two in one specific way: gnome-shell stops
-servicing its main loop while the kernel and every system service stay alive
-and keep logging. Every escape a user would reach for is blocked here.
+This machine freezes every day or two: gnome-shell stops servicing its main
+loop while the kernel and every system service stay alive and keep logging.
+Every escape a user would reach for is blocked here.
 
 Ctrl+Alt+F3 does nothing, because under Wayland mutter holds the keyboard
 through evdev and the VT-switch keys never reach logind. The power key does
@@ -11,19 +11,18 @@ nothing, because gsd-media-keys holds a block-mode handle-power-key inhibitor
 that a frozen GNOME never releases, and logind honours low-level locks
 unconditionally. SysRq would work, but PrtScr is Fn+F10 on this keyboard and
 the embedded controller suppresses other keys while Fn is held, so the letter
-after Alt+SysRq never arrives; no spare key is left to remap either. What
-remained was a hard power cut, which is how 37 unsafe shutdowns accumulated.
+after it never arrives; no spare key is left to remap either.
 
-The system layer stays healthy throughout the hang, so a root service can do
-what the user cannot. Two triggers, one recovery:
+The system layer stays healthy throughout, so a root service can do what the
+user cannot. Two triggers, one recovery:
 
-  * a periodic D-Bus ping of org.gnome.Shell over the user's session bus, and
+  * a periodic D-Bus probe of org.gnome.Shell over the user's session bus, and
   * the power button, read straight off its evdev node.
 
 Reading the button directly is the point: it sidesteps both logind and the
 GNOME inhibitor that make the press useless otherwise, and it is the one key
 on this laptop that can be hit with a single finger. A press burst only acts
-if a ping confirms the shell really is wedged, so a healthy desktop keeps its
+if a probe confirms the shell really is wedged, so a healthy desktop keeps its
 normal power-button behaviour.
 
 It also suspends on lid close, which GNOME refuses to do here. Both logind
@@ -31,34 +30,51 @@ It also suspends on lid close, which GNOME refuses to do here. Both logind
 connected) and gsd-power ("no external monitors or session inactive for a
 while; uninhibiting lid close") keep the machine awake while the dock's
 monitor is attached. That default assumes a clamshell setup, and this laptop
-has no external keyboard, so a closed lid means no way to type at all. Reading
-the switch off evdev sidesteps the gsd-power inhibitor the same way the power
-button does. It suspends through `systemctl suspend`, which still honours
-block-mode sleep inhibitors, so Caffeine keeps working as the override.
+has no external keyboard, so a closed lid means no way to type at all.
+Suspending through `systemctl suspend` still honours block-mode sleep
+inhibitors, so Caffeine keeps working as the override.
 
-Recovery dumps kernel state through sysrq first. The hang has so far left no
-trace of its own in the journal, so those dumps are the only material we get
-for finding the cause; read them after the next freeze with
+On 2026-09-22 the first real freeze after deployment caught this service doing
+nothing at all: no missed probe, no reaction to a four-press burst, no
+reaction to a lid close it had handled correctly an hour earlier. It had
+wedged itself, somewhere in a probe, and said nothing. So the loop is now
+built to survive its own bugs rather than to be provably free of them:
+
+  * the probe runs in a throwaway thread, so it can hang without taking the
+    loop with it, and its subprocess gets its own process group to kill;
+  * every branch pings the systemd watchdog, so a stall that outlasts
+    WatchdogSec has systemd kill and restart the service instead of leaving a
+    silent corpse;
+  * a heartbeat line every HEARTBEAT seconds means silence in the journal is
+    itself evidence, and bounds how far back the next investigation starts.
+
+Recovery dumps kernel state through sysrq first. The hang leaves no trace of
+its own in the journal, so those dumps are the only material we get for
+finding the cause; read them after the next freeze with
 
     journalctl -b -1 -k
 """
 
 import glob
 import os
+import queue
 import select
+import signal
+import socket
 import struct
 import subprocess
 import sys
+import threading
 import time
 
-INTERVAL = int(os.environ.get("INTERVAL", 30))  # seconds between pings
-PING_TIMEOUT = int(os.environ.get("PING_TIMEOUT", 10))  # seconds per ping
+INTERVAL = int(os.environ.get("INTERVAL", 30))  # seconds between probes
+PING_TIMEOUT = int(os.environ.get("PING_TIMEOUT", 10))  # seconds per probe
 STRIKES = int(os.environ.get("STRIKES", 6))  # misses before acting
 ACTION = os.environ.get("ACTION", "restart")  # restart | dump-only
 POWER_PRESSES = int(os.environ.get("POWER_PRESSES", 3))  # presses to force it
 POWER_WINDOW = float(os.environ.get("POWER_WINDOW", 45.0))  # within N seconds
 RESUME_GRACE = float(os.environ.get("RESUME_GRACE", 60.0))  # settle after resume
-
+HEARTBEAT = float(os.environ.get("HEARTBEAT", 600.0))  # seconds between "alive"
 LID_SUSPEND = os.environ.get("LID_SUSPEND", "1") != "0"
 
 EV_KEY, KEY_POWER, KEY_PRESS = 0x01, 116, 1
@@ -68,6 +84,41 @@ EVENT = struct.Struct("llHHi")
 
 def log(msg):
     print(msg, flush=True)
+
+
+def notify(state):
+    """sd_notify without the systemd python bindings."""
+    addr = os.environ.get("NOTIFY_SOCKET")
+    if not addr:
+        return
+    if addr.startswith("@"):
+        addr = "\0" + addr[1:]
+    try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as sock:
+            sock.connect(addr)
+            sock.sendall(state.encode())
+    except OSError:
+        pass
+
+
+def run(argv, timeout):
+    """Run argv in its own process group, killing the group on timeout."""
+    proc = subprocess.Popen(
+        argv,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        start_new_session=True,
+        text=True,
+    )
+    try:
+        _, err = proc.communicate(timeout=timeout)
+        return proc.returncode, (err or "").strip()
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except OSError:
+            pass
+        return 124, "timed out"
 
 
 def evdev_node(wanted):
@@ -84,11 +135,8 @@ def evdev_node(wanted):
 
 def suspend():
     """Suspend, unless something holds a block-mode sleep inhibitor."""
-    done = subprocess.run(["systemctl", "suspend"], capture_output=True, text=True)
-    if done.returncode:
-        log(f"lid closed but suspend was refused: {done.stderr.strip()}")
-    else:
-        log("lid closed, suspending")
+    code, err = run(["systemctl", "suspend"], 20)
+    log("lid closed, suspending" if not code else f"lid closed but suspend was refused: {err}")
 
 
 def active_graphical_uid():
@@ -99,41 +147,58 @@ def active_graphical_uid():
     """
 
     def show(*args):
-        out = subprocess.run(
-            ["loginctl", *args, "--value"], capture_output=True, text=True
+        proc = subprocess.run(
+            ["loginctl", *args, "--value"], capture_output=True, text=True, timeout=10
         )
-        return out.stdout.strip() if out.returncode == 0 else ""
+        return proc.stdout.strip() if proc.returncode == 0 else ""
 
-    sid = show("show-seat", "seat0", "--property=ActiveSession")
-    if not sid:
+    try:
+        sid = show("show-seat", "seat0", "--property=ActiveSession")
+        if not sid:
+            return None
+        if show("show-session", sid, "--property=Type") not in ("wayland", "x11"):
+            return None
+        uid = show("show-session", sid, "--property=User")
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        log(f"loginctl did not answer: {exc}")
         return None
-    if show("show-session", sid, "--property=Type") not in ("wayland", "x11"):
-        return None
-    uid = show("show-session", sid, "--property=User")
     if not uid.isdigit() or int(uid) < 1000:
         return None
     return int(uid) if os.path.exists(f"/run/user/{uid}/bus") else None
 
 
 def shell_answers(uid):
-    """True if gnome-shell replied to a D-Bus ping within PING_TIMEOUT."""
-    try:
-        return (
-            subprocess.run(
-                [
-                    "setpriv", f"--reuid={uid}", f"--regid={uid}", "--init-groups",
-                    "env", f"DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/{uid}/bus",
-                    "gdbus", "call", "--session", "--timeout", str(PING_TIMEOUT),
-                    "--dest", "org.gnome.Shell",
-                    "--object-path", "/org/gnome/Shell",
-                    "--method", "org.freedesktop.DBus.Peer.Ping",
-                ],
-                capture_output=True,
-                timeout=PING_TIMEOUT + 2,
-            ).returncode
-            == 0
+    """True if gnome-shell replied to a D-Bus probe.
+
+    The call happens on a throwaway thread. A probe that wedges in a way the
+    subprocess timeout cannot reach then costs one leaked thread instead of
+    the whole watchdog, which is exactly how the 2026-09-22 freeze went
+    unanswered.
+    """
+    answer = queue.Queue(maxsize=1)
+
+    def ask():
+        code, _ = run(
+            [
+                "setpriv", f"--reuid={uid}", f"--regid={uid}", "--init-groups",
+                "env", f"DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/{uid}/bus",
+                "gdbus", "call", "--session", "--timeout", str(PING_TIMEOUT),
+                "--dest", "org.gnome.Shell",
+                "--object-path", "/org/gnome/Shell",
+                "--method", "org.freedesktop.DBus.Peer.Ping",
+            ],
+            PING_TIMEOUT + 2,
         )
-    except subprocess.TimeoutExpired:
+        try:
+            answer.put_nowait(code == 0)
+        except queue.Full:
+            pass
+
+    threading.Thread(target=ask, daemon=True).start()
+    try:
+        return answer.get(timeout=PING_TIMEOUT + 5)
+    except queue.Empty:
+        log("probe thread did not return, counting it as a miss")
         return False
 
 
@@ -141,16 +206,17 @@ def recover(why):
     log(f"{why}; dumping kernel state")
     for key in ("w", "t"):
         try:
-            with open("/proc/sysrq-trigger", "w") as f:
-                f.write(key)
+            with open("/proc/sysrq-trigger", "w") as trigger:
+                trigger.write(key)
         except OSError as exc:
             log(f"sysrq {key} failed: {exc}")
     if ACTION != "restart":
         log(f"ACTION={ACTION}, leaving the session alone")
         return
     log("restarting the display manager")
-    if subprocess.run(["systemctl", "restart", "gdm.service"]).returncode:
-        log("gdm restart failed")
+    code, err = run(["systemctl", "restart", "gdm.service"], 60)
+    if code:
+        log(f"gdm restart failed: {err}")
 
 
 def main():
@@ -169,7 +235,8 @@ def main():
         except OSError as exc:
             log(f"cannot read {node}: {exc}")
     if not fds:
-        log("no input devices, falling back to ping-only")
+        log("no input devices, falling back to probe-only")
+    notify("READY=1")
 
     strikes, presses = 0, []
     # Act on the open -> shut transition only. The kernel re-reports the switch
@@ -181,9 +248,16 @@ def main():
     last_boot = time.clock_gettime(time.CLOCK_BOOTTIME)
     deadline = time.monotonic() + INTERVAL
     grace_until = 0.0
+    beat = time.monotonic()
 
     while True:
-        timeout = max(0.0, deadline - time.monotonic())
+        notify("WATCHDOG=1")
+        now = time.monotonic()
+        if now - beat >= HEARTBEAT:
+            log(f"alive, {strikes} missed probe(s) outstanding")
+            beat = now
+
+        timeout = max(0.0, deadline - now)
         forced = False
 
         ready = select.select(list(fds), [], [], timeout)[0] if fds else []
@@ -209,6 +283,7 @@ def main():
                 ):
                     presses = [t for t in presses if now - t < POWER_WINDOW]
                     presses.append(now)
+                    log(f"power button press {len(presses)}/{POWER_PRESSES}")
                     if len(presses) >= POWER_PRESSES:
                         presses.clear()
                         forced = True
@@ -233,6 +308,8 @@ def main():
 
         uid = active_graphical_uid()
         if uid is None:
+            if forced:
+                log("power button burst ignored, no active graphical session")
             strikes = 0
             continue
 
@@ -248,13 +325,13 @@ def main():
             recover("power button burst and the shell did not answer")
         else:
             strikes += 1
-            log(f"gnome-shell missed ping {strikes}/{STRIKES}")
+            log(f"gnome-shell missed probe {strikes}/{STRIKES}")
             if strikes < STRIKES:
                 continue
             recover(f"compositor unresponsive for ~{STRIKES * INTERVAL}s")
 
         strikes, presses = 0, []
-        # Let the replacement session come up before pinging again.
+        # Let the replacement session come up before probing again.
         deadline = time.monotonic() + 120
 
 
