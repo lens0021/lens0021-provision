@@ -177,6 +177,10 @@
           },
           {
             "type": "command",
+            "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-gh-link-allowlist.py"
+          },
+          {
+            "type": "command",
             "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-pr-body-linear-id.py"
           },
           {
