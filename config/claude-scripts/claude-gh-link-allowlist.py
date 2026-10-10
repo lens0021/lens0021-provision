@@ -29,6 +29,9 @@ import subprocess
 import sys
 
 ALLOWED_OWNERS = {"femiwiki", "lens0021", "chaotic-ground"}
+# Bots take commands by mention (`@dependabot rebase`) and have no timeline to
+# spam; any login with the [bot] suffix counts as one too.
+ALLOWED_BOTS = {"dependabot", "renovate", "github-actions", "codecov"}
 
 POST_RE = re.compile(
     r"\bgh\b[^\n|;&]*?\b(?:"
@@ -55,9 +58,9 @@ REF_RES = [
     re.compile(r"github\.com/(" + OWNER + r")/[\w.-]+/(?:issues|pull|discussions)/\d+", re.I),
     # owner/repo#12
     re.compile(r"(?<![\w/.-])(" + OWNER + r")/[\w.-]+#\d+"),
-    # @login, @org/team
-    re.compile(r"(?<![\w`/.@=-])@(" + OWNER + r")(?![\w-])"),
 ]
+# @login, @org/team, @app[bot]
+MENTION_RE = re.compile(r"(?<![\w`/.@=-])@(" + OWNER + r")(\[bot\])?(?![\w-])")
 
 
 def strip_code(text):
@@ -120,6 +123,12 @@ def main():
         for m in regex.finditer(text):
             if m.group(1).lower() not in ALLOWED_OWNERS and m.group(0) not in found:
                 found.append(m.group(0))
+    for m in MENTION_RE.finditer(text):
+        login = m.group(1).lower()
+        if m.group(2) or login in ALLOWED_OWNERS or login in ALLOWED_BOTS:
+            continue
+        if m.group(0) not in found:
+            found.append(m.group(0))
     if not found:
         return
 
