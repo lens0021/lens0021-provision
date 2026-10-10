@@ -156,7 +156,7 @@
       "ExitPlanMode"
     ]
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
@@ -186,6 +186,10 @@
           {
             "type": "command",
             "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-pr-body-ticket-dup.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-bash-stdin-guard.py"
           }
         ]
       },
@@ -229,15 +233,16 @@
   "enabledPlugins": {
     "slack@claude-plugins-official": true,
     "ralph-loop@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true,
+    "chrome-devtools-mcp@claude-plugins-official": false,
     "typescript-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "clangd-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
-    "terraform@claude-plugins-official": true,
-    "discord@claude-plugins-official": true,
-    "eli5@claude-community": true
+    "discord@claude-plugins-official": false,
+    "eli5@claude-community": true,
+    "zellij@claude-zellij": true,
+    "grafana-cloud-mcp@anthropic-plugin-directory": true
   },
   "extraKnownMarketplaces": {
     "claude-community": {
@@ -245,11 +250,20 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-community"
       }
+    },
+    "claude-zellij": {
+      "source": {
+        "source": "github",
+        "repo": "chaotic-ground/claude-zellij"
+      }
     }
   },
   "modelSettings": {
     "claude-opus-5": {
-      "effortLevel": "high"
+      "effortLevel": "medium"
+    },
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
     }
   },
   "skipDangerousModePermissionPrompt": true,
