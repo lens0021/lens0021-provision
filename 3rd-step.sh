@@ -32,6 +32,10 @@ sudo sysctl --system >/dev/null
 sudo install -m 0644 ~/git/lens/provision/systemd/gnome-shell-watchdog.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now gnome-shell-watchdog.service
+sudo install -m 0755 ~/git/lens/provision/bin/fanotify-rescue /usr/local/bin/
+sudo install -m 0644 ~/git/lens/provision/systemd/fanotify-rescue.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now fanotify-rescue.service
 
 # KakaoTalk. Lives in its own repo now: the setup is long, most of it is
 # knowledge about Wine and GNOME rather than anything personal, and it is of

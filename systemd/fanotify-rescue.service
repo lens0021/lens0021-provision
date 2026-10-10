@@ -1,0 +1,25 @@
+# Root service, so it can read other processes' fanotify descriptors, write
+# /proc/sysrq-trigger and kill a security agent. 3rd-step.sh installs it under
+# /usr/local/bin for the same SELinux reason as gnome-shell-watchdog.
+[Unit]
+Description=Unwedge the system when a fanotify permission responder stops answering
+
+[Service]
+# Deliberately not Type=notify with WatchdogSec: the failure this exists for
+# leaves PID 1 itself stuck, so systemd could not enforce it anyway.
+Type=simple
+Environment=INTERVAL=5
+# PID 1 in D for this long, sampled every INTERVAL, counts as the wedge. On
+# 2026-10-10 it stayed there for the seven minutes until the power cut.
+Environment=STUCK=120
+# How long to wait for the agent to respawn its responder before restarting
+# its unit.
+Environment=RESTART_AFTER=30
+# kill = dump blocked-task stacks, kill, restart. dump-only = just the stacks.
+Environment=ACTION=kill
+ExecStart=/usr/local/bin/fanotify-rescue
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+"""Unwedge the machine when a fanotify permission responder stops answering.
+
+An endpoint security agent here watches the root filesystem through fanotify
+with FAN_OPEN_PERM and FAN_OPEN_EXEC_PERM: every open and exec on it waits in
+the kernel until the agent says yes. On 2026-10-10 the agent's threads spun at
+100% system time and stopped answering. Within a minute systemd, logind,
+dconf, gnome-shell, the terminal and gnome-shell-watchdog were all in D state,
+the desktop froze with only the cursor moving, and the only way out was the
+power button. Nothing that execs a program or relies on PID 1 can recover from
+that, which is why gnome-shell-watchdog stayed silent.
+
+The waits are killable, though, and closing the fanotify group allows every
+pending event. So this service does only what still works in that state: it
+re-reads PID 1's state through a descriptor opened at startup, and once PID 1
+has sat in D for STUCK seconds it SIGKILLs every process holding a
+content-class fanotify group. /proc is not on the watched filesystem, so
+finding those processes does not block either.
+
+Then it switches the agent back on. If no responder has reappeared after
+RESTART_AFTER seconds, the systemd unit each one belonged to is restarted;
+by then PID 1 is answering again.
+
+Before killing anything it writes "w" to /proc/sysrq-trigger, so the kernel
+log keeps the stacks of the blocked tasks as evidence.
+"""
+
+import os
+import signal
+import subprocess
+import sys
+import time
+
+INTERVAL = float(os.environ.get("INTERVAL", 5))  # seconds between samples
+STUCK = float(os.environ.get("STUCK", 120))  # seconds in D before acting
+WATCH_PID = int(os.environ.get("WATCH_PID", 1))  # the process whose wedge counts
+RESTART_AFTER = float(os.environ.get("RESTART_AFTER", 30))  # grace to respawn
+ACTION = os.environ.get("ACTION", "kill")  # kill | dump-only
+# Space-separated systemd units to limit the kill to. Empty means any holder.
+ONLY_UNITS = set(os.environ.get("ONLY_UNITS", "").split())
+
+# Groups of these classes can hold other processes waiting for an answer.
+FAN_CLASS_CONTENT, FAN_CLASS_PRE_CONTENT = 0x04, 0x08
+
+
+def log(msg):
+    print(msg, flush=True)
+
+
+def state(fd):
+    """The one-letter state from a /proc/<pid>/stat descriptor, or None."""
+    try:
+        data = os.pread(fd, 1024, 0)
+        # comm may contain spaces and parentheses; the state follows the last ")".
+        end = data.rindex(b")")
+        return data[end + 2 : end + 3].decode()
+    except (OSError, ValueError):
+        return None
+
+
+def read(path):
+    try:
+        with open(path) as f:
+            return f.read()
+    except OSError:
+        return ""
+
+
+def system_unit(pid):
+    """The system service a process runs in, or None."""
+    for line in read(f"/proc/{pid}/cgroup").splitlines():
+        parts = line.split("::", 1)[-1].split("/")
+        if len(parts) > 2 and parts[1] == "system.slice" and parts[2].endswith(".service"):
+            return parts[2]
+    return None
+
+
+def responders():
+    """Map each pid holding a blocking fanotify group to its system unit."""
+    found = {}
+    for entry in os.listdir("/proc"):
+        if not entry.isdigit():
+            continue
+        try:
+            fds = os.listdir(f"/proc/{entry}/fd")
+        except OSError:
+            continue
+        for fd in fds:
+            try:
+                if os.readlink(f"/proc/{entry}/fd/{fd}") != "anon_inode:[fanotify]":
+                    continue
+            except OSError:
+                continue
+            for line in read(f"/proc/{entry}/fdinfo/{fd}").splitlines():
+                if not line.startswith("fanotify flags:"):
+                    continue
+                flags = int(line.split()[1].split(":")[1], 16)
+                if flags & (FAN_CLASS_CONTENT | FAN_CLASS_PRE_CONTENT):
+                    found[int(entry)] = system_unit(entry)
+    if ONLY_UNITS:
+        found = {pid: unit for pid, unit in found.items() if unit in ONLY_UNITS}
+    return found
+
+
+def rescue(stat, sysrq, stuck_for):
+    found = responders()
+    if not found:
+        log(f"pid {WATCH_PID} in D for {stuck_for:.0f}s, but no fanotify responder to blame")
+        return
+    names = ", ".join(
+        f"{pid} ({read(f'/proc/{pid}/comm').strip()}, {unit or 'no unit'})"
+        for pid, unit in sorted(found.items())
+    )
+    log(f"pid {WATCH_PID} in D for {stuck_for:.0f}s; fanotify responders: {names}")
+    try:
+        os.write(sysrq, b"w")
+    except OSError as exc:
+        log(f"sysrq w failed: {exc}")
+    if ACTION != "kill":
+        log(f"ACTION={ACTION}, leaving them alone")
+        return
+
+    for pid in found:
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    log(f"killed {len(found)} responder(s)")
+
+    start = time.monotonic()
+    while state(stat) == "D" and time.monotonic() - start < RESTART_AFTER:
+        time.sleep(1)
+    if state(stat) == "D":
+        log(f"pid {WATCH_PID} still in D {RESTART_AFTER:.0f}s after the kill")
+    else:
+        log(f"pid {WATCH_PID} left D {time.monotonic() - start:.0f}s after the kill")
+    time.sleep(max(0.0, RESTART_AFTER - (time.monotonic() - start)))
+
+    back = responders()
+    if back:
+        log(f"responder back by itself as pid {', '.join(map(str, sorted(back)))}")
+        return
+    for unit in sorted({unit for unit in found.values() if unit}):
+        try:
+            proc = subprocess.run(
+                ["systemctl", "restart", unit], capture_output=True, text=True, timeout=90
+            )
+            log(f"restarted {unit}" if not proc.returncode else f"restart of {unit} failed: {proc.stderr.strip()}")
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            log(f"restart of {unit} failed: {exc}")
+
+
+def main():
+    # Opened once: in the wedge we are after, opening files on the watched
+    # filesystem is exactly what blocks.
+    try:
+        stat = os.open(f"/proc/{WATCH_PID}/stat", os.O_RDONLY)
+        sysrq = os.open("/proc/sysrq-trigger", os.O_WRONLY)
+    except OSError as exc:
+        log(f"cannot start: {exc}")
+        sys.exit(1)
+    log(f"watching pid {WATCH_PID}, acting after {STUCK:.0f}s in D")
+
+    since = None
+    while True:
+        time.sleep(INTERVAL)
+        now = time.monotonic()
+        if state(stat) != "D":
+            if since is not None and now - since >= 30:
+                log(f"pid {WATCH_PID} left D after {now - since:.0f}s by itself")
+            since = None
+            continue
+        if since is None:
+            since = now
+        elif now - since >= STUCK:
+            rescue(stat, sysrq, now - since)
+            since = None
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)
