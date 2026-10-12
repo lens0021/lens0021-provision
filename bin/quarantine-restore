@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+"""Put back the files the endpoint agent here ate out of a Wine prefix.
+
+Wine fills a prefix with PE files it builds itself: unsigned, and in the case
+of a locally built Wine, unique in the world, so nothing knows them. The agent
+on this machine judges them by heuristics alone and files them under names
+like Gen:Variant.Lazy.737988. It has taken 1206 of them out of ~/.var/app so
+far, across two different Wine setups. Nothing is wrong with the files; the
+same bytes sit unread inside the flatpak install, which has never lost one.
+
+A prefix missing ntdll.dll does not start, and the app simply never appears.
+
+The agent's own answer to a wrong verdict is to restore from quarantine, which
+puts the file back where it was and excludes that path from on-access scanning
+from then on. That is what this does, in bulk. It only ever touches paths that
+are gone from disk, so it cannot overwrite a file that is already fine, and it
+takes the newest verdict when the same path was taken more than once.
+
+Do not repair such a prefix with `wineboot -u` instead. That rewrites every
+file in it, the agent weighs each one again as freshly written, and a prefix
+short ten files comes back short a hundred and fifty. That happened here on
+2026-10-12.
+
+The quarantine is machine-wide, so a path prefix is required: say which tree
+to put back.
+
+    sudo quarantine-restore ~/.var/app/io.github.chaotic_ground.KakaoTalk
+    sudo quarantine-restore --dry-run ~/.var/app
+"""
+
+import argparse
+import os
+import re
+import signal
+import subprocess
+import sys
+
+BDUITOOL = "/opt/bitdefender-security-tools/bin/bduitool"
+
+# <n> [<threat name>] <uuid> <YYYY-MM-DD-HH:MM:SS> <absolute path>
+# The threat name is missing on some rows, and paths hold spaces, so anchor on
+# the two fields whose shape is fixed and take the rest of the line as a path.
+ENTRY = re.compile(
+    r"(?P<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"
+    r" (?P<when>\d{4}-\d{2}-\d{2}-\d{2}:\d{2}:\d{2})"
+    r" (?P<path>/.*)$"
+)
+
+
+def quarantine():
+    """Every quarantined item, newest verdict per path."""
+    out = subprocess.run(
+        [BDUITOOL, "get", "quar"],
+        capture_output=True, text=True, timeout=300,
+    ).stdout
+    newest = {}
+    for line in out.splitlines():
+        m = ENTRY.search(line)
+        if not m:
+            continue
+        path, when = m["path"], m["when"]
+        if path not in newest or when >= newest[path][1]:
+            newest[path] = (m["id"], when)
+    return newest
+
+
+def restore(quar_id):
+    r = subprocess.run(
+        [BDUITOOL, "quar", "-r", "original", quar_id],
+        capture_output=True, text=True, timeout=300,
+    )
+    said = " ".join(r.stdout.split())
+    # The tool spells it "successfuly" and still exits 0 on failure, so read
+    # what it said rather than the status.
+    return "success" in said.lower(), said
+
+
+def main():
+    # The listing is long enough to pipe into head, and dying there is not an
+    # error worth a traceback.
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("tree", nargs="+", help="only restore paths under these")
+    ap.add_argument("-n", "--dry-run", action="store_true",
+                    help="say what would come back and stop")
+    args = ap.parse_args()
+
+    if os.geteuid() != 0:
+        sys.exit("needs root: the quarantine is not readable otherwise")
+
+    trees = [os.path.abspath(os.path.expanduser(t)) for t in args.tree]
+    wanted = sorted(
+        (path, quar_id)
+        for path, (quar_id, _) in quarantine().items()
+        if any(path == t or path.startswith(t + "/") for t in trees)
+        and not os.path.lexists(path)
+    )
+
+    if not wanted:
+        print("nothing to put back")
+        return
+
+    print(f"{len(wanted)} file(s) missing and held in quarantine")
+    if args.dry_run:
+        for path, _ in wanted:
+            print(f"  {path}")
+        return
+
+    failed = []
+    for i, (path, quar_id) in enumerate(wanted, 1):
+        ok, said = restore(quar_id)
+        print(f"[{i}/{len(wanted)}] {'ok  ' if ok else 'FAIL'} {path}")
+        if not ok:
+            failed.append((path, said))
+
+    still_gone = [p for p, _ in wanted if not os.path.lexists(p)]
+    print(f"\nrestored {len(wanted) - len(failed)}, failed {len(failed)}")
+    for path, said in failed:
+        print(f"  {path}: {said}")
+    if still_gone:
+        print(f"{len(still_gone)} still not on disk:")
+        for path in still_gone:
+            print(f"  {path}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

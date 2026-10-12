@@ -37,6 +37,13 @@ sudo install -m 0644 ~/git/lens/provision/systemd/fanotify-rescue.service /etc/s
 sudo systemctl daemon-reload
 sudo systemctl enable --now fanotify-rescue.service
 
+# The same agent quarantines the PE files Wine puts in a prefix. They are
+# unsigned and, for a locally built Wine, unknown to everyone, so heuristics
+# are all it has to go on. A prefix short its ntdll.dll does not start. Run it
+# by hand after that happens; it is not a service, since putting a file back
+# also excludes it, and that is not a thing to do unwatched.
+sudo install -m 0755 ~/git/lens/provision/bin/quarantine-restore /usr/local/bin/
+
 # KakaoTalk. Lives in its own repo now: the setup is long, most of it is
 # knowledge about Wine and GNOME rather than anything personal, and it is of
 # no use to anyone buried in here.
