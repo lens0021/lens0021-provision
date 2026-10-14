@@ -59,6 +59,7 @@
     "libgda-sqlite": "6.0.0-11.fc42",
     "docker-compose-plugin": "2.38.2-1.fc42",
     "gopls": "0.18.1-2.fc43",
+    "delve": "1.27.1-1.fc43",
     "google-cloud-cli": "554.0.0-1",
     "google-cloud-cli-gke-gcloud-auth-plugin": "554.0.0-1",
     "mariadb-devel": "10.11.15-1.fc43",
