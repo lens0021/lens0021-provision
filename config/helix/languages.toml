@@ -1,12 +1,3 @@
-[language-server.scls]
-command = "simple-completion-language-server"
-
-[language-server.scls.config]
-max_completion_items = 20
-feature_paths = true
-feature_unicode_input = true
-feature_words = true
-
 [language-server.typos]
 command = "typos-lsp"
 environment = {"RUST_LOG" = "error"}
@@ -34,7 +25,7 @@ scope = "source.ab"
 file-types = ["ab"]
 comment-token = ["//"]
 indent = { tab-width = 4, unit = "    " }
-language-servers = [ "amber-lsp", "scls", "typos" ]
+language-servers = [ "amber-lsp", "typos" ]
 
 [[grammar]]
 name = "amber"
@@ -47,7 +38,7 @@ scope = "source.vrl"
 file-types = ["vrl"]
 comment-token = ["#"]
 indent = { tab-width = 2, unit = "    " }
-language-servers = [ "scls", "typos" ]
+language-servers = [ "typos" ]
 
 [[grammar]]
 name = "vrl"
@@ -55,7 +46,7 @@ source = { git = "https://github.com/belltoy/tree-sitter-vrl", rev = "274b3ce63f
 
 [[language]]
 name = "git-commit"
-language-servers = [ "scls", "typos" ]
+language-servers = [ "typos" ]
 
 [[language]]
 name = "github-action"
@@ -68,11 +59,11 @@ grammar = "yaml"
 
 [[language]]
 name = "go"
-language-servers = [ "gopls", "golangci-lint-lsp", "scls", "typos" ]
+language-servers = [ "gopls", "golangci-lint-lsp", "typos" ]
 
 [[language]]
 name = "hcl"
-language-servers = [ "terraform-ls", "scls", "typos" ]
+language-servers = [ "terraform-ls", "typos" ]
 
 [[language]]
 name = "javascript"
@@ -85,21 +76,21 @@ formatter = { command = 'prettier', args = ["--parser", "markdown"] }
 
 [[language]]
 name = "php"
-language-servers = [ "phpactor", "scls", "typos" ]
+language-servers = [ "phpactor", "typos" ]
 roots = [ "travis.yml" ]
 
 [[language]]
 name = "rust"
 auto-format = false
-language-servers = [ "rust-analyzer", "scls", "typos" ]
+language-servers = [ "rust-analyzer", "typos" ]
 
 [[language]]
 name = "scheme"
-language-servers = [ "scls", "typos" ]
+language-servers = [ "typos" ]
 
 [[language]]
 name = "toml"
-language-servers = [ "taplo", "scls", "typos" ]
+language-servers = [ "taplo", "typos" ]
 
 [[language]]
 name = "vrl"
@@ -107,7 +98,7 @@ scope = "source.vrl"
 file-types = ["vrl"]
 comment-token = ["#"]
 indent = { tab-width = 2, unit = "    " }
-language-servers = [ "scls", "typos" ]
+language-servers = [ "typos" ]
 
 [[grammar]]
 name = "vrl"
@@ -116,5 +107,5 @@ source = { git = "https://github.com/belltoy/tree-sitter-vrl", rev = "274b3ce63f
 
 [[language]]
 name = "yaml"
-language-servers = [ "yaml-language-server", "scls", "typos" ]
+language-servers = [ "yaml-language-server", "typos" ]
 formatter = { command = 'yamlfmt', args = ["-in", "-formatter", "retain_line_breaks=true,trim_trailing_whitespace=true,eof_newline=true"] }
