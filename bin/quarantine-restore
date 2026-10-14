@@ -11,10 +11,20 @@ same bytes sit unread inside the flatpak install, which has never lost one.
 A prefix missing ntdll.dll does not start, and the app simply never appears.
 
 The agent's own answer to a wrong verdict is to restore from quarantine, which
-puts the file back where it was and excludes that path from on-access scanning
-from then on. That is what this does, in bulk. It only ever touches paths that
-are gone from disk, so it cannot overwrite a file that is already fine, and it
-takes the newest verdict when the same path was taken more than once.
+puts the file back where it was. That is what this does, in bulk. It only ever
+touches paths that are gone from disk, so it cannot overwrite a file that is
+already fine, and it takes the newest verdict when the same path was taken
+more than once.
+
+Expect to run it again. The help text promises that restoring also adds an
+on-access exclusion, and it does, but the files come back anyway: of the ten
+taken on 2026-10-14, eight had been restored two days earlier. The exclusion
+appears to cover only on-access scanning, leaving whatever scan runs on its
+own schedule to take them again. That part is inference. What is certain is
+that an excluded file was taken a second time.
+
+Only an exclusion on the whole prefix directory ends this, and that is set
+where the agent's policy comes from, not here.
 
 Do not repair such a prefix with `wineboot -u` instead. That rewrites every
 file in it, the agent weighs each one again as freshly written, and a prefix
