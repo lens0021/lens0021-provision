@@ -192,6 +192,10 @@
           {
             "type": "command",
             "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-bash-stdin-guard.py"
+          },
+          {
+            "type": "command",
+            "command": "[ ! -f ~/git/port/leslie-kit/scripts/claude-vault-token-guard.py ] || python3 ~/git/port/leslie-kit/scripts/claude-vault-token-guard.py"
           }
         ]
       },
@@ -205,6 +209,17 @@
           {
             "type": "command",
             "command": "python3 ~/git/lens/provision/config/claude-scripts/claude-linear-parent-dup.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -f ~/git/port/leslie-kit/scripts/claude-vault-token-guard.py ] || python3 ~/git/port/leslie-kit/scripts/claude-vault-token-guard.py"
           }
         ]
       }
