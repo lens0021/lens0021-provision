@@ -202,7 +202,8 @@
   },
   "flathub": {
     "com.collaboraoffice.Office": null,
-    "com.usebottles.bottles": null
+    "com.usebottles.bottles": null,
+    "org.remmina.Remmina": null
   },
   "dconf": {
     "/desktop/ibus/general/preload-engines": "['hangul']",
