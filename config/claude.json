@@ -196,6 +196,10 @@
           {
             "type": "command",
             "command": "[ ! -f ~/git/port/leslie-kit/scripts/claude-vault-token-guard.py ] || python3 ~/git/port/leslie-kit/scripts/claude-vault-token-guard.py"
+          },
+          {
+            "type": "command",
+            "command": "[ ! -f ~/git/port/leslie-kit/scripts/claude-k8s-secret-guard.py ] || python3 ~/git/port/leslie-kit/scripts/claude-k8s-secret-guard.py"
           }
         ]
       },
